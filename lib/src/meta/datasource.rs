@@ -1,7 +1,7 @@
 use serde::{ Deserialize, Serialize };
 #[derive(Deserialize, Serialize)]
 pub enum Datasource {
-	DatasourceV1 {
+	V1 {
 		name: Option<String>,
 		version: Option<Version>,
 		description: Option<String>
