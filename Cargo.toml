@@ -1,0 +1,16 @@
+[workspace]
+members = [
+	"lib/model"
+]
+
+[profile.dev]
+opt-level = 0 # none
+debug-assertions = true
+debug = true
+incremental = true
+
+[profile.release]
+opt-level = 3 # all
+debug-assertions = false
+lto = true
+codegen-units = 1
