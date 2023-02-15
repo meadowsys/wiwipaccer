@@ -1,6 +1,7 @@
 [workspace]
 members = [
-	"lib/model"
+	"lib/model",
+	"src-tauri"
 ]
 
 [profile.dev]
