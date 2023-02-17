@@ -13,11 +13,12 @@ pub struct VersionRuntimeMeta {
 	path: String,
 	versions: Vec<PackVersionSpecifier>,
 	processing_option: OptionType,
-	actions: Vec<Action>
+	actions: Vec<Action>,
+	warnings: Vec<Warning>
 }
 
 impl VersionRuntimeMeta {
-	pub async fn new(path: &str) -> Result<(Self, Vec<Warning>)> {
+	pub async fn new(path: &str) -> Result<Self> {
 		let warnings = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -89,9 +90,10 @@ impl VersionRuntimeMeta {
 			versions,
 			processing_option,
 			path: path.into(),
-			actions
+			actions,
+			warnings
 		};
 
-		Ok((new, warnings))
+		Ok(new)
 	}
 }
