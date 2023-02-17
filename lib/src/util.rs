@@ -1,6 +1,7 @@
 use crate::error::Result;
+use futures::StreamExt as _;
 use ron::extensions::Extensions;
-use std::fs;
+use tokio::fs;
 
 lazy_static::lazy_static! {
 	pub static ref RON: ron::Options = {
@@ -10,16 +11,17 @@ lazy_static::lazy_static! {
 	};
 }
 
-pub fn walk_dir(path: &str) -> crate::error::Result<Vec<String>> {
-	let metadata = fs::metadata(path)?;
+#[async_recursion::async_recursion]
+pub async fn walk_dir(path: &str) -> crate::error::Result<Vec<String>> {
+	let metadata = fs::metadata(path).await?;
 	if !metadata.is_dir() { return Ok(vec![path.into()]) }
 
 	let mut paths = vec![];
-	let inner_files = fs::read_dir(path)?;
+	let mut inner_files = fs::read_dir(path).await?;
 
-	for file in inner_files {
-		let file = file?.path();
-		for file in walk_dir(file.to_str().expect("invalid unicode paths unsupported"))? {
+	while let Some(file) = inner_files.next_entry().await? {
+		let file = file.path();
+		for file in walk_dir(file.to_str().expect("invalid unicode paths unsupported")).await? {
 			paths.push(file);
 		}
 	}

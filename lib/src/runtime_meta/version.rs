@@ -4,7 +4,7 @@ use crate::meta::version::OptionType;
 use crate::meta::version::PackVersionSpecifier;
 use crate::runtime_meta::Warning;
 use crate::util::RON;
-use std::fs;
+use tokio::fs;
 use super::action::Action;
 use super::{ ASSETS_DIR_NAME, META_NAME };
 
@@ -17,13 +17,13 @@ pub struct VersionRuntimeMeta {
 }
 
 impl VersionRuntimeMeta {
-	pub fn new(path: &str) -> Result<(Self, Vec<Warning>)> {
+	pub async fn new(path: &str) -> Result<(Self, Vec<Warning>)> {
 		let warnings = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
-		let _manifest_file_meta = fs::metadata(&manifest_path)?;
+		let _manifest_file_meta = fs::metadata(&manifest_path).await?;
 
-		let file = fs::read_to_string(&manifest_path)?;
+		let file = fs::read_to_string(&manifest_path).await?;
 		let version = RON.from_str::<Version>(&file)
 			.map_err(|e| Error::ParseErrorRonSpannedError {
 				path: manifest_path,
@@ -37,14 +37,14 @@ impl VersionRuntimeMeta {
 		let processing_option = processing_option.unwrap_or(OptionType::CopyPaste);
 
 		let assets_path = format!("{path}/{ASSETS_DIR_NAME}");
-		let assets_metadata = fs::metadata(&assets_path)?;
+		let assets_metadata = fs::metadata(&assets_path).await?;
 		if !assets_metadata.is_dir() { return Err(Error::AssetsIsNotDir { assets_path }) }
 
 		let actions = match &processing_option {
 			OptionType::CopyPaste => {
 				let mut actions = vec![];
 
-				let assets_contents = dbg!(crate::util::walk_dir(&assets_path)?);
+				let assets_contents = dbg!(crate::util::walk_dir(&assets_path).await?);
 				for file in assets_contents {
 					if !file.ends_with(".png") { continue }
 
