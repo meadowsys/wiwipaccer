@@ -4,7 +4,7 @@
 
 use serde::{ Deserialize, Serialize };
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum Datasource {
 	V1 {
 		/// name of the data source
@@ -17,7 +17,7 @@ pub enum Datasource {
 	}
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum Version {
 	/// explicit version
 	String(String),

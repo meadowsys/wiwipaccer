@@ -2,7 +2,7 @@
 
 use serde::{ Deserialize, Serialize };
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum Version {
 	V1 {
 		/// Versions that this option supports
@@ -12,10 +12,12 @@ pub enum Version {
 	}
 }
 
-#[derive(Deserialize, Serialize)]
-pub enum PackVersionSpecifier {}
+#[derive(Debug, Deserialize, Serialize)]
+pub enum PackVersionSpecifier {
+	PackVersion(u8)
+}
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum OptionType {
 	/// Option should be copy pasted into the output, with no modifications
 	CopyPaste,
