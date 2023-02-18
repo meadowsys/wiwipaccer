@@ -67,7 +67,7 @@ impl VersionRuntimeMeta {
 			OptionType::CopyPaste => {
 				let mut actions = vec![];
 
-				let assets_contents = dbg!(crate::util::walk_dir(&assets_path).await?);
+				let assets_contents = crate::util::walk_dir(&assets_path).await?;
 				for file in assets_contents {
 					if !file.ends_with(".png") {
 						warnings.push(Warning {
@@ -77,7 +77,6 @@ impl VersionRuntimeMeta {
 					}
 
 					let mut relative_path = &file[path.len()..];
-					dbg!(relative_path);
 					if relative_path.starts_with('/') {
 						// while next_char is being called, this will be one more than the index of
 						// the character being read, so right before breaking the loop, we subtract
@@ -181,7 +180,7 @@ impl VersionRuntimeMeta {
 						// this should never fail:
 						// - Derive, no reason to fail
 						// - HashMap contains string keys
-						data: dbg!(serde_json::to_string(&model).unwrap()).into(),
+						data: serde_json::to_string(&model).unwrap().into(),
 						src_files: vec![texture_src_path.clone()]
 					});
 
@@ -204,7 +203,7 @@ impl VersionRuntimeMeta {
 
 				actions.push(Action::WriteBytes {
 					path: format!("assets/{block_ns}/blockstates/{block_id}.json"),
-					data: dbg!(serde_json::to_string(&blockstate).unwrap()).into(),
+					data: serde_json::to_string(&blockstate).unwrap().into(),
 					src_files: texture_src_paths
 				});
 
