@@ -12,7 +12,7 @@ lazy_static::lazy_static! {
 }
 
 #[async_recursion::async_recursion]
-pub async fn walk_dir(path: &str) -> crate::error::Result<Vec<String>> {
+pub async fn walk_dir(path: &str) -> Result<Vec<String>> {
 	let metadata = fs::metadata(path).await
 		.map_err(|e| Error::FileDoesNotExist { path: path.into(), source: e })?;
 	if !metadata.is_dir() { return Ok(vec![path.into()]) }
