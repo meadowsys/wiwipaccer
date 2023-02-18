@@ -113,7 +113,7 @@ impl VersionRuntimeMeta {
 					.ok_or_else(|| Error::InvalidBlockID { id: block_id.clone() })?;
 
 
-				let hash = hash(&format!("{block_id}/{mirror:?}/{y:?}"));
+				let hash = hash(&format!("{block_ns}{block_id}{mirror:?}{y:?}"));
 
 				let assets_contents = crate::util::walk_dir(&assets_path).await?;
 
@@ -136,7 +136,7 @@ impl VersionRuntimeMeta {
 
 					if let Some(y) = y {
 						for y in y {
-							let path = format!("block/{hash}/{filename}");
+							let path = format!("block/{block_id}-{hash}/{filename}");
 
 							if let Some(true) = mirror {
 								model_and_blockstate.push(gen_model_and_blockstate(GenModelAndBlockstateParams {
