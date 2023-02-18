@@ -74,7 +74,7 @@ impl OptionRuntimeMeta {
 					versions.insert(version.shortpath.clone(), version);
 				}
 				Err(err) => {
-					warnings.push(err.into_warning());
+					warnings.push(err.to_warning());
 				}
 			}
 		}

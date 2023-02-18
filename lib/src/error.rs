@@ -34,7 +34,7 @@ pub enum Error {
 }
 
 impl Error {
-	pub fn into_warning(self) -> Warning {
+	pub fn to_warning(&self) -> Warning {
 		Warning { message: self.to_string() }
 	}
 }
