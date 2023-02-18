@@ -31,11 +31,19 @@ impl VersionRuntimeMeta {
 				source: e
 			})?;
 
-		let (versions, processing_option) = match version {
-			Version::V1 { versions, r#type } => { (versions, r#type) }
-		};
+		struct Destructure {
+			versions: Vec<PackVersionSpecifier>,
+			processing_option: OptionType
+		}
 
-		let processing_option = processing_option.unwrap_or(OptionType::CopyPaste);
+		let Destructure { versions, processing_option } = match version {
+			Version::V1 { versions, r#type } => {
+				Destructure {
+					versions,
+					processing_option: r#type.unwrap_or(OptionType::CopyPaste)
+				}
+			}
+		};
 
 		let assets_path = format!("{path}/{ASSETS_DIR_NAME}");
 		let assets_metadata = fs::metadata(&assets_path).await?;
