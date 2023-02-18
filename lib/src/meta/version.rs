@@ -23,9 +23,9 @@ pub enum OptionType {
 	CopyPaste,
 	/// Allows to provide some textures, and blockstate/models will be generated
 	/// for random textures.
-	Random {
+	RandomCubeAll {
 		block_id: String,
 		mirror: Option<bool>,
-		y: Option<Vec<u16>>
+		y: Option<Vec<Option<u16>>>
 	}
 }

@@ -1,9 +1,15 @@
+use ahash::{ HashMapExt, HashSetExt, RandomState };
 use crate::error::{ Error, Result };
+use crate::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
+use crate::mc_structs::model::Model;
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
 use crate::meta::version::PackVersionSpecifier;
 use crate::runtime_meta::Warning;
+use crate::util::hash;
 use crate::util::RON;
+use std::collections::HashMap;
+use std::collections::HashSet;
 use super::action::Action;
 use super::{ ASSETS_DIR_NAME, META_NAME };
 use tokio::fs;
@@ -23,7 +29,7 @@ impl VersionRuntimeMeta {
 		// if !fs::metadata(path).await?.is_dir() {
 		// 	return Err
 		// }
-		let warnings = vec![];
+		let mut warnings = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
 		let manifest_file_meta = fs::metadata(&manifest_path).await
@@ -63,7 +69,12 @@ impl VersionRuntimeMeta {
 
 				let assets_contents = dbg!(crate::util::walk_dir(&assets_path).await?);
 				for file in assets_contents {
-					if !file.ends_with(".png") { continue }
+					if !file.ends_with(".png") {
+						warnings.push(Warning {
+							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}")
+						});
+						continue
+					}
 
 					let mut relative_path = &file[path.len()..];
 					dbg!(relative_path);
@@ -97,8 +108,107 @@ impl VersionRuntimeMeta {
 				actions
 			}
 
-			OptionType::Random { block_id, mirror, y } => {
-				todo!()
+			OptionType::RandomCubeAll { block_id, mirror, y } => {
+				let (block_ns, block_id) = block_id.split_once(':')
+					.ok_or_else(|| Error::InvalidBlockID { id: block_id.clone() })?;
+
+
+				let hash = hash(&format!("{block_id}/{mirror:?}/{y:?}"));
+
+				let assets_contents = crate::util::walk_dir(&assets_path).await?;
+
+				let mut model_and_blockstate = vec![];
+
+				for file in assets_contents {
+					if !file.ends_with(".png") {
+						warnings.push(Warning {
+							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}")
+						});
+						continue
+					}
+
+					let filename = std::path::Path::new(&file)
+						.file_name()
+						.unwrap()
+						.to_str()
+						.unwrap()
+						.to_string();
+
+					if let Some(y) = y {
+						for y in y {
+							let path = format!("block/{hash}/{filename}");
+
+							if let Some(true) = mirror {
+								model_and_blockstate.push(gen_model_and_blockstate(GenModelAndBlockstateParams {
+									block_ns,
+									file: file.clone(),
+									parent: "block/cube_mirrored_all",
+									path: path.clone(),
+									y
+								}));
+							}
+
+							model_and_blockstate.push(gen_model_and_blockstate(GenModelAndBlockstateParams {
+								block_ns,
+								file: file.clone(),
+								parent: "block/cube_all",
+								path,
+								y
+							}));
+
+						}
+					}
+				}
+
+				let mut actions = vec![];
+				let mut variants = vec![];
+				let mut texture_src_paths = vec![];
+				let mut texture_dedup_set: HashSet<String, RandomState> = HashSetExt::new();
+
+				for mb in model_and_blockstate {
+					let ModelAndBlockstate {
+						blockstate_entry,
+						model,
+						model_file_path,
+						texture_src_path,
+						texture_dest_path
+					} = mb;
+
+					variants.push(blockstate_entry);
+
+					actions.push(Action::WriteBytes {
+						path: model_file_path,
+						// this should never fail:
+						// - Derive, no reason to fail
+						// - HashMap contains string keys
+						data: dbg!(serde_json::to_string(&model).unwrap()).into(),
+						src_files: vec![texture_src_path.clone()]
+					});
+
+					if !texture_dedup_set.contains(&texture_src_path) {
+						texture_dedup_set.insert(texture_src_path.clone());
+
+						actions.push(Action::CopyFile {
+							from: texture_src_path.clone(),
+							to: texture_dest_path
+						});
+						texture_src_paths.push(texture_src_path);
+					}
+				}
+
+
+				let mut blockstate = Blockstate {
+					variants: HashMapExt::new()
+				};
+				blockstate.variants.insert("".into(), variants);
+
+				actions.push(Action::WriteBytes {
+					path: format!("assets/{block_ns}/blockstates/{block_id}.json"),
+					data: dbg!(serde_json::to_string(&blockstate).unwrap()).into(),
+					src_files: texture_src_paths
+				});
+
+				actions
 			}
 		};
 
@@ -119,5 +229,53 @@ impl VersionRuntimeMeta {
 		};
 
 		Ok(new)
+	}
+}
+
+#[derive(Debug)]
+struct ModelAndBlockstate {
+	blockstate_entry: BlockstateEntry,
+	model: Model,
+	model_file_path: String,
+	texture_src_path: String,
+	texture_dest_path: String
+}
+
+struct GenModelAndBlockstateParams<'h> {
+	block_ns: &'h str,
+	file: String,
+	parent: &'h str,
+	path: String,
+	y: &'h Option<u16>
+}
+
+fn gen_model_and_blockstate(params: GenModelAndBlockstateParams<'_>) -> ModelAndBlockstate {
+	let GenModelAndBlockstateParams {
+		block_ns,
+		file,
+		parent,
+		path,
+		y,
+	} = params;
+
+	let path_notdeviated = path;
+	let hash = hash(&format!("{block_ns}{file}{parent}{path_notdeviated}{}", y.unwrap_or_else(|| 0)));
+	let path = format!("{path_notdeviated}-{hash}");
+
+	let mut textures: HashMap<String, String, RandomState> = HashMapExt::new();
+	textures.insert("all".into(), format!("{block_ns}:{path_notdeviated}"));
+
+	ModelAndBlockstate {
+		blockstate_entry: BlockstateEntry {
+			model: format!("{block_ns}:{path}"),
+			y: *y
+		},
+		model: Model {
+			parent: parent.into(),
+			textures: Some(textures)
+		},
+		model_file_path: format!("assets/{block_ns}/models/{path}.json"),
+		texture_src_path: file,
+		texture_dest_path: format!("assets/{block_ns}/textures/{path_notdeviated}.png")
 	}
 }

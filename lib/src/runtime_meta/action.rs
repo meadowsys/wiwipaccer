@@ -11,7 +11,7 @@ pub enum Action {
 		path: String,
 		/// vec of paths of files that caused the compilation of this entry,
 		/// the "source" if you will
-		depends_on: Vec<String>
+		src_files: Vec<String>
 	}
 }
 
@@ -22,8 +22,8 @@ impl std::fmt::Debug for Action {
 			CopyFile { from, to } => {
 				write!(f, "CopyFile {{ from: {from:?}, to: {to:?}}}")?;
 			}
-			WriteBytes { data, path, depends_on } => {
-				write!(f, "WriteBytes {{ data: {data:?}, path: {path:?}, depends_on: {depends_on:?} }}")?;
+			WriteBytes { data, path, src_files } => {
+				write!(f, "WriteBytes {{ data: {data:?}, path: {path:?}, src_files: {src_files:?} }}")?;
 			}
 		}
 

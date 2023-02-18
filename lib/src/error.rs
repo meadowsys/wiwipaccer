@@ -18,6 +18,10 @@ pub enum Error {
 	IOError {
 		source: std::io::Error
 	},
+	#[error("Invalid block ID: {id}")]
+	InvalidBlockID {
+		id: String
+	},
 	#[error("Ron parsing error for path {path}: {source}")]
 	ParseErrorRonSpannedError {
 		path: String,
