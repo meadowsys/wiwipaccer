@@ -10,6 +10,13 @@ fn greet(name: &str) -> String {
 }
 
 fn main() {
+	let rt = tokio::runtime::Builder::new_multi_thread()
+		.enable_all()
+		.worker_threads(2)
+		.build()
+		.unwrap();
+	tauri::async_runtime::set(rt.handle().clone());
+
 	tauri::Builder::default()
 		.invoke_handler(tauri::generate_handler![greet])
 		.build(tauri::generate_context!())
