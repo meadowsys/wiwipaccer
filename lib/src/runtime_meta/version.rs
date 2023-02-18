@@ -97,7 +97,7 @@ impl VersionRuntimeMeta {
 			}
 
 			OptionType::Random { block_id, mirror, y } => {
-				vec![]
+				todo!()
 			}
 		};
 
