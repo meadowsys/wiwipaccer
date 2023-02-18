@@ -10,11 +10,12 @@ use tokio::fs;
 
 #[derive(Debug)]
 pub struct VersionRuntimeMeta {
-	path: String,
-	versions: Vec<PackVersionSpecifier>,
-	processing_option: OptionType,
-	actions: Vec<Action>,
-	warnings: Vec<Warning>
+	pub path: String,
+	pub shortpath: String,
+	pub versions: Vec<PackVersionSpecifier>,
+	pub processing_option: OptionType,
+	pub actions: Vec<Action>,
+	pub warnings: Vec<Warning>
 }
 
 impl VersionRuntimeMeta {
@@ -46,7 +47,7 @@ impl VersionRuntimeMeta {
 			Version::V1 { versions, r#type } => {
 				Destructure {
 					versions,
-					processing_option: r#type.unwrap_or(OptionType::CopyPaste)
+					processing_option: r#type.unwrap_or_else(|| OptionType::CopyPaste)
 				}
 			}
 		};
@@ -101,8 +102,16 @@ impl VersionRuntimeMeta {
 			}
 		};
 
+		let shortpath = std::path::Path::new(path)
+			.file_name()
+			.unwrap()
+			.to_str()
+			.unwrap()
+			.into();
+
 		let new = Self {
 			path: path.into(),
+			shortpath,
 			versions,
 			processing_option,
 			actions,

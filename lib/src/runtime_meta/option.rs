@@ -1,18 +1,22 @@
+use ahash::{ RandomState, HashMapExt };
+use ahash::AHasher;
 use crate::error::{ Error, Result };
 use crate::meta::option::TextureOption;
 use crate::runtime_meta::Warning;
 use crate::runtime_meta::version::VersionRuntimeMeta;
 use crate::util::RON;
+use std::collections::hash_map::HashMap;
 use super::{ ASSETS_DIR_NAME, META_NAME };
 use tokio::fs;
 
 #[derive(Debug)]
 pub struct OptionRuntimeMeta {
-	path: String,
-	name: String,
-	description: String,
-	versions: Vec<VersionRuntimeMeta>,
-	warnings: Vec<Warning>
+	pub path: String,
+	pub shortpath: String,
+	pub name: String,
+	pub description: String,
+	pub versions: HashMap<String, VersionRuntimeMeta, RandomState>,
+	pub warnings: Vec<Warning>
 }
 
 impl OptionRuntimeMeta {
@@ -45,7 +49,7 @@ impl OptionRuntimeMeta {
 			}
 		};
 
-		let mut versions = vec![];
+		let mut versions = HashMap::<String, VersionRuntimeMeta, RandomState>::new();
 
 		let mut dir_contents = fs::read_dir(&path).await
 			.map_err(|e| Error::IOError { source: e })?;
@@ -66,13 +70,25 @@ impl OptionRuntimeMeta {
 			}
 
 			match VersionRuntimeMeta::new(dir_entry_path).await {
-				Ok(version) => { versions.push(version) }
-				Err(err) => { warnings.push(err.into_warning()) }
+				Ok(version) => {
+					versions.insert(version.shortpath.clone(), version);
+				}
+				Err(err) => {
+					warnings.push(err.into_warning());
+				}
 			}
 		}
 
+		let shortpath = std::path::Path::new(path)
+			.file_name()
+			.unwrap()
+			.to_str()
+			.unwrap()
+			.into();
+
 		Ok(OptionRuntimeMeta {
 			path: path.into(),
+			shortpath,
 			name,
 			description,
 			versions,
