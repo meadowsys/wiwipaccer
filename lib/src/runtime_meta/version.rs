@@ -161,7 +161,7 @@ impl VersionRuntimeMeta {
 				}
 
 				let mut actions = vec![];
-				let mut variants = vec![];
+				let mut variants = Vec::with_capacity(model_and_blockstate.len());
 				let mut texture_src_paths = vec![];
 				let mut texture_dedup_set: HashSet<String, RandomState> = HashSetExt::new();
 
