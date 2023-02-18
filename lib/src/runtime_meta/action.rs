@@ -12,9 +12,6 @@ pub enum Action {
 		/// vec of paths of files that caused the compilation of this entry,
 		/// the "source" if you will
 		depends_on: Vec<String>
-	},
-	Process {
-		f: Box<dyn Fn() -> Result<Vec<Action>>>
 	}
 }
 
@@ -27,9 +24,6 @@ impl std::fmt::Debug for Action {
 			}
 			WriteBytes { data, path, depends_on } => {
 				write!(f, "WriteBytes {{ data: {data:?}, path: {path:?}, depends_on: {depends_on:?} }}")?;
-			}
-			Process { f: _ } => {
-				write!(f, "Process {{ f: <closure> }}")?;
 			}
 		}
 
