@@ -5,7 +5,7 @@ use crate::meta::option::TextureOption;
 use crate::runtime_meta::Warning;
 use crate::runtime_meta::version::VersionRuntimeMeta;
 use crate::util::RON;
-use std::collections::hash_map::HashMap;
+use std::collections::HashMap;
 use super::{ ASSETS_DIR_NAME, META_NAME };
 use tokio::fs;
 
