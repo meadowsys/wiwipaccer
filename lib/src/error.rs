@@ -5,39 +5,32 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Error)]
 pub enum Error {
+	#[error("Assets path is not a directory: {path}")]
+	AssetsPathIsNotDir {
+		path: String
+	},
+	#[error("IO Error (does the file/directory at this path exist, and does wiwipaccer have access to it?): path {path}, filesystem error: {source}")]
+	FileDoesNotExist {
+		path: String,
+		source: std::io::Error
+	},
 	#[error("IO error: {source}")]
 	IOError {
 		source: std::io::Error
 	},
-	#[error("Parsing error")]
+	#[error("Ron parsing error for path {path}: {source}")]
 	ParseErrorRonSpannedError {
 		path: String,
 		source: ron::error::SpannedError
-	},
-	#[error("Path is not a directory: {path}")]
-	PathIsNotDir {
-		path: String
 	}
-}
-
-impl From<std::io::Error> for Error {
-	fn from(value: std::io::Error) -> Self {
-		Self::IOError { source: value }
-	}
+	// #[error("Path is not a directory: {path}")]
+	// PathIsNotDir {
+	// 	path: String
+	// }
 }
 
 impl Error {
-	pub fn into_warning(self) -> Result<Warning> {
-		use Error::*;
-
-		match self {
-			IOError { source } => { Err(IOError { source }) }
-			ParseErrorRonSpannedError { path, source } => { Err(ParseErrorRonSpannedError { path, source }) }
-			PathIsNotDir { path } => {
-				Ok(Warning {
-					message: format!("Path is not a directory: {path}")
-				})
-			}
-		}
+	pub fn into_warning(self) -> Warning {
+		Warning { message: self.to_string() }
 	}
 }

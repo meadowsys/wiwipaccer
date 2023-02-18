@@ -20,9 +20,11 @@ impl OptionRuntimeMeta {
 		let mut warnings = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
-		let _manifest_file_meta = fs::metadata(&manifest_path).await?;
+		let _manifest_file_meta = fs::metadata(&manifest_path).await
+			.map_err(|e| Error::FileDoesNotExist { path: manifest_path.clone(), source: e })?;
 
-		let file = fs::read_to_string(&manifest_path).await?;
+		let file = fs::read_to_string(&manifest_path).await
+			.map_err(|e| Error::IOError { source: e })?;
 		let option = RON.from_str::<TextureOption>(&file)
 			.map_err(|e| Error::ParseErrorRonSpannedError {
 				path: manifest_path,
@@ -45,29 +47,27 @@ impl OptionRuntimeMeta {
 
 		let mut versions = vec![];
 
-		let mut dir_contents = fs::read_dir(&path).await?;
-		while let Some(dir_entry) = dir_contents.next_entry().await? {
+		let mut dir_contents = fs::read_dir(&path).await
+			.map_err(|e| Error::IOError { source: e })?;
+		while let Some(dir_entry) = dir_contents.next_entry().await.map_err(|e| Error::IOError { source: e })? {
 			let dir_entry_path = dir_entry.path();
 			let dir_entry_path = dir_entry_path.to_str()
 				.expect("invalid unicode paths unsupported");
 
 			if dir_entry_path.ends_with(META_NAME) { continue }
 
-			let dir_entry_metadata = fs::metadata(&dir_entry_path).await?;
+			let dir_entry_metadata = fs::metadata(&dir_entry_path).await
+				.map_err(|e| Error::IOError { source: e })?;
 			if !dir_entry_metadata.is_dir() {
 				warnings.push(Warning {
-					message: format!("item in an option dir is not a dir or the assets file: {dir_entry_path}")
+					message: format!("item in an option dir is not an option or the assets file: {dir_entry_path}")
 				});
 				continue
 			}
 
 			match VersionRuntimeMeta::new(dir_entry_path).await {
-				Ok(version) => {
-					versions.push(version);
-				}
-				Err(err) => {
-					err.into_warning().map(|w| warnings.push(w))?;
-				}
+				Ok(version) => { versions.push(version) }
+				Err(err) => { warnings.push(err.into_warning()) }
 			}
 		}
 

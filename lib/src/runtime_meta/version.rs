@@ -19,12 +19,18 @@ pub struct VersionRuntimeMeta {
 
 impl VersionRuntimeMeta {
 	pub async fn new(path: &str) -> Result<Self> {
+		// if !fs::metadata(path).await?.is_dir() {
+		// 	return Err
+		// }
 		let warnings = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
-		let _manifest_file_meta = fs::metadata(&manifest_path).await?;
+		let manifest_file_meta = fs::metadata(&manifest_path).await
+			.map_err(|e| Error::FileDoesNotExist { path: manifest_path.clone(), source: e })?;
+		if !manifest_file_meta.is_dir() {}
 
-		let file = fs::read_to_string(&manifest_path).await?;
+		let file = fs::read_to_string(&manifest_path).await
+			.map_err(|e| Error::IOError { source: e })?;
 		let version = RON.from_str::<Version>(&file)
 			.map_err(|e| Error::ParseErrorRonSpannedError {
 				path: manifest_path,
@@ -46,8 +52,9 @@ impl VersionRuntimeMeta {
 		};
 
 		let assets_path = format!("{path}/{ASSETS_DIR_NAME}");
-		let assets_metadata = fs::metadata(&assets_path).await?;
-		if !assets_metadata.is_dir() { return Err(Error::AssetsIsNotDir { assets_path }) }
+		let assets_metadata = fs::metadata(&assets_path).await
+			.map_err(|e| Error::FileDoesNotExist { path: assets_path.clone(), source: e })?;
+		if !assets_metadata.is_dir() { return Err(Error::AssetsPathIsNotDir { path: assets_path }) }
 
 		let actions = match &processing_option {
 			OptionType::CopyPaste => {
@@ -95,9 +102,9 @@ impl VersionRuntimeMeta {
 		};
 
 		let new = Self {
+			path: path.into(),
 			versions,
 			processing_option,
-			path: path.into(),
 			actions,
 			warnings
 		};
