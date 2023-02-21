@@ -37,8 +37,6 @@ impl TextureRuntimeMeta {
 				source: e
 			})?;
 
-		dbg!(&texture);
-
 		struct Destructure {
 			name: String,
 			description: String
