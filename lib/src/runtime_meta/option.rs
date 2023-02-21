@@ -64,7 +64,7 @@ impl OptionRuntimeMeta {
 				.map_err(|e| Error::IOError { source: e })?;
 			if !dir_entry_metadata.is_dir() {
 				warnings.push(Warning {
-					message: format!("item in an option dir is not an option or the assets file: {dir_entry_path}")
+					message: format!("item in an option dir is not a version or the manifest file: {dir_entry_path}")
 				});
 				continue
 			}
