@@ -7,11 +7,13 @@ use crate::util::RON;
 use std::collections::HashMap;
 use super::{ META_NAME, TEXTURES_DIR };
 use tokio::fs;
+use tokio::process::Command;
 
 #[derive(Debug)]
 pub struct DatasourceRuntimeMeta {
 	pub path: String,
 	pub name: String,
+	pub version: String,
 	pub description: String,
 	pub textures: HashMap<String, TextureRuntimeMeta, RandomState>,
 	pub warnings: Vec<Warning>
@@ -54,7 +56,7 @@ impl DatasourceRuntimeMeta {
 
 		let mut textures: HashMap<String, TextureRuntimeMeta, RandomState> = HashMapExt::new();
 
-		let mut textures_dir = format!("{path}/{TEXTURES_DIR}");
+		let textures_dir = format!("{path}/{TEXTURES_DIR}");
 		let mut dir_contents = fs::read_dir(&textures_dir).await
 			.map_err(|e| Error::IOError { source: e })?;
 
@@ -84,10 +86,24 @@ impl DatasourceRuntimeMeta {
 			}
 		}
 
+		let version = match version {
+			Version::Git => {
+				Command::new("git")
+					.arg("rev-parse")
+					.arg("HEAD")
+					.output()
+					.await
+					.map(|g| String::from_utf8(g.stdout).unwrap())
+					.unwrap_or_else(|_| "unknown (git failed to run)".into())
+			}
+			Version::String(v) => { v }
+		};
+
 		Ok(DatasourceRuntimeMeta {
 			path: path.into(),
 			name,
 			description,
+			version,
 			textures,
 			warnings
 		})

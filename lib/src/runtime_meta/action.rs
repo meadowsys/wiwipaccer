@@ -1,5 +1,3 @@
-use crate::error::Result;
-
 #[derive(Debug)]
 pub enum Action {
 	CopyFile {
