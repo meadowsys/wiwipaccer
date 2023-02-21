@@ -61,8 +61,8 @@ pub struct MCVersion {
 	version_type: MCVersionType,
 	#[serde(rename = "url")]
 	manifest_url: String,
-	/// No idea what this one does. You probably want [release_time][`MCVersion::release_time`]
-	time: DateTime<UTC>,
+	#[serde(rename = "time")]
+	time_generated_by_server_or_something: DateTime<UTC>,
 	#[serde(rename = "releaseTime")]
 	release_time: DateTime<UTC>
 }
