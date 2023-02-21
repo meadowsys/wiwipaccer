@@ -1,3 +1,5 @@
+use chrono::DateTime;
+use chrono::offset::Utc as UTC;
 use crate::error::{ Error, Result };
 use crate::util::RON;
 use serde::{ Deserialize, Serialize };
@@ -60,9 +62,9 @@ pub struct MCVersion {
 	#[serde(rename = "url")]
 	manifest_url: String,
 	/// No idea what this one does. You probably want [release_time][`MCVersion::release_time`]
-	time: chrono::DateTime<chrono::offset::Utc>,
+	time: DateTime<UTC>,
 	#[serde(rename = "releaseTime")]
-	release_time: String
+	release_time: DateTime<UTC>
 }
 
 #[derive(Debug, Deserialize, Serialize)]
