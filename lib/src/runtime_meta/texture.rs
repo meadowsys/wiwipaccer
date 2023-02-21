@@ -1,8 +1,8 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::texture::Texture;
-use crate::runtime_meta::Warning;
 use crate::runtime_meta::option::OptionRuntimeMeta;
+use crate::runtime_meta::Warning;
 use crate::util::RON;
 use std::collections::HashMap;
 use super::META_NAME;
