@@ -69,6 +69,7 @@ impl TextureRuntimeMeta {
 				warnings.push(Warning {
 					message: format!("item in a texture dir is not an option or the manifest file: {dir_entry_path}")
 				});
+				continue
 			}
 
 			match OptionRuntimeMeta::new(dir_entry_path).await {
@@ -76,7 +77,7 @@ impl TextureRuntimeMeta {
 					options.insert(option.shortpath.clone(), option);
 				}
 				Err(err) => {
-					warnings.push(err.to_warning())
+					warnings.push(err.to_warning());
 				}
 			}
 		}
