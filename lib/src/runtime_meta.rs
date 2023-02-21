@@ -9,6 +9,15 @@ const ASSETS_DIR_NAME: &str = "assets";
 const TEXTURES_DIR: &str = "textures";
 
 #[derive(Debug)]
-pub struct Warning {
-	pub message: String
+pub struct Message {
+	pub message: String,
+	pub severity: MessageSeverity
+}
+
+#[derive(Debug)]
+pub enum MessageSeverity {
+	Info,
+	Warning,
+	Error,
+	Fatal
 }

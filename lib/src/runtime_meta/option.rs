@@ -1,7 +1,7 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::option::TextureOption;
-use crate::runtime_meta::Warning;
+use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::runtime_meta::version::VersionRuntimeMeta;
 use crate::util::RON;
 use std::collections::HashMap;
@@ -15,12 +15,12 @@ pub struct OptionRuntimeMeta {
 	pub name: String,
 	pub description: String,
 	pub versions: HashMap<String, VersionRuntimeMeta, RandomState>,
-	pub warnings: Vec<Warning>
+	pub messages: Vec<Message>
 }
 
 impl OptionRuntimeMeta {
 	pub async fn new(path: &str) -> Result<Self> {
-		let mut warnings = vec![];
+		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
 		let manifest_file_meta = fs::metadata(&manifest_path).await
@@ -65,8 +65,9 @@ impl OptionRuntimeMeta {
 			let dir_entry_metadata = fs::metadata(&dir_entry_path).await
 				.map_err(|e| Error::IOError { source: e })?;
 			if !dir_entry_metadata.is_dir() {
-				warnings.push(Warning {
-					message: format!("item in an option dir is not a version or the manifest file: {dir_entry_path}")
+				messages.push(Message {
+					message: format!("item in an option dir is not a dir (potential version) or the manifest file: {dir_entry_path}"),
+					severity: MessageSeverity::Info
 				});
 				continue
 			}
@@ -76,7 +77,7 @@ impl OptionRuntimeMeta {
 					versions.insert(version.shortpath.clone(), version);
 				}
 				Err(err) => {
-					warnings.push(err.to_warning());
+					messages.push(err.to_warning());
 				}
 			}
 		}
@@ -94,7 +95,7 @@ impl OptionRuntimeMeta {
 			name,
 			description,
 			versions,
-			warnings
+			messages
 		})
 	}
 }

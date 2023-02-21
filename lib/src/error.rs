@@ -1,4 +1,4 @@
-use crate::runtime_meta::Warning;
+use crate::runtime_meta::{ Message, MessageSeverity };
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -36,14 +36,22 @@ pub enum Error {
 		path: String,
 		source: ron::error::SpannedError
 	}
-	// #[error("Path is not a directory: {path}")]
-	// PathIsNotDir {
-	// 	path: String
-	// }
 }
 
 impl Error {
-	pub fn to_warning(&self) -> Warning {
-		Warning { message: self.to_string() }
+	pub fn to_warning(&self) -> Message {
+		use Error::*;
+
+		let severity = match self {
+			AssetsPathIsNotDir { .. }=> { MessageSeverity::Error }
+			FileDoesNotExist { .. } => { MessageSeverity::Warning }
+			IOError { .. } => { MessageSeverity::Warning }
+			InvalidBlockID { .. } => { MessageSeverity::Fatal }
+			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
+			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
+			ParseErrorRonSpannedError { .. } => { MessageSeverity::Fatal }
+		};
+
+		Message { message: self.to_string(), severity }
 	}
 }

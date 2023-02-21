@@ -2,7 +2,7 @@ use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::texture::Texture;
 use crate::runtime_meta::option::OptionRuntimeMeta;
-use crate::runtime_meta::Warning;
+use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::RON;
 use std::collections::HashMap;
 use super::META_NAME;
@@ -15,12 +15,12 @@ pub struct TextureRuntimeMeta {
 	pub name: String,
 	pub description: String,
 	pub options: HashMap<String, OptionRuntimeMeta, RandomState>,
-	pub warnings: Vec<Warning>
+	pub messages: Vec<Message>
 }
 
 impl TextureRuntimeMeta {
 	pub async fn new(path: &str) -> Result<Self> {
-		let mut warnings = vec![];
+		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
 		let manifest_file_meta = fs::metadata(&manifest_path).await
@@ -66,8 +66,9 @@ impl TextureRuntimeMeta {
 			let dir_entry_metadata = fs::metadata(&dir_entry_path).await
 				.map_err(|e| Error::IOError { source: e })?;
 			if !dir_entry_metadata.is_dir() {
-				warnings.push(Warning {
-					message: format!("item in a texture dir is not an option or the manifest file: {dir_entry_path}")
+				messages.push(Message {
+					message: format!("item in a texture dir is not a dir (potential option) or the manifest file: {dir_entry_path}"),
+					severity: MessageSeverity::Info
 				});
 				continue
 			}
@@ -77,7 +78,7 @@ impl TextureRuntimeMeta {
 					options.insert(option.shortpath.clone(), option);
 				}
 				Err(err) => {
-					warnings.push(err.to_warning());
+					messages.push(err.to_warning());
 				}
 			}
 		}
@@ -95,7 +96,7 @@ impl TextureRuntimeMeta {
 			name,
 			description,
 			options,
-			warnings
+			messages
 		})
 	}
 }

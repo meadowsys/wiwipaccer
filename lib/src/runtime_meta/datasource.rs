@@ -2,7 +2,7 @@ use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::datasource::{ Datasource, Version };
 use crate::runtime_meta::texture::TextureRuntimeMeta;
-use crate::runtime_meta::Warning;
+use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::RON;
 use std::collections::HashMap;
 use super::{ META_NAME, TEXTURES_DIR };
@@ -16,12 +16,12 @@ pub struct DatasourceRuntimeMeta {
 	pub version: String,
 	pub description: String,
 	pub textures: HashMap<String, TextureRuntimeMeta, RandomState>,
-	pub warnings: Vec<Warning>
+	pub messages: Vec<Message>
 }
 
 impl DatasourceRuntimeMeta {
 	pub async fn new(path: &str) -> Result<Self> {
-		let mut warnings = vec![];
+		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
 		let manifest_file_meta = fs::metadata(&manifest_path).await
@@ -70,8 +70,9 @@ impl DatasourceRuntimeMeta {
 			let dir_entry_metadata = fs::metadata(&dir_entry_path).await
 				.map_err(|e| Error::IOError { source: e })?;
 			if !dir_entry_metadata.is_dir() {
-				warnings.push(Warning {
-					message: format!("item in datasource isn't a dir (potential texture) or manifest file: {dir_entry_path}")
+				messages.push(Message {
+					message: format!("item in datasource isn't a dir (potential texture) or manifest file: {dir_entry_path}"),
+					severity: MessageSeverity::Info
 				});
 				continue
 			}
@@ -81,7 +82,7 @@ impl DatasourceRuntimeMeta {
 					textures.insert(texture.shortpath.clone(), texture);
 				}
 				Err(err) => {
-					warnings.push(err.to_warning());
+					messages.push(err.to_warning());
 				}
 			}
 		}
@@ -105,7 +106,7 @@ impl DatasourceRuntimeMeta {
 			description,
 			version,
 			textures,
-			warnings
+			messages
 		})
 	}
 }

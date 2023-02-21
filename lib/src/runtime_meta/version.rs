@@ -5,7 +5,7 @@ use crate::mc_structs::model::Model;
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
 use crate::meta::version::PackVersionSpecifier;
-use crate::runtime_meta::Warning;
+use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::hash;
 use crate::util::RON;
 use std::collections::HashMap;
@@ -21,7 +21,7 @@ pub struct VersionRuntimeMeta {
 	pub versions: Vec<PackVersionSpecifier>,
 	pub processing_option: OptionType,
 	pub actions: Vec<Action>,
-	pub warnings: Vec<Warning>
+	pub messages: Vec<Message>
 }
 
 impl VersionRuntimeMeta {
@@ -29,7 +29,7 @@ impl VersionRuntimeMeta {
 		// if !fs::metadata(path).await?.is_dir() {
 		// 	return Err
 		// }
-		let mut warnings = vec![];
+		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
 		let manifest_file_meta = fs::metadata(&manifest_path).await
@@ -72,8 +72,9 @@ impl VersionRuntimeMeta {
 				let assets_contents = crate::util::walk_dir(&assets_path).await?;
 				for file in assets_contents {
 					if !file.ends_with(".png") && !file.to_ascii_lowercase().ends_with(".png") {
-						warnings.push(Warning {
-							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}")
+						messages.push(Message {
+							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}"),
+							severity: MessageSeverity::Info
 						});
 						continue
 					}
@@ -122,8 +123,9 @@ impl VersionRuntimeMeta {
 
 				for file in assets_contents {
 					if !file.ends_with(".png") && !file.to_ascii_lowercase().ends_with(".png") {
-						warnings.push(Warning {
-							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}")
+						messages.push(Message {
+							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}"),
+							severity: MessageSeverity::Info
 						});
 						continue
 					}
@@ -226,7 +228,7 @@ impl VersionRuntimeMeta {
 			versions,
 			processing_option,
 			actions,
-			warnings
+			messages
 		};
 
 		Ok(new)
