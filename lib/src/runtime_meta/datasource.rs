@@ -1,0 +1,95 @@
+use ahash::{ RandomState, HashMapExt };
+use crate::error::{ Error, Result };
+use crate::meta::datasource::{ Datasource, Version };
+use crate::runtime_meta::texture::TextureRuntimeMeta;
+use crate::runtime_meta::Warning;
+use crate::util::RON;
+use std::collections::HashMap;
+use super::{ META_NAME, TEXTURES_DIR };
+use tokio::fs;
+
+#[derive(Debug)]
+pub struct DatasourceRuntimeMeta {
+	pub path: String,
+	pub name: String,
+	pub description: String,
+	pub textures: HashMap<String, TextureRuntimeMeta, RandomState>,
+	pub warnings: Vec<Warning>
+}
+
+impl DatasourceRuntimeMeta {
+	pub async fn new(path: &str) -> Result<Self> {
+		let mut warnings = vec![];
+		let manifest_path = format!("{path}/{META_NAME}");
+
+		let manifest_file_meta = fs::metadata(&manifest_path).await
+			.map_err(|e| Error::ManifestDoesNotExist { path: manifest_path.clone(), source: e })?;
+		if !manifest_file_meta.is_file() {
+			return Err(Error::ManifestIsNotFile { path: manifest_path })
+		}
+
+		let file = fs::read_to_string(&manifest_path).await
+			.map_err(|e| Error::IOError { source: e })?;
+		let datasource = RON.from_str::<Datasource>(&file)
+			.map_err(|e| Error::ParseErrorRonSpannedError {
+				path: manifest_path,
+				source: e
+			})?;
+
+		struct Destructure {
+			name: String,
+			version: Version,
+			description: String
+		}
+
+		let Destructure { name, version, description } = match datasource {
+			Datasource::V1 { name, version, description } => {
+				Destructure {
+					name,
+					version: version.unwrap_or_else(|| Version::String("unknown".into())),
+					description: description.unwrap_or_else(|| "description not provided".into())
+				}
+			}
+		};
+
+		let mut textures: HashMap<String, TextureRuntimeMeta, RandomState> = HashMapExt::new();
+
+		let mut textures_dir = format!("{path}/{TEXTURES_DIR}");
+		let mut dir_contents = fs::read_dir(&textures_dir).await
+			.map_err(|e| Error::IOError { source: e })?;
+
+		while let Some(dir_entry) = dir_contents.next_entry().await.map_err(|e| Error::IOError { source: e })? {
+			let dir_entry_path = dir_entry.path();
+			let dir_entry_path = dir_entry_path.to_str()
+				.expect("invalid unicode paths unsupported");
+
+			if dir_entry_path.ends_with(META_NAME) { continue }
+
+			let dir_entry_metadata = fs::metadata(&dir_entry_path).await
+				.map_err(|e| Error::IOError { source: e })?;
+			if !dir_entry_metadata.is_dir() {
+				warnings.push(Warning {
+					message: format!("item in datasource isn't a dir (potential texture) or manifest file: {dir_entry_path}")
+				});
+				continue
+			}
+
+			match TextureRuntimeMeta::new(dir_entry_path).await {
+				Ok(texture) => {
+					textures.insert(texture.shortpath.clone(), texture);
+				}
+				Err(err) => {
+					warnings.push(err.to_warning());
+				}
+			}
+		}
+
+		Ok(DatasourceRuntimeMeta {
+			path: path.into(),
+			name,
+			description,
+			textures,
+			warnings
+		})
+	}
+}
