@@ -33,8 +33,10 @@ impl VersionRuntimeMeta {
 		let manifest_path = format!("{path}/{META_NAME}");
 
 		let manifest_file_meta = fs::metadata(&manifest_path).await
-			.map_err(|e| Error::FileDoesNotExist { path: manifest_path.clone(), source: e })?;
-		if !manifest_file_meta.is_dir() {}
+			.map_err(|e| Error::ManifestDoesNotExist { path: manifest_path.clone(), source: e })?;
+		if !manifest_file_meta.is_file() {
+			return Err(Error::ManifestIsNotFile { path: manifest_path })
+		}
 
 		let file = fs::read_to_string(&manifest_path).await
 			.map_err(|e| Error::IOError { source: e })?;

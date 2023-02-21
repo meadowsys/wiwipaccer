@@ -22,6 +22,15 @@ pub enum Error {
 	InvalidBlockID {
 		id: String
 	},
+	#[error("Manifest that is supposed to be at path {path} does not exist. source: {source}")]
+	ManifestDoesNotExist {
+		path: String,
+		source: std::io::Error
+	},
+	#[error("Item at manifest path is not a file: {path}")]
+	ManifestIsNotFile {
+		path: String
+	},
 	#[error("Ron parsing error for path {path}: {source}")]
 	ParseErrorRonSpannedError {
 		path: String,
