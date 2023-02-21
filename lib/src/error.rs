@@ -9,6 +9,14 @@ pub enum Error {
 	AssetsPathIsNotDir {
 		path: String
 	},
+	#[error("Unable to fetch MC Versions from Mojang: {source}")]
+	FailedToFetchMCVersions {
+		source: reqwest::Error
+	},
+	#[error("Failed to parse MC versions response from Mojang: {source}")]
+	FailedToFetchMCVersionsInvalidUTF8 {
+		source: std::string::FromUtf8Error
+	},
 	#[error("IO Error (does the file/directory at this path exist, and does wiwipaccer have access to it?): path {path}, filesystem error: {source}")]
 	FileDoesNotExist {
 		path: String,
@@ -35,6 +43,10 @@ pub enum Error {
 	ParseErrorRonSpannedError {
 		path: String,
 		source: ron::error::SpannedError
+	},
+	#[error("Unable to initialise HTTP client: {source}")]
+	UnableToInitialiseHttpClient {
+		source: reqwest::Error
 	}
 }
 
@@ -43,13 +55,16 @@ impl Error {
 		use Error::*;
 
 		let severity = match self {
-			AssetsPathIsNotDir { .. }=> { MessageSeverity::Error }
+			AssetsPathIsNotDir { .. } => { MessageSeverity::Error }
+			FailedToFetchMCVersions { .. } => { MessageSeverity::Fatal }
+			FailedToFetchMCVersionsInvalidUTF8 { .. } => { MessageSeverity::Fatal }
 			FileDoesNotExist { .. } => { MessageSeverity::Warning }
 			IOError { .. } => { MessageSeverity::Warning }
 			InvalidBlockID { .. } => { MessageSeverity::Fatal }
 			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
 			ParseErrorRonSpannedError { .. } => { MessageSeverity::Fatal }
+			UnableToInitialiseHttpClient { .. } => { MessageSeverity::Fatal }
 		};
 
 		Message { message: self.to_string(), severity }

@@ -1,5 +1,6 @@
 //! A supported version for an option.
 
+use super::pack_version_specifier::PackVersionSpecifier;
 use serde::{ Deserialize, Serialize };
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -10,11 +11,6 @@ pub enum Version {
 		/// Type of option. Default is [`CopyPaste`][`OptionType::CopyPaste`]
 		r#type: Option<OptionType>
 	}
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub enum PackVersionSpecifier {
-	PackVersion(u8)
 }
 
 #[derive(Debug, Deserialize, Serialize)]

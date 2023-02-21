@@ -4,7 +4,7 @@ use crate::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
 use crate::mc_structs::model::Model;
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
-use crate::meta::version::PackVersionSpecifier;
+use crate::meta::pack_version_specifier::PackVersionSpecifier;
 use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::hash;
 use crate::util::RON;
