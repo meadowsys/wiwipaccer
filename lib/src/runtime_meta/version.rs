@@ -71,7 +71,7 @@ impl VersionRuntimeMeta {
 
 				let assets_contents = crate::util::walk_dir(&assets_path).await?;
 				for file in assets_contents {
-					if !file.ends_with(".png") {
+					if !file.ends_with(".png") && !file.to_ascii_lowercase().ends_with(".png") {
 						warnings.push(Warning {
 							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}")
 						});
@@ -121,7 +121,7 @@ impl VersionRuntimeMeta {
 				let mut model_and_blockstate = vec![];
 
 				for file in assets_contents {
-					if !file.ends_with(".png") {
+					if !file.ends_with(".png") && !file.to_ascii_lowercase().ends_with(".png") {
 						warnings.push(Warning {
 							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}")
 						});
