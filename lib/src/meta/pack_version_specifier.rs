@@ -19,6 +19,7 @@ impl PackVersionSpecifier {
 			.brotli(true)
 			.gzip(true)
 			.https_only(true)
+			.use_rustls_tls()
 			.no_trust_dns()
 			.build()
 			.map_err(|e| Error::UnableToInitialiseHttpClient { source: e })?;
