@@ -13,6 +13,7 @@ pub struct PackVersion {
 pub enum PackFormat {
 	Some(u8),
 	Maybe(u8),
+	Unknown,
 	None
 }
 
