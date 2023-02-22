@@ -6,9 +6,18 @@ use serde::{ Deserialize, Serialize };
 pub struct PackVersion {
 	name: &'static str,
 	release_type: MCVersionType,
-	format: Option<u8>
+	format: PackFormat
 }
 
+#[derive(Clone, Debug)]
+pub enum PackFormat {
+	Some(u8),
+	Maybe(u8),
+	None
+}
+
+use PackFormat::*;
+use MCVersionType::*;
 const PACK_FORMATS: &[PackVersion] = include!("./pack_formats");
 
 #[derive(Debug, Deserialize, Serialize)]
