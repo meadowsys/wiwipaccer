@@ -9,10 +9,6 @@ pub enum Error {
 	AssetsPathIsNotDir {
 		path: String
 	},
-	#[error("Unable to fetch MC Versions from Mojang: {source}")]
-	FailedToFetchMCVersions {
-		source: reqwest::Error
-	},
 	#[error("Failed to parse MC versions response from Mojang: {source}")]
 	FailedToFetchMCVersionsInvalidUTF8 {
 		source: std::string::FromUtf8Error
@@ -44,10 +40,6 @@ pub enum Error {
 		path: String,
 		source: ron::error::SpannedError
 	},
-	#[error("Unable to initialise HTTP client: {source}")]
-	UnableToInitialiseHttpClient {
-		source: reqwest::Error
-	}
 }
 
 impl Error {
@@ -56,7 +48,6 @@ impl Error {
 
 		let severity = match self {
 			AssetsPathIsNotDir { .. } => { MessageSeverity::Error }
-			FailedToFetchMCVersions { .. } => { MessageSeverity::Fatal }
 			FailedToFetchMCVersionsInvalidUTF8 { .. } => { MessageSeverity::Fatal }
 			FileDoesNotExist { .. } => { MessageSeverity::Warning }
 			IOError { .. } => { MessageSeverity::Warning }
@@ -64,7 +55,6 @@ impl Error {
 			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
 			ParseErrorRonSpannedError { .. } => { MessageSeverity::Fatal }
-			UnableToInitialiseHttpClient { .. } => { MessageSeverity::Fatal }
 		};
 
 		Message { message: self.to_string(), severity }
