@@ -2,9 +2,9 @@ use ahash::{ HashMapExt, HashSetExt, RandomState };
 use crate::error::{ Error, Result };
 use crate::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
 use crate::mc_structs::model::Model;
+use crate::meta::pack_version_specifier::{ PackVersion, PackVersionSpecifier};
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
-use crate::meta::pack_version_specifier::PackVersionSpecifier;
 use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::hash;
 use crate::util::RON;
@@ -15,20 +15,25 @@ use super::{ ASSETS_DIR_NAME, META_NAME };
 use tokio::fs;
 
 #[derive(Debug)]
-pub struct VersionRuntimeMeta {
-	pub path: String,
-	pub shortpath: String,
-	pub versions: Vec<PackVersionSpecifier>,
-	pub processing_option: OptionType,
-	pub actions: Vec<Action>,
-	pub messages: Vec<Message>
+pub enum VersionRuntimeMeta {
+	Available {
+		mc_version: PackVersion,
+		path: String,
+		shortpath: String,
+		versions: Vec<PackVersionSpecifier>,
+		processing_option: OptionType,
+		actions: Vec<Action>,
+		messages: Vec<Message>
+	},
+	NotAvailable {
+		path: String,
+		shortpath: String,
+		versions: Vec<PackVersionSpecifier>
+	}
 }
 
 impl VersionRuntimeMeta {
-	pub async fn new(path: &str) -> Result<Self> {
-		// if !fs::metadata(path).await?.is_dir() {
-		// 	return Err
-		// }
+	pub async fn new(path: &str, mc_version: PackVersion) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -222,7 +227,8 @@ impl VersionRuntimeMeta {
 			.unwrap()
 			.into();
 
-		let new = Self {
+		let new = Self::Available {
+			mc_version,
 			path: path.into(),
 			shortpath,
 			versions,

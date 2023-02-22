@@ -1,6 +1,7 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::datasource::{ Datasource, Version };
+use crate::meta::pack_version_specifier::PackVersion;
 use crate::runtime_meta::texture::TextureRuntimeMeta;
 use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::RON;
@@ -20,7 +21,7 @@ pub struct DatasourceRuntimeMeta {
 }
 
 impl DatasourceRuntimeMeta {
-	pub async fn new(path: &str) -> Result<Self> {
+	pub async fn new(path: &str, mc_version: PackVersion) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -77,7 +78,7 @@ impl DatasourceRuntimeMeta {
 				continue
 			}
 
-			match TextureRuntimeMeta::new(dir_entry_path).await {
+			match TextureRuntimeMeta::new(dir_entry_path, mc_version.clone()).await {
 				Ok(texture) => {
 					textures.insert(texture.shortpath.clone(), texture);
 				}

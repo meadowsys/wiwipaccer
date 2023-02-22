@@ -1,6 +1,7 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::option::TextureOption;
+use crate::meta::pack_version_specifier::PackVersion;
 use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::runtime_meta::version::VersionRuntimeMeta;
 use crate::util::RON;
@@ -19,7 +20,7 @@ pub struct OptionRuntimeMeta {
 }
 
 impl OptionRuntimeMeta {
-	pub async fn new(path: &str) -> Result<Self> {
+	pub async fn new(path: &str, mc_version: PackVersion) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -72,9 +73,14 @@ impl OptionRuntimeMeta {
 				continue
 			}
 
-			match VersionRuntimeMeta::new(dir_entry_path).await {
-				Ok(version) => {
-					versions.insert(version.shortpath.clone(), version);
+			match VersionRuntimeMeta::new(dir_entry_path, mc_version.clone()).await {
+				Ok(version) => match version {
+					VersionRuntimeMeta::Available { ref shortpath, .. } => {
+						versions.insert(shortpath.clone(), version);
+					}
+					VersionRuntimeMeta::NotAvailable { ref shortpath, .. } => {
+						versions.insert(shortpath.clone(), version);
+					}
 				}
 				Err(err) => {
 					messages.push(err.to_warning());
