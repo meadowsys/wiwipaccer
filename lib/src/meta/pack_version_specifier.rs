@@ -11,7 +11,8 @@ pub struct PackVersion {
 
 #[derive(Clone, Debug)]
 pub enum PackFormat {
-	Some(u8),
+	Verified(u8),
+	Unverified(u8),
 	Maybe(u8),
 	Unknown,
 	None
