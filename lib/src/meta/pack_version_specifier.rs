@@ -1,12 +1,13 @@
 use crate::error::{ Error, Result };
 use crate::util::RON;
 use serde::{ Deserialize, Serialize };
+use super::pack_formats::PACK_FORMATS;
 
 #[derive(Clone, Debug)]
 pub struct PackVersion {
-	name: &'static str,
-	release_type: MCVersionType,
-	format: PackFormat
+	pub name: &'static str,
+	pub release_type: MCVersionType,
+	pub format: PackFormat
 }
 
 #[derive(Clone, Debug)]
@@ -17,8 +18,6 @@ pub enum PackFormat {
 	Unknown,
 	None
 }
-
-const PACK_FORMATS: &[PackVersion] = include!("./pack_formats");
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum PackVersionSpecifier {
