@@ -18,8 +18,6 @@ pub enum PackFormat {
 	None
 }
 
-use PackFormat::*;
-use MCVersionType::*;
 const PACK_FORMATS: &[PackVersion] = include!("./pack_formats");
 
 #[derive(Debug, Deserialize, Serialize)]

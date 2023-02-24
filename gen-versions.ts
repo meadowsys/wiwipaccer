@@ -127,7 +127,7 @@ const dest = "./lib/src/meta/pack_formats";
 				? `${formats_meta[version.id]!.specifier_type}${formats_meta[version.id]!.specifier_type === "Unknown" || formats_meta[version.id]!.specifier_type === "None" ? "" : `(${formats_meta[version.id]!.specifier})`}`
 				: (still_in_new_versions ? new_versions_specifier : "Unknown");
 
-			return `PackVersion { name: "${version.id}", release_type: ${release_type}, format: ${format} }`;
+			return `PackVersion { name: "${version.id}", release_type: MCVersionType::${release_type}, format: PackFormat::${format} }`;
 		})
 		.join(",\n\t");
 
