@@ -5,6 +5,8 @@ import { z } from "zod";
 const src = "./lib/src/meta/pack_formats_src";
 const dest = "./lib/src/meta/pack_formats.rs";
 
+let is_ci = !!process.env.CI;
+
 (async () => {
 	type PackMeta = {
 		lineno: number;
@@ -15,6 +17,7 @@ const dest = "./lib/src/meta/pack_formats.rs";
 
 	let formats_meta: Record<string, PackMeta | undefined> = {};
 
+	is_ci && console.log("::group::parsed pack formats from src file");
 	read_file(resolve_path(src), "utf8")
 		.trim()
 		.split("\n")
@@ -64,6 +67,7 @@ const dest = "./lib/src/meta/pack_formats.rs";
 			console.log(JSON.stringify(packmeta));
 			formats_meta[packmeta.mc_version] = packmeta;
 		});
+	is_ci && console.log("::endgroup::");
 
 	let mojang_versions_validator = z.object({
 		latest: z.object({
@@ -88,10 +92,12 @@ const dest = "./lib/src/meta/pack_formats.rs";
 		.then(res => res.json())
 		.then(res => mojang_versions_validator.parse(res));
 
+	is_ci && console.log("::group::Versions from mojang");
 	// sort by time released, from newest to oldest
 	versions_from_mojang.versions
 		.sort((a, b) => b.releaseTime.getTime() - a.releaseTime.getTime())
 		.forEach(v => console.log(`version from mojang: ${v.id}`));
+	is_ci && console.log("::endgroup::");
 
 	let format_meta: PackMeta | undefined;
 	// find first version with _something_ of a version, maybe, unverified, or not
@@ -150,7 +156,7 @@ const dest = "./lib/src/meta/pack_formats.rs";
 	let s_old_beta = versions_from_mojang.versions.filter(v => v.type === "old_beta");
 	let s_old_alpha = versions_from_mojang.versions.filter(v => v.type === "old_alpha");
 
-	console.log("some stats:");
+	is_ci ? console.log("::group::stats") : console.log("some stats:");
 	console.log(`   latest: ${versions_from_mojang.latest.release}, snapshot: ${versions_from_mojang.latest.snapshot}`);
 	console.log(`   ${versions_from_mojang.versions.length} releases received from Mojang`);
 	console.log(`      ${s_release.length} releases`);
@@ -163,4 +169,5 @@ const dest = "./lib/src/meta/pack_formats.rs";
 	console.log(`      ${s_maybe.length} maybe`);
 	console.log(`      ${s_unknown.length} unknown`);
 	console.log(`      ${s_none.length} none`);
+	is_ci && console.log("::endgroup::");
 })();
