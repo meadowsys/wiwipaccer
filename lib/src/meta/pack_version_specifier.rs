@@ -3,14 +3,14 @@ use crate::util::RON;
 use serde::{ Deserialize, Serialize };
 use super::pack_formats::PACK_FORMATS;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PackVersion {
 	pub name: &'static str,
 	pub release_type: MCVersionType,
 	pub format: PackFormat
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum PackFormat {
 	Verified(u8),
 	Unverified(u8),
