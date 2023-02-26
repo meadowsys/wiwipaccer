@@ -23,7 +23,6 @@ pub enum VersionRuntimeMeta {
 
 #[derive(Debug)]
 pub struct AvailableVersionRuntimeMeta {
-	pub mc_version: PackVersionSpecifierRuntimeMeta,
 	pub path: String,
 	pub shortpath: String,
 	pub versions: Vec<PackVersionSpecifier>,
@@ -246,7 +245,6 @@ impl VersionRuntimeMeta {
 		}
 
 		Ok(Self::Available(AvailableVersionRuntimeMeta {
-			mc_version,
 			path: path.into(),
 			shortpath,
 			versions,
