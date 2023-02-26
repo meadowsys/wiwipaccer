@@ -14,9 +14,14 @@ pub enum OptionRuntimeMeta {
 	Available(AvailableOptionRuntimeMeta),
 	Unavailable(UnavailableOptionRuntimeMeta)
 }
+#[derive(Debug)]
+pub struct AvailableOptionRuntimeMeta(InnerAvailable);
+#[derive(Debug)]
+pub struct UnavailableOptionRuntimeMeta(InnerUnavailable);
+
 
 #[derive(Debug)]
-pub struct AvailableOptionRuntimeMeta {
+pub struct InnerAvailable {
 	pub path: String,
 	pub shortpath: String,
 	pub name: String,
@@ -27,7 +32,7 @@ pub struct AvailableOptionRuntimeMeta {
 }
 
 #[derive(Debug)]
-pub struct UnavailableOptionRuntimeMeta {
+pub struct InnerUnavailable {
 	pub path: String,
 	pub shortpath: String,
 	pub name: String,
@@ -35,6 +40,9 @@ pub struct UnavailableOptionRuntimeMeta {
 	pub versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
+
+crate::impl_deref!(AvailableOptionRuntimeMeta, target InnerAvailable);
+crate::impl_deref!(UnavailableOptionRuntimeMeta, target InnerUnavailable);
 
 impl OptionRuntimeMeta {
 	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
@@ -114,14 +122,14 @@ impl OptionRuntimeMeta {
 			.into();
 
 		if available_versions.is_empty() {
-			return Ok(OptionRuntimeMeta::Unavailable(UnavailableOptionRuntimeMeta {
+			return Ok(OptionRuntimeMeta::Unavailable(UnavailableOptionRuntimeMeta(InnerUnavailable {
 				path: path.into(),
 				shortpath,
 				name,
 				description,
 				versions: unavailable_versions,
 				messages
-			}))
+			})))
 		}
 
 		if available_versions.len() > 1 {
@@ -135,7 +143,7 @@ impl OptionRuntimeMeta {
 			})
 		}
 
-		Ok(OptionRuntimeMeta::Available(AvailableOptionRuntimeMeta {
+		Ok(OptionRuntimeMeta::Available(AvailableOptionRuntimeMeta(InnerAvailable {
 			path: path.into(),
 			shortpath,
 			name,
@@ -143,6 +151,6 @@ impl OptionRuntimeMeta {
 			available_version: available_versions.into_iter().next().unwrap().1,
 			unavailable_versions,
 			messages
-		}))
+		})))
 	}
 }

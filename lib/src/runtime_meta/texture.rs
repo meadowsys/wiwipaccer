@@ -14,9 +14,13 @@ pub enum TextureRuntimeMeta {
 	Available(AvailableTextureRuntimeMeta),
 	Unavailable(UnavailableTextureRuntimeMeta)
 }
+#[derive(Debug)]
+pub struct AvailableTextureRuntimeMeta(InnerAvailable);
+#[derive(Debug)]
+pub struct UnavailableTextureRuntimeMeta(InnerUnavailable);
 
 #[derive(Debug)]
-pub struct AvailableTextureRuntimeMeta {
+pub struct InnerAvailable {
 	pub path: String,
 	pub shortpath: String,
 	pub name: String,
@@ -27,7 +31,7 @@ pub struct AvailableTextureRuntimeMeta {
 }
 
 #[derive(Debug)]
-pub struct UnavailableTextureRuntimeMeta {
+pub struct InnerUnavailable {
 	pub path: String,
 	pub shortpath: String,
 	pub name: String,
@@ -35,6 +39,9 @@ pub struct UnavailableTextureRuntimeMeta {
 	pub options: HashMap<String, UnavailableOptionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
+
+crate::impl_deref!(AvailableTextureRuntimeMeta, target InnerAvailable);
+crate::impl_deref!(UnavailableTextureRuntimeMeta, target InnerUnavailable);
 
 impl TextureRuntimeMeta {
 	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
@@ -115,17 +122,17 @@ impl TextureRuntimeMeta {
 			.into();
 
 		if available_options.is_empty() {
-			return Ok(TextureRuntimeMeta::Unavailable(UnavailableTextureRuntimeMeta {
+			return Ok(TextureRuntimeMeta::Unavailable(UnavailableTextureRuntimeMeta(InnerUnavailable {
 				path: path.into(),
 				shortpath,
 				name,
 				description,
 				options: unavailable_options,
 				messages
-			}))
+			})))
 		}
 
-		Ok(TextureRuntimeMeta::Available(AvailableTextureRuntimeMeta {
+		Ok(TextureRuntimeMeta::Available(AvailableTextureRuntimeMeta(InnerAvailable {
 			path: path.into(),
 			shortpath,
 			name,
@@ -133,6 +140,6 @@ impl TextureRuntimeMeta {
 			available_options,
 			unavailable_options,
 			messages
-		}))
+		})))
 	}
 }

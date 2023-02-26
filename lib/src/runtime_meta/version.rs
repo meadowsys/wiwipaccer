@@ -20,9 +20,13 @@ pub enum VersionRuntimeMeta {
 	Available(AvailableVersionRuntimeMeta),
 	Unavailable(UnavailableVersionRuntimeMeta)
 }
+#[derive(Debug)]
+pub struct AvailableVersionRuntimeMeta(InnerAvailable);
+#[derive(Debug)]
+pub struct UnavailableVersionRuntimeMeta(InnerUnavailable);
 
 #[derive(Debug)]
-pub struct AvailableVersionRuntimeMeta {
+pub struct InnerAvailable {
 	pub path: String,
 	pub shortpath: String,
 	pub versions: Vec<PackVersionSpecifier>,
@@ -32,12 +36,15 @@ pub struct AvailableVersionRuntimeMeta {
 }
 
 #[derive(Debug)]
-pub struct UnavailableVersionRuntimeMeta {
+pub struct InnerUnavailable {
 	pub path: String,
 	pub shortpath: String,
 	pub versions: Vec<PackVersionSpecifier>,
 	pub messages: Vec<Message>
 }
+
+crate::impl_deref!(AvailableVersionRuntimeMeta, target InnerAvailable);
+crate::impl_deref!(UnavailableVersionRuntimeMeta, target InnerUnavailable);
 
 impl VersionRuntimeMeta {
 	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
@@ -236,22 +243,22 @@ impl VersionRuntimeMeta {
 
 		let supported = versions.iter().any(|v| v.contains(&mc_version));
 		if !supported {
-			return Ok(Self::Unavailable(UnavailableVersionRuntimeMeta {
+			return Ok(Self::Unavailable(UnavailableVersionRuntimeMeta(InnerUnavailable {
 				path: path.into(),
 				shortpath,
 				versions,
 				messages
-			}))
+			})))
 		}
 
-		Ok(Self::Available(AvailableVersionRuntimeMeta {
+		Ok(Self::Available(AvailableVersionRuntimeMeta(InnerAvailable {
 			path: path.into(),
 			shortpath,
 			versions,
 			processing_option,
 			actions,
 			messages
-		}))
+		})))
 	}
 }
 

@@ -22,3 +22,15 @@ pub enum MessageSeverity {
 	Error,
 	Fatal
 }
+
+#[macro_export]
+macro_rules! impl_deref {
+	($type:ty, target $target:ty) => {
+		impl std::ops::Deref for $type {
+			type Target = $target;
+			fn deref(&self) -> &Self::Target {
+				&self.0
+			}
+		}
+	}
+}

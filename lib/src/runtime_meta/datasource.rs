@@ -11,7 +11,10 @@ use tokio::fs;
 use tokio::process::Command;
 
 #[derive(Debug)]
-pub struct DatasourceRuntimeMeta {
+pub struct DatasourceRuntimeMeta(Inner);
+
+#[derive(Debug)]
+pub struct Inner {
 	pub path: String,
 	pub name: String,
 	pub description: String,
@@ -21,6 +24,8 @@ pub struct DatasourceRuntimeMeta {
 	pub unavailable_textures: HashMap<String, UnavailableTextureRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
+
+crate::impl_deref!(DatasourceRuntimeMeta, target Inner);
 
 impl DatasourceRuntimeMeta {
 	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
@@ -110,7 +115,7 @@ impl DatasourceRuntimeMeta {
 			Version::String(v) => { v }
 		};
 
-		Ok(DatasourceRuntimeMeta {
+		Ok(DatasourceRuntimeMeta(Inner {
 			path: path.into(),
 			name,
 			description,
@@ -119,6 +124,6 @@ impl DatasourceRuntimeMeta {
 			available_textures,
 			unavailable_textures,
 			messages
-		})
+		}))
 	}
 }
