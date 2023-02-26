@@ -21,7 +21,7 @@ pub struct AvailableOptionRuntimeMeta {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
-	pub available_versions: HashMap<String, AvailableVersionRuntimeMeta, RandomState>,
+	pub available_version: AvailableVersionRuntimeMeta,
 	pub unavailable_versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
@@ -140,7 +140,7 @@ impl OptionRuntimeMeta {
 			shortpath,
 			name,
 			description,
-			available_versions,
+			available_version: available_versions.into_iter().next().unwrap().1,
 			unavailable_versions,
 			messages
 		}))
