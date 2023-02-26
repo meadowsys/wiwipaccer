@@ -14,6 +14,7 @@ pub enum OptionRuntimeMeta {
 	Available(AvailableOptionRuntimeMeta),
 	Unavailable(UnavailableOptionRuntimeMeta)
 }
+
 #[derive(Debug)]
 pub struct AvailableOptionRuntimeMeta(InnerAvailable);
 #[derive(Debug)]

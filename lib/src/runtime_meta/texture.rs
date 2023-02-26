@@ -14,6 +14,7 @@ pub enum TextureRuntimeMeta {
 	Available(AvailableTextureRuntimeMeta),
 	Unavailable(UnavailableTextureRuntimeMeta)
 }
+
 #[derive(Debug)]
 pub struct AvailableTextureRuntimeMeta(InnerAvailable);
 #[derive(Debug)]

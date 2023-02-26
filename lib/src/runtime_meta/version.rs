@@ -20,6 +20,7 @@ pub enum VersionRuntimeMeta {
 	Available(AvailableVersionRuntimeMeta),
 	Unavailable(UnavailableVersionRuntimeMeta)
 }
+
 #[derive(Debug)]
 pub struct AvailableVersionRuntimeMeta(InnerAvailable);
 #[derive(Debug)]
