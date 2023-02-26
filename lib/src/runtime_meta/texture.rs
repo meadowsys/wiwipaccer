@@ -126,6 +126,11 @@ impl TextureRuntimeMeta {
 			.into();
 
 		if available_options.is_empty() {
+			messages.push(Error::UnavailableInfo {
+				thing: format!("Texture {shortpath}"),
+				reason: "no options are available".into()
+			}.to_warning());
+
 			return Ok(TextureRuntimeMeta::Unavailable(UnavailableTextureRuntimeMeta(InnerUnavailable {
 				path: path.into(),
 				shortpath,
@@ -141,6 +146,11 @@ impl TextureRuntimeMeta {
 		}
 
 		if default.len() > 1 {
+			messages.push(Error::UnavailableError {
+				thing: format!("Texture {shortpath}"),
+				reason: "more than 1 default was specified".into()
+			}.to_warning());
+
 			return Ok(TextureRuntimeMeta::Unavailable(UnavailableTextureRuntimeMeta(InnerUnavailable {
 				path: path.into(),
 				shortpath,

@@ -44,6 +44,16 @@ pub enum Error {
 		path: String,
 		source: ron::error::SpannedError
 	},
+	#[error("{thing} is unavailable because {reason}")]
+	UnavailableError {
+		thing: String,
+		reason: String
+	},
+	#[error("{thing} is unavailable because {reason}")]
+	UnavailableInfo {
+		thing: String,
+		reason: String
+	}
 }
 
 impl Error {
@@ -60,6 +70,8 @@ impl Error {
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
 			MultipleAvailableVersions { .. } => { MessageSeverity::Error }
 			ParseErrorRonSpannedError { .. } => { MessageSeverity::Fatal }
+			UnavailableError { .. } => { MessageSeverity::Error }
+			UnavailableInfo { .. } => { MessageSeverity::Info }
 		};
 
 		Message { message: self.to_string(), severity }
