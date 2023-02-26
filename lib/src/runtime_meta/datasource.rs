@@ -14,8 +14,9 @@ use tokio::process::Command;
 pub struct DatasourceRuntimeMeta {
 	pub path: String,
 	pub name: String,
-	pub version: String,
 	pub description: String,
+	pub version: String,
+	pub mc_version: PackVersionSpecifierRuntimeMeta,
 	pub available_textures: HashMap<String, AvailableTextureRuntimeMeta, RandomState>,
 	pub unavailable_textures: HashMap<String, UnavailableTextureRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
@@ -114,6 +115,7 @@ impl DatasourceRuntimeMeta {
 			name,
 			description,
 			version,
+			mc_version,
 			available_textures,
 			unavailable_textures,
 			messages
