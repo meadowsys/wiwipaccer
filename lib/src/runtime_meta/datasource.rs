@@ -1,8 +1,8 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::datasource::{ Datasource, Version };
-use crate::meta::pack_version_specifier::PackVersion;
-use crate::runtime_meta::texture::TextureRuntimeMeta;
+use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
+use crate::runtime_meta::texture::{ TextureRuntimeMeta, AvailableTextureRuntimeMeta, UnavailableTextureRuntimeMeta };
 use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::RON;
 use std::collections::HashMap;
@@ -16,12 +16,13 @@ pub struct DatasourceRuntimeMeta {
 	pub name: String,
 	pub version: String,
 	pub description: String,
-	pub textures: HashMap<String, TextureRuntimeMeta, RandomState>,
+	pub available_textures: HashMap<String, AvailableTextureRuntimeMeta, RandomState>,
+	pub unavailable_textures: HashMap<String, UnavailableTextureRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
 
 impl DatasourceRuntimeMeta {
-	pub async fn new(path: &str, mc_version: PackVersion) -> Result<Self> {
+	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -55,7 +56,8 @@ impl DatasourceRuntimeMeta {
 			}
 		};
 
-		let mut textures: HashMap<String, TextureRuntimeMeta, RandomState> = HashMapExt::new();
+		let mut available_textures: HashMap<String, AvailableTextureRuntimeMeta, RandomState> = HashMapExt::new();
+		let mut unavailable_textures: HashMap<String, UnavailableTextureRuntimeMeta, RandomState> = HashMapExt::new();
 
 		let textures_dir = format!("{path}/{TEXTURES_DIR}");
 		let mut dir_contents = fs::read_dir(&textures_dir).await
@@ -79,8 +81,13 @@ impl DatasourceRuntimeMeta {
 			}
 
 			match TextureRuntimeMeta::new(dir_entry_path, mc_version.clone()).await {
-				Ok(texture) => {
-					textures.insert(texture.shortpath.clone(), texture);
+				Ok(texture) => match texture {
+					TextureRuntimeMeta::Available(texture) => {
+						available_textures.insert(texture.shortpath.clone(), texture);
+					}
+					TextureRuntimeMeta::Unavailable(texture) => {
+						unavailable_textures.insert(texture.shortpath.clone(), texture);
+					}
 				}
 				Err(err) => {
 					messages.push(err.to_warning());
@@ -106,7 +113,8 @@ impl DatasourceRuntimeMeta {
 			name,
 			description,
 			version,
-			textures,
+			available_textures,
+			unavailable_textures,
 			messages
 		})
 	}

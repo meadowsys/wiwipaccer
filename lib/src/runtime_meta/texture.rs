@@ -1,8 +1,8 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::texture::Texture;
-use crate::meta::pack_version_specifier::PackVersion;
-use crate::runtime_meta::option::OptionRuntimeMeta;
+use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
+use crate::runtime_meta::option::{ OptionRuntimeMeta, AvailableOptionRuntimeMeta, UnavailableOptionRuntimeMeta };
 use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::util::RON;
 use std::collections::HashMap;
@@ -10,17 +10,34 @@ use super::META_NAME;
 use tokio::fs;
 
 #[derive(Debug)]
-pub struct TextureRuntimeMeta {
+pub enum TextureRuntimeMeta {
+	Available(AvailableTextureRuntimeMeta),
+	Unavailable(UnavailableTextureRuntimeMeta)
+}
+
+#[derive(Debug)]
+pub struct AvailableTextureRuntimeMeta {
 	pub path: String,
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
-	pub options: HashMap<String, OptionRuntimeMeta, RandomState>,
+	pub available_options: HashMap<String, AvailableOptionRuntimeMeta, RandomState>,
+	pub unavailable_options: HashMap<String, UnavailableOptionRuntimeMeta, RandomState>,
+	pub messages: Vec<Message>
+}
+
+#[derive(Debug)]
+pub struct UnavailableTextureRuntimeMeta {
+	pub path: String,
+	pub shortpath: String,
+	pub name: String,
+	pub description: String,
+	pub options: HashMap<String, UnavailableOptionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
 
 impl TextureRuntimeMeta {
-	pub async fn new(path: &str, mc_version: PackVersion) -> Result<Self> {
+	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -52,7 +69,8 @@ impl TextureRuntimeMeta {
 			}
 		};
 
-		let mut options: HashMap<String, OptionRuntimeMeta, RandomState> = HashMapExt::new();
+		let mut available_options: HashMap<String, AvailableOptionRuntimeMeta, RandomState> = HashMapExt::new();
+		let mut unavailable_options: HashMap<String, UnavailableOptionRuntimeMeta, RandomState> = HashMapExt::new();
 
 		let mut dir_contents = fs::read_dir(&path).await
 			.map_err(|e| Error::IOError { source: e })?;
@@ -75,8 +93,13 @@ impl TextureRuntimeMeta {
 			}
 
 			match OptionRuntimeMeta::new(dir_entry_path, mc_version.clone()).await {
-				Ok(option) => {
-					options.insert(option.shortpath.clone(), option);
+				Ok(option) => match option {
+					OptionRuntimeMeta::Available(option) => {
+						available_options.insert(option.shortpath.clone(), option);
+					}
+					OptionRuntimeMeta::Unavailable(option) => {
+						unavailable_options.insert(option.shortpath.clone(), option);
+					}
 				}
 				Err(err) => {
 					messages.push(err.to_warning());
@@ -91,13 +114,25 @@ impl TextureRuntimeMeta {
 			.unwrap()
 			.into();
 
-		Ok(TextureRuntimeMeta {
+		if available_options.is_empty() {
+			return Ok(TextureRuntimeMeta::Unavailable(UnavailableTextureRuntimeMeta {
+				path: path.into(),
+				shortpath,
+				name,
+				description,
+				options: unavailable_options,
+				messages
+			}))
+		}
+
+		Ok(TextureRuntimeMeta::Available(AvailableTextureRuntimeMeta {
 			path: path.into(),
 			shortpath,
 			name,
 			description,
-			options,
+			available_options,
+			unavailable_options,
 			messages
-		})
+		}))
 	}
 }

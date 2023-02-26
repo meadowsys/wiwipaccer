@@ -2,10 +2,11 @@ use ahash::{ HashMapExt, HashSetExt, RandomState };
 use crate::error::{ Error, Result };
 use crate::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
 use crate::mc_structs::model::Model;
-use crate::meta::pack_version_specifier::{ PackVersion, PackVersionSpecifier};
+use crate::meta::pack_version_specifier::PackVersionSpecifier;
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
 use crate::runtime_meta::{ Message, MessageSeverity };
+use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::util::hash;
 use crate::util::RON;
 use std::collections::HashMap;
@@ -16,24 +17,31 @@ use tokio::fs;
 
 #[derive(Debug)]
 pub enum VersionRuntimeMeta {
-	Available {
-		mc_version: PackVersion,
-		path: String,
-		shortpath: String,
-		versions: Vec<PackVersionSpecifier>,
-		processing_option: OptionType,
-		actions: Vec<Action>,
-		messages: Vec<Message>
-	},
-	NotAvailable {
-		path: String,
-		shortpath: String,
-		versions: Vec<PackVersionSpecifier>
-	}
+	Available(AvailableVersionRuntimeMeta),
+	Unavailable(UnavailableVersionRuntimeMeta)
+}
+
+#[derive(Debug)]
+pub struct AvailableVersionRuntimeMeta {
+	pub mc_version: PackVersionSpecifierRuntimeMeta,
+	pub path: String,
+	pub shortpath: String,
+	pub versions: Vec<PackVersionSpecifier>,
+	pub processing_option: OptionType,
+	pub actions: Vec<Action>,
+	pub messages: Vec<Message>
+}
+
+#[derive(Debug)]
+pub struct UnavailableVersionRuntimeMeta {
+	pub path: String,
+	pub shortpath: String,
+	pub versions: Vec<PackVersionSpecifier>,
+	pub messages: Vec<Message>
 }
 
 impl VersionRuntimeMeta {
-	pub async fn new(path: &str, mc_version: PackVersion) -> Result<Self> {
+	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -69,6 +77,13 @@ impl VersionRuntimeMeta {
 		let assets_metadata = fs::metadata(&assets_path).await
 			.map_err(|e| Error::FileDoesNotExist { path: assets_path.clone(), source: e })?;
 		if !assets_metadata.is_dir() { return Err(Error::AssetsPathIsNotDir { path: assets_path }) }
+
+		let shortpath = std::path::Path::new(path)
+			.file_name()
+			.unwrap()
+			.to_str()
+			.unwrap()
+			.into();
 
 		let actions = match &processing_option {
 			OptionType::CopyPaste => {
@@ -220,14 +235,17 @@ impl VersionRuntimeMeta {
 			}
 		};
 
-		let shortpath = std::path::Path::new(path)
-			.file_name()
-			.unwrap()
-			.to_str()
-			.unwrap()
-			.into();
+		let supported = versions.iter().any(|v| v.contains(&mc_version));
+		if !supported {
+			return Ok(Self::Unavailable(UnavailableVersionRuntimeMeta {
+				path: path.into(),
+				shortpath,
+				versions,
+				messages
+			}))
+		}
 
-		let new = Self::Available {
+		Ok(Self::Available(AvailableVersionRuntimeMeta {
 			mc_version,
 			path: path.into(),
 			shortpath,
@@ -235,9 +253,7 @@ impl VersionRuntimeMeta {
 			processing_option,
 			actions,
 			messages
-		};
-
-		Ok(new)
+		}))
 	}
 }
 

@@ -1,26 +1,43 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::option::TextureOption;
-use crate::meta::pack_version_specifier::PackVersion;
+use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::{ Message, MessageSeverity };
-use crate::runtime_meta::version::VersionRuntimeMeta;
+use crate::runtime_meta::version::{ VersionRuntimeMeta, AvailableVersionRuntimeMeta, UnavailableVersionRuntimeMeta };
 use crate::util::RON;
 use std::collections::HashMap;
 use super::META_NAME;
 use tokio::fs;
 
 #[derive(Debug)]
-pub struct OptionRuntimeMeta {
+pub enum OptionRuntimeMeta {
+	Available(AvailableOptionRuntimeMeta),
+	Unavailable(UnavailableOptionRuntimeMeta)
+}
+
+#[derive(Debug)]
+pub struct AvailableOptionRuntimeMeta {
 	pub path: String,
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
-	pub versions: HashMap<String, VersionRuntimeMeta, RandomState>,
+	pub available_versions: HashMap<String, AvailableVersionRuntimeMeta, RandomState>,
+	pub unavailable_versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
+	pub messages: Vec<Message>
+}
+
+#[derive(Debug)]
+pub struct UnavailableOptionRuntimeMeta {
+	pub path: String,
+	pub shortpath: String,
+	pub name: String,
+	pub description: String,
+	pub versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
 
 impl OptionRuntimeMeta {
-	pub async fn new(path: &str, mc_version: PackVersion) -> Result<Self> {
+	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -52,7 +69,8 @@ impl OptionRuntimeMeta {
 			}
 		};
 
-		let mut versions = HashMap::<String, VersionRuntimeMeta, RandomState>::new();
+		let mut available_versions = HashMap::<String, AvailableVersionRuntimeMeta, RandomState>::new();
+		let mut unavailable_versions = HashMap::<String, UnavailableVersionRuntimeMeta, RandomState>::new();
 
 		let mut dir_contents = fs::read_dir(&path).await
 			.map_err(|e| Error::IOError { source: e })?;
@@ -75,11 +93,11 @@ impl OptionRuntimeMeta {
 
 			match VersionRuntimeMeta::new(dir_entry_path, mc_version.clone()).await {
 				Ok(version) => match version {
-					VersionRuntimeMeta::Available { ref shortpath, .. } => {
-						versions.insert(shortpath.clone(), version);
+					VersionRuntimeMeta::Available(version) => {
+						available_versions.insert(version.shortpath.clone(), version);
 					}
-					VersionRuntimeMeta::NotAvailable { ref shortpath, .. } => {
-						versions.insert(shortpath.clone(), version);
+					VersionRuntimeMeta::Unavailable(version) => {
+						unavailable_versions.insert(version.shortpath.clone(), version);
 					}
 				}
 				Err(err) => {
@@ -95,13 +113,36 @@ impl OptionRuntimeMeta {
 			.unwrap()
 			.into();
 
-		Ok(OptionRuntimeMeta {
+		if available_versions.is_empty() {
+			return Ok(OptionRuntimeMeta::Unavailable(UnavailableOptionRuntimeMeta {
+				path: path.into(),
+				shortpath,
+				name,
+				description,
+				versions: unavailable_versions,
+				messages
+			}))
+		}
+
+		if available_versions.len() > 1 {
+			return Err(Error::MultipleAvailableVersions {
+				available_versions_shortnames_formatted: {
+					available_versions.iter()
+						.map::<&str, _>(|v| &v.1.shortpath)
+						.collect::<Vec<_>>()
+						.join(", ")
+				}
+			})
+		}
+
+		Ok(OptionRuntimeMeta::Available(AvailableOptionRuntimeMeta {
 			path: path.into(),
 			shortpath,
 			name,
 			description,
-			versions,
+			available_versions,
+			unavailable_versions,
 			messages
-		})
+		}))
 	}
 }

@@ -35,6 +35,10 @@ pub enum Error {
 	ManifestIsNotFile {
 		path: String
 	},
+	#[error("There are multiple available versions for this: {available_versions_shortnames_formatted}. Please check that they don't overlap in which versions they provide for")]
+	MultipleAvailableVersions {
+		available_versions_shortnames_formatted: String
+	},
 	#[error("Ron parsing error for path {path}: {source}")]
 	ParseErrorRonSpannedError {
 		path: String,
@@ -54,6 +58,7 @@ impl Error {
 			InvalidBlockID { .. } => { MessageSeverity::Fatal }
 			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
+			MultipleAvailableVersions { .. } => { MessageSeverity::Error }
 			ParseErrorRonSpannedError { .. } => { MessageSeverity::Fatal }
 		};
 
