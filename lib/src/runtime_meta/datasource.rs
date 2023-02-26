@@ -100,9 +100,10 @@ impl DatasourceRuntimeMeta {
 				Command::new("git")
 					.arg("rev-parse")
 					.arg("HEAD")
+					.current_dir(path)
 					.output()
 					.await
-					.map(|g| String::from_utf8(g.stdout).unwrap())
+					.map(|g| String::from_utf8(g.stdout).unwrap().trim().into())
 					.unwrap_or_else(|_| "unknown (git failed to run)".into())
 			}
 			Version::String(v) => { v }
