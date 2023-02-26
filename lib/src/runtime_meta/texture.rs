@@ -26,6 +26,7 @@ pub struct InnerAvailable {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
+	pub default: Option<String>,
 	pub available_options: HashMap<String, AvailableOptionRuntimeMeta, RandomState>,
 	pub unavailable_options: HashMap<String, UnavailableOptionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
@@ -37,7 +38,7 @@ pub struct InnerUnavailable {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
-	pub options: HashMap<String, UnavailableOptionRuntimeMeta, RandomState>,
+	pub options: HashMap<String, OptionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
 
@@ -77,6 +78,7 @@ impl TextureRuntimeMeta {
 			}
 		};
 
+		let mut default = vec![];
 		let mut available_options: HashMap<String, AvailableOptionRuntimeMeta, RandomState> = HashMapExt::new();
 		let mut unavailable_options: HashMap<String, UnavailableOptionRuntimeMeta, RandomState> = HashMapExt::new();
 
@@ -103,6 +105,7 @@ impl TextureRuntimeMeta {
 			match OptionRuntimeMeta::new(dir_entry_path, mc_version.clone()).await {
 				Ok(option) => match option {
 					OptionRuntimeMeta::Available(option) => {
+						if option.default { default.push(option.shortpath.clone()) }
 						available_options.insert(option.shortpath.clone(), option);
 					}
 					OptionRuntimeMeta::Unavailable(option) => {
@@ -128,16 +131,46 @@ impl TextureRuntimeMeta {
 				shortpath,
 				name,
 				description,
-				options: unavailable_options,
+				options: {
+					unavailable_options.into_iter()
+						.map(|(shortpath, o)| (shortpath, OptionRuntimeMeta::Unavailable(o)))
+						.collect()
+				},
 				messages
 			})))
 		}
+
+		if default.len() > 1 {
+			return Ok(TextureRuntimeMeta::Unavailable(UnavailableTextureRuntimeMeta(InnerUnavailable {
+				path: path.into(),
+				shortpath,
+				name,
+				description,
+				options: {
+					let unavailable_iter = unavailable_options.into_iter()
+						.map(|(shortpath, o)| (shortpath, OptionRuntimeMeta::Unavailable(o)));
+
+					available_options.into_iter()
+						.map(|(shortpath, o)| (shortpath, OptionRuntimeMeta::Available(o)))
+						.chain(unavailable_iter)
+						.collect()
+				},
+				messages
+			})))
+		}
+
+		let default = if default.is_empty() {
+			None
+		} else {
+			Some(default.into_iter().next().unwrap())
+		};
 
 		Ok(TextureRuntimeMeta::Available(AvailableTextureRuntimeMeta(InnerAvailable {
 			path: path.into(),
 			shortpath,
 			name,
 			description,
+			default,
 			available_options,
 			unavailable_options,
 			messages

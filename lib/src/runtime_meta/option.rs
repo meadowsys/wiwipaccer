@@ -27,6 +27,7 @@ pub struct InnerAvailable {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
+	pub default: bool,
 	pub available_version: AvailableVersionRuntimeMeta,
 	pub unavailable_versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
@@ -38,6 +39,7 @@ pub struct InnerUnavailable {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
+	pub default: bool,
 	pub versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
 	pub messages: Vec<Message>
 }
@@ -66,14 +68,16 @@ impl OptionRuntimeMeta {
 
 		struct Destructure {
 			name: String,
-			description: String
+			description: String,
+			default: bool
 		}
 
-		let Destructure { name, description } = match option {
-			TextureOption::V1 { name, description } => {
+		let Destructure { name, description, default } = match option {
+			TextureOption::V1 { name, description, default } => {
 				Destructure {
 					name,
-					description: description.unwrap_or_else(|| "description not provided".into())
+					description: description.unwrap_or_else(|| "description not provided".into()),
+					default: default.unwrap_or(false)
 				}
 			}
 		};
@@ -128,6 +132,7 @@ impl OptionRuntimeMeta {
 				shortpath,
 				name,
 				description,
+				default,
 				versions: unavailable_versions,
 				messages
 			})))
@@ -149,6 +154,7 @@ impl OptionRuntimeMeta {
 			shortpath,
 			name,
 			description,
+			default,
 			available_version: available_versions.into_iter().next().unwrap().1,
 			unavailable_versions,
 			messages
