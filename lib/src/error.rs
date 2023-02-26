@@ -57,7 +57,7 @@ pub enum Error {
 }
 
 impl Error {
-	pub fn to_warning(&self) -> Message {
+	pub fn to_message(&self) -> Message {
 		use Error::*;
 
 		let severity = match self {

@@ -96,7 +96,7 @@ impl DatasourceRuntimeMeta {
 					}
 				}
 				Err(err) => {
-					messages.push(err.to_warning());
+					messages.push(err.to_message());
 				}
 			}
 		}

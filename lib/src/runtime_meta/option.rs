@@ -114,7 +114,7 @@ impl OptionRuntimeMeta {
 					}
 				}
 				Err(err) => {
-					messages.push(err.to_warning());
+					messages.push(err.to_message());
 				}
 			}
 		}
@@ -130,7 +130,7 @@ impl OptionRuntimeMeta {
 			messages.push(Error::UnavailableInfo {
 				thing: format!("Option {shortpath}"),
 				reason: "no compatible versions are available".into()
-			}.to_warning());
+			}.to_message());
 
 			return Ok(OptionRuntimeMeta::Unavailable(UnavailableOptionRuntimeMeta(InnerUnavailable {
 				path: path.into(),
