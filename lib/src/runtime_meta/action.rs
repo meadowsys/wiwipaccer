@@ -1,6 +1,7 @@
 #[derive(Debug)]
 pub enum Action {
 	CopyFile {
+		/// this must be absolute
 		from: String,
 		/// this is relative to the base of the built resource pack
 		to: String

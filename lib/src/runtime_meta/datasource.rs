@@ -4,9 +4,12 @@ use crate::meta::datasource::{ Datasource, Version };
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::texture::{ TextureRuntimeMeta, AvailableTextureRuntimeMeta, UnavailableTextureRuntimeMeta };
 use crate::runtime_meta::{ Message, MessageSeverity };
+use crate::runtime_meta::action::Action;
 use crate::util::RON;
 use std::collections::HashMap;
+use std::path;
 use super::{ META_NAME, TEXTURES_DIR };
+use tokio::io::AsyncWriteExt;
 use tokio::fs;
 use tokio::process::Command;
 
@@ -26,6 +29,12 @@ pub struct Inner {
 }
 
 crate::impl_deref!(DatasourceRuntimeMeta, target Inner);
+
+#[derive(Debug)]
+pub enum BuildType {
+	CustomiseDefault,
+	FromScratch
+}
 
 impl DatasourceRuntimeMeta {
 	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
@@ -126,4 +135,116 @@ impl DatasourceRuntimeMeta {
 			messages
 		}))
 	}
+
+	pub async fn build(
+		&mut self,
+		dir: &str,
+		choices: &HashMap<String, String, RandomState>,
+		buildtype: BuildType,
+	) -> Result<()> {
+		let mut messages = vec![];
+		let include_default = matches!(buildtype, BuildType::CustomiseDefault);
+
+		fs::create_dir_all(dir).await
+			.map_err(|e| Error::ActionFailedToExecute { error: Box::new(Error::IOError { source: e }) })?;
+
+		let mut executed = vec![];
+
+		for (texture, option) in choices {
+			let texture = match self.available_textures.get(texture) {
+				Some(texture) => { texture }
+				None => {
+					if self.unavailable_textures.contains_key(texture) {
+						messages.push(Error::TextureUnavailable {
+							texture: texture.into()
+						}.to_message());
+					} else {
+						messages.push(Error::TextureNotFound {
+							texture: texture.into()
+						}.to_message());
+					}
+
+					continue
+				}
+			};
+
+			let option = match texture.available_options.get(option) {
+				Some(option) => { option }
+				None => {
+					if texture.unavailable_options.contains_key(option) {
+						messages.push(Error::OptionUnavailable {
+							option: option.into()
+						}.to_message());
+					} else {
+						messages.push(Error::OptionNotFound {
+							option: option.into()
+						}.to_message());
+					}
+
+					continue
+				}
+			};
+
+			for action in &option.available_version.actions {
+				execute(dir, action).await
+					.map_err(|e| Error::ActionFailedToExecute { error: Box::new(e) })?;
+			}
+
+			executed.push(&texture.name);
+		}
+
+		if include_default {
+			for (texture_name, texture) in &self.available_textures {
+				if executed.contains(&texture_name) { continue }
+
+				if let Some(option) = &texture.default {
+					let option = texture.available_options.get(option).unwrap();
+					for action in &option.available_version.actions {
+						execute(dir, action).await
+							.map_err(|e| Error::ActionFailedToExecute { error: Box::new(e) })?;
+					}
+				}
+			}
+		}
+
+		Ok(())
+	}
+}
+
+async fn execute(base_dir: &str, action: &Action) -> Result<()> {
+	use Action::*;
+	match action {
+		CopyFile { from, to } => {
+			let mut to_path = path::PathBuf::new();
+			to_path.push(base_dir);
+			to_path.push(to);
+
+			if fs::metadata(&to_path).await.is_ok() {
+				return Err(Error::FileAlreadyExists { path: to_path.to_str().unwrap().into() })
+			}
+
+			fs::create_dir_all(to_path.parent().unwrap()).await
+				.map_err(|e| Error::IOError { source: e })?;
+
+			fs::copy(from, to).await
+				.map_err(|e| Error::IOError { source: e })?;
+		}
+		WriteBytes { data, path, src_files: _ } => {
+			let mut to_path = path::PathBuf::new();
+			to_path.push(base_dir);
+			to_path.push(path);
+
+			let mut file = fs::OpenOptions::new()
+				.create_new(true)
+				.write(true)
+				.open(&to_path)
+				.await
+				.map_err(|e| Error::IOError { source: e })?;
+
+			file.write_all(data).await
+				.map_err(|e| Error::IOError { source: e })?;
+		}
+	}
+
+	Ok(())
 }
