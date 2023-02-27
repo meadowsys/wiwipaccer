@@ -137,9 +137,9 @@ impl DatasourceRuntimeMeta {
 	}
 
 	pub async fn build(
-		&mut self,
+		&self,
 		dir: &str,
-		choices: &HashMap<String, String, RandomState>,
+		choices: impl Iterator<Item = (&String, &String)>,
 		buildtype: BuildType,
 	) -> Result<()> {
 		let mut messages = vec![];
@@ -226,13 +226,16 @@ async fn execute(base_dir: &str, action: &Action) -> Result<()> {
 			fs::create_dir_all(to_path.parent().unwrap()).await
 				.map_err(|e| Error::IOError { source: e })?;
 
-			fs::copy(from, to).await
+			fs::copy(from, to_path).await
 				.map_err(|e| Error::IOError { source: e })?;
 		}
 		WriteBytes { data, path, src_files: _ } => {
 			let mut to_path = path::PathBuf::new();
 			to_path.push(base_dir);
 			to_path.push(path);
+
+			fs::create_dir_all(to_path.parent().unwrap()).await
+				.map_err(|e| Error::IOError { source: e })?;
 
 			let mut file = fs::OpenOptions::new()
 				.create_new(true)
