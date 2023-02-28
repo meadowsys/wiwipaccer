@@ -12,16 +12,12 @@
 	},
 	"tauri": {
 		"allowlist": {
-			"all": false,
-			"shell": {
-				"all": false,
-				"open": true
-			}
+			"all": false
 		},
 		"bundle": {
 			"active": true,
 			"category": "DeveloperTool",
-			"copyright": "",
+			"copyright": "Copyright © 2023 Meadowsys\nLicense: AGPL-3.0-only",
 			"deb": {
 				"depends": []
 			},
@@ -66,9 +62,9 @@
 			{
 				"fullscreen": false,
 				"height": 600,
+				"width": 800,
 				"resizable": true,
-				"title": "wiwipaccer",
-				"width": 800
+				"title": "wiwipaccer"
 			}
 		]
 	}
