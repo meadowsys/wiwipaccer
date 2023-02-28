@@ -15,6 +15,11 @@ jobs:
       with:
         node-version: "18.14.2"
 
+    - name: setup rust
+      run: |
+        rustup target add aarch64-apple-darwin
+        rustup target add x86_64-apple-darwin
+
     - name: setup pnpm
       uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
 
