@@ -26,7 +26,7 @@ jobs:
       run: pnpm i
 
     - name: build app (aarch64)
-      run: pnpm tauri build --target aarch64-apple-darwin
+      run: pnpm tauri build --target aarch64-apple-darwin -- -Z build-std
     - name: upload aarch64 app
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
@@ -34,7 +34,7 @@ jobs:
         path: target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
 
     - name: build app (x64)
-      run: pnpm tauri build --target x86_64-apple-darwin
+      run: pnpm tauri build --target x86_64-apple-darwin -- -Z build-std
     - name: upload x64 app
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
@@ -42,9 +42,40 @@ jobs:
         path: target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
 
     - name: build app (universal)
-      run: pnpm tauri build --target universal-apple-darwin
+      run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
     - name: upload universal app
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
         name: macos-universal
         path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
+
+  # linux:
+  #   name: Linux
+  #   # https://tauri.app/v1/guides/building/linux#limitations
+  #   runs-on: ubuntu-20.04
+
+  #   steps:
+  #   - name: checkout code
+  #     uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+
+  #   - name: setup rust
+  #     run:  |
+  #       rustup update 1.67.1
+  #       rustup default 1.67.1
+
+  #       rustup target add aarch64-apple-darwin
+  #       rustup target add x86_64-apple-darwin
+
+  #   - name: setup pnpm
+  #     uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+
+  #   - name: setup system dependencies
+  #     run: |
+  #       sudo apt update
+  #       sudo apt install libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+  #   - name: install node deps
+  #     uses: pnpm i
+
+  #   - name: build app
+  #     run:
