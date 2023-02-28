@@ -1,7 +1,6 @@
 name: build
 on:
-  push:
-
+- push
 
 jobs:
   macos:
