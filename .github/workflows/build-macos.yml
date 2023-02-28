@@ -1,10 +1,9 @@
-name: build
+name: build (macOS)
 on:
 - push
 
 jobs:
-  macos:
-    name: macOS
+  build:
     runs-on: macos-12
 
     steps:
