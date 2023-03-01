@@ -63,6 +63,7 @@ jobs:
 
 
   build-universal:
+    name: build universal
     needs: build
     runs-on: macos-12
 
