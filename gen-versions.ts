@@ -198,7 +198,7 @@ let is_ci = !!process.env.CI;
 		spawn("git", ["checkout", branch_name]);
 		spawn("git", ["add", "-A"]);
 		spawn("git", ["commit", "-m", "adding new mc releases from github actions"]);
-		spawn("git", ["push"]);
+		spawn("git", ["push", "--set-upstream", "origin", branch_name]);
 
 		let octokit = new Octokit({
 			auth: process.env.GITHUB_TOKEN,
