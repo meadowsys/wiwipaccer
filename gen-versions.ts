@@ -204,5 +204,7 @@ let is_ci = !!process.env.CI;
 		spawn("git", ["push"]);
 
 		console.log("::endgroup::");
+	} else {
+		console.log("no changes, not committing");
 	}
 })();
