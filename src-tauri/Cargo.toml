@@ -6,6 +6,7 @@ authors = ["Meadowsys"]
 license = "AGPL-3.0-only"
 repository = "https://github.com/Meadowsys/wiwipaccer"
 edition = "2021"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
