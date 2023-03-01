@@ -8,7 +8,6 @@ import { resolve as resolve_path } from "path";
 import { z } from "zod";
 import { createHash } from "crypto";
 import { spawnSync as spawn } from "child_process";
-import { Octokit } from "@octokit/rest";
 
 const src = "./lib/src/meta/pack_formats_src";
 const dest = "./lib/src/meta/pack_formats.rs";
@@ -193,8 +192,6 @@ let is_ci = !!process.env.CI;
 	if (is_ci && github_output && original_hash !== new_hash) {
 		console.log("::group::committing / creating pull request from new changes");
 
-		let branch_name = spawn("date", ["+new-mc-releases-%Y-%m-%d"]).stdout.toString().trim();
-
 		spawn("git", ["config", "--global", "user.name", process.env.GENVERSIONS_AUTOCOMMITTER_NAME!]);
 		spawn("git", ["config", "--global", "user.email", process.env.GENVERSIONS_AUTOCOMMITTER_EMAIL!]);
 		let credential_file = ".git/credentials";
@@ -202,33 +199,10 @@ let is_ci = !!process.env.CI;
 		spawn("git", ["config", "--global", "credential.helper", `store --file=${credential_file}`]);
 		spawn("git", ["config", "--unset-all", "http.https://github.com/.extraheader"]); // https://stackoverflow.com/a/69979203
 
-		spawn("git", ["branch", branch_name]);
-		spawn("git", ["checkout", branch_name]);
 		spawn("git", ["add", "-A"]);
 		spawn("git", ["commit", "-m", "adding new mc releases from github actions"]);
-		spawn("git", ["push", "--set-upstream", "origin", branch_name]);
+		spawn("git", ["push"]);
 
-		let octokit = new Octokit({
-			auth: process.env.GITHUB_TOKEN,
-			userAgent: "meadowsys/wiwipaccer, gen-versions.ts script",
-			log: {
-				debug: console.debug,
-				error: console.error,
-				info: console.info,
-				warn: console.warn
-			}
-		});
-
-		await octokit.request("POST /repos/{owner}/{repo}/pulls", {
-			base: "wiwi",
-			head: branch_name,
-			owner: "meadowsys",
-			repo: "wiwipaccer",
-			title: "updating mc versions"
-		});
-
-		// GENVERSIONS_AUTOCOMMITTER_NAME
-		// GENVERSIONS_AUTOCOMMITTER_EMAIL
 		console.log("::endgroup::");
 	}
 })();
