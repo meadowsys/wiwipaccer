@@ -38,3 +38,5 @@ jobs:
     - name: run gen-versions script (and pr if applicable)
       id: gen-versions
       run: pnpm gen-versions
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
