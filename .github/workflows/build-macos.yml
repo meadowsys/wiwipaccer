@@ -103,22 +103,12 @@ jobs:
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
       with:
         name: macos-aarch64-targetfolder
-        path: target
+        path: target/aarch64-apple-darwin
     - name: download x64 target dir
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
       with:
         name: macos-x64-targetfolder
-        path: target
-
-    - name: temporary ls commands
-      run: |
-        ls -lAh . target
-
-        echo
-        echo recursive
-        echo
-
-        ls -lAhR .
+        path: target/x86_64-apple-darwin
 
     - name: build app (universal)
       run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
