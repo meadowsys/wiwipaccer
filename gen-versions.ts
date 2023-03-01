@@ -23,7 +23,7 @@ let is_ci = !!process.env.CI;
 		specifier: number;
 	};
 
-	let original_hash = createHash("sha-512")
+	let original_hash = createHash("sha512")
 		.update(read_file(resolve_path(dest)))
 		.digest()
 		.toString("hex");
@@ -185,7 +185,7 @@ let is_ci = !!process.env.CI;
 	is_ci && console.log("::endgroup::");
 
 	const github_output = process.env.GITHUB_OUTPUT;
-	let new_hash = createHash("sha-512")
+	let new_hash = createHash("sha512")
 		.update(read_file(resolve_path(dest)))
 		.digest()
 		.toString("hex");
@@ -193,7 +193,7 @@ let is_ci = !!process.env.CI;
 	if (is_ci && github_output && original_hash !== new_hash) {
 		console.log("::group::committing / creating pull request from new changes");
 
-		let branch_name = `new-mc-releases-${new Date().toISOString()}`;
+		let branch_name = spawn("date", ["+new-mc-releases-%Y-%m-%d"]).stdout.toString().trim();
 		spawn("git", ["branch", branch_name]);
 		spawn("git", ["checkout", branch_name]);
 		spawn("git", ["add", "-A"]);
