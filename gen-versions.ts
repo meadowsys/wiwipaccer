@@ -194,6 +194,14 @@ let is_ci = !!process.env.CI;
 		console.log("::group::committing / creating pull request from new changes");
 
 		let branch_name = spawn("date", ["+new-mc-releases-%Y-%m-%d"]).stdout.toString().trim();
+
+		spawn("git", ["config", "--global", "user.name", process.env.GENVERSIONS_AUTOCOMMITTER_NAME!]);
+		spawn("git", ["config", "--global", "user.email", process.env.GENVERSIONS_AUTOCOMMITTER_EMAIL!]);
+		let credential_file = ".git/credentials";
+		write_file(credential_file, `https://meadowsys:${process.env.GITHUB_TOKEN}@github.com\n`);
+		spawn("git", ["config", "--global", "credential.helper", `store --file=${credential_file}`]);
+		spawn("git", ["config", "--unset-all", "http.https://github.com/.extraheader"]); // https://stackoverflow.com/a/69979203
+
 		spawn("git", ["branch", branch_name]);
 		spawn("git", ["checkout", branch_name]);
 		spawn("git", ["add", "-A"]);
@@ -219,6 +227,8 @@ let is_ci = !!process.env.CI;
 			title: "updating mc versions"
 		});
 
+		// GENVERSIONS_AUTOCOMMITTER_NAME
+		// GENVERSIONS_AUTOCOMMITTER_EMAIL
 		console.log("::endgroup::");
 	}
 })();

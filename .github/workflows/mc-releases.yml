@@ -40,3 +40,5 @@ jobs:
       run: pnpm gen-versions
       env:
         GITHUB_TOKEN: ${{ secrets.GHPAT }}
+        GENVERSIONS_AUTOCOMMITTER_NAME: ${{ secrets.GENVERSIONS_AUTOCOMMITTER_NAME }}
+        GENVERSIONS_AUTOCOMMITTER_EMAIL: ${{ secrets.GENVERSIONS_AUTOCOMMITTER_EMAIL }}
