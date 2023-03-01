@@ -35,7 +35,7 @@ jobs:
     - name: install node deps
       run: pnpm i
 
-    - name: run gen-versions script (and pr if applicable)
+    - name: run gen-versions script (and commit if applicable)
       id: gen-versions
       run: pnpm gen-versions
       env:
