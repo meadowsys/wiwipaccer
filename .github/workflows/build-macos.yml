@@ -52,10 +52,10 @@ jobs:
         echo "RUSTC_WRAPPER=$(which sccache)" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/gitignore-sccache" >> $GITHUB_ENV
 
-    - name: build app (${{ matrix.target.name }})
+    - name: build app
       run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
 
-    - name: upload ${{ matrix.target.name }} app
+    - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
         name: macos-${{ matrix.target.name }}
@@ -122,9 +122,15 @@ jobs:
         echo "RUSTC_WRAPPER=$(which sccache)" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/gitignore-sccache" >> $GITHUB_ENV
 
-    - name: build app (universal)
+    - name: build app
       run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
     - name: upload universal app
+      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+      with:
+        name: macos-universal
+        path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
+
+    - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
         name: macos-universal
