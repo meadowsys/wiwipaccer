@@ -4,6 +4,17 @@ on:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+        - name: aarch64
+          triple: aarch64-apple-darwin
+        - name: x64
+          triple: x86_64-apple-darwin
+        - name: universal
+          triple: universal-apple-darwin
+
     runs-on: macos-12
 
     steps:
@@ -38,26 +49,10 @@ jobs:
     - name: install node deps
       run: pnpm i
 
-    - name: build app (aarch64)
-      run: pnpm tauri build --target aarch64-apple-darwin -- -Z build-std
-    - name: upload aarch64 app
+    - name: build app (${{ matrix.target.name }})
+      run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
+    - name: upload ${{ matrix.target.name }} app
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
-        name: macos-aarch64
-        path: target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
-
-    - name: build app (x64)
-      run: pnpm tauri build --target x86_64-apple-darwin -- -Z build-std
-    - name: upload x64 app
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: macos-x64
-        path: target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
-
-    - name: build app (universal)
-      run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
-    - name: upload universal app
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: macos-universal
-        path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
+        name: macos-${{ matrix.target.name }}
+        path: target/${{ matrix.target.triple }}/release/bundle/dmg/*.dmg
