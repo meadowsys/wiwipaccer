@@ -41,12 +41,6 @@ jobs:
         restore-keys: |
           pnpm-store-${{ runner.os }}
 
-    - name: cache sccache dir
-      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: sccache
-        key: sccache-${{ runner.os }}-${{ matrix.target.name }}-${{ github.sha }}
-
     - name: install node deps
       run: pnpm i
 
@@ -65,6 +59,12 @@ jobs:
       with:
         name: macos-${{ matrix.target.name }}
         path: target/${{ matrix.target.triple }}/release/bundle/dmg/*.dmg
+
+    - name: save sccache dir
+      uses: actions/cache/save@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+      with:
+        path: sccache
+        key: sccache-${{ runner.os }}-${{ matrix.target.name }}-${{ github.sha }}
 
 
   build-universal:
@@ -99,16 +99,18 @@ jobs:
         restore-keys: |
           pnpm-store-${{ runner.os }}
 
-    - name: restore cached sccache dir (aarch64)
+    - name: restore sccache dir (aarch64)
       uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
       with:
         path: sccache
         key: sccache-${{ runner.os }}-aarch64-${{ github.sha }}
-    - name: restore cached sccache dir (x64)
+        fail-on-cache-miss: true
+    - name: restore sccache dir (x64)
       uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
       with:
         path: sccache
         key: sccache-${{ runner.os }}-x64-${{ github.sha }}
+        fail-on-cache-miss: true
 
     - name: install node deps
       run: pnpm i
@@ -133,3 +135,14 @@ jobs:
       with:
         name: macos-universal
         path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
+
+    - name: delete sccache caches from github cache
+      uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
+      with:
+        script: |
+          let { owner, repo } = context.repo;
+          github.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_aarch64 });
+          github.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_x64 });
+      env:
+        key_aarch64: sccache-${{ runner.os }}-aarch64-${{ github.sha }}
+        key_x64: sccache-${{ runner.os }}-x64-${{ github.sha }}
