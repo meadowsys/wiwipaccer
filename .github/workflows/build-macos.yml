@@ -41,6 +41,12 @@ jobs:
         restore-keys: |
           pnpm-store-${{ runner.os }}
 
+    - name: cache sccache dir
+      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+      with:
+        path: sccache
+        key: sccache-${{ runner.os }}-${{ matrix.target.name }}-${{ github.sha }}
+
     - name: install node deps
       run: pnpm i
 
@@ -48,7 +54,8 @@ jobs:
       run: |
         brew install sccache
         echo "RUSTC_WRAPPER=$(which sccache)" >> $GITHUB_ENV
-        echo "SCCACHE_DIR=$(pwd)/gitignore-sccache" >> $GITHUB_ENV
+        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+        echo /sccache >> .git/info/exclude
 
     - name: build app
       run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
@@ -58,12 +65,6 @@ jobs:
       with:
         name: macos-${{ matrix.target.name }}
         path: target/${{ matrix.target.triple }}/release/bundle/dmg/*.dmg
-
-    - name: upload sccache
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: macos-${{ matrix.target.name }}-sccache
-        path: gitignore-sccache
 
 
   build-universal:
@@ -98,25 +99,26 @@ jobs:
         restore-keys: |
           pnpm-store-${{ runner.os }}
 
+    - name: restore cached sccache dir (aarch64)
+      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+      with:
+        path: sccache
+        key: sccache-${{ runner.os }}-aarch64-${{ github.sha }}
+    - name: restore cached sccache dir (x64)
+      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+      with:
+        path: sccache
+        key: sccache-${{ runner.os }}-x64-${{ github.sha }}
+
     - name: install node deps
       run: pnpm i
-
-    - name: download aarch64 sccache
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: macos-aarch64-sccache
-        path: gitignore-sccache
-    - name: download x64 sccache
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: macos-x64-sccache
-        path: gitignore-sccache
 
     - name: install sccache
       run: |
         brew install sccache
         echo "RUSTC_WRAPPER=$(which sccache)" >> $GITHUB_ENV
-        echo "SCCACHE_DIR=$(pwd)/gitignore-sccache" >> $GITHUB_ENV
+        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+        echo /sccache >> .git/info/exclude
 
     - name: build app
       run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
