@@ -141,8 +141,8 @@ jobs:
       with:
         script: |
           let { owner, repo } = context.repo;
-          github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_aarch64 });
-          github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_x64 });
+          await github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_aarch64 });
+          await github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_x64 });
         github-token: ${{ secrets.GHPAT }}
       env:
         key_aarch64: sccache-${{ runner.os }}-aarch64-${{ github.sha }}
