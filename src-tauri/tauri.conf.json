@@ -62,14 +62,6 @@
 		"updater": {
 			"active": false
 		},
-		"windows": [
-			{
-				"fullscreen": false,
-				"height": 600,
-				"width": 800,
-				"resizable": true,
-				"title": "wiwipaccer"
-			}
-		]
+		"windows": []
 	}
 }

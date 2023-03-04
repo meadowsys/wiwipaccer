@@ -5,5 +5,11 @@ export default defineNuxtConfig({
 	ssr: false,
 	devServer: {
 		port: 3000
+	},
+	postcss: {
+		plugins: {
+			tailwindcss: {},
+			autoprefixer: {}
+		}
 	}
 });

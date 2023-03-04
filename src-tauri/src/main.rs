@@ -3,11 +3,9 @@
 	windows_subsystem = "windows"
 )]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-	format!("Hello, {}! You've been greeted from Rust!", name)
-}
+use tauri::{ TitleBarStyle, WindowBuilder, WindowUrl };
+
+const WELCOME_WINDOW_NAME: &str = "welcome_window";
 
 fn main() {
 	let rt = tokio::runtime::Builder::new_multi_thread()
@@ -18,7 +16,18 @@ fn main() {
 	tauri::async_runtime::set(rt.handle().clone());
 
 	tauri::Builder::default()
-		.invoke_handler(tauri::generate_handler![greet])
+		.setup(|app| {
+			WindowBuilder::new(app, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
+				.accept_first_mouse(false)
+				.enable_clipboard_access()
+				.title_bar_style(TitleBarStyle::Overlay)
+				.inner_size(700., 400.)
+				.title("")
+				.build()?;
+
+			Ok(())
+		})
+		.invoke_handler(tauri::generate_handler![])
 		.build(tauri::generate_context!())
 		.expect("error while running application")
 		.run(|_apphandle, _event| {
