@@ -29,11 +29,30 @@ fn main() {
 		.unwrap();
 	async_runtime::set(rt.handle().clone());
 
+	#[cfg(not(debug_assertions))]
 	let mut appdata_rootdir = tauri::api::path::home_dir()
 		.expect("cannot get home directory")
 		.to_str()
 		.expect("path is not valid UTF-8, only valid UTF-8 pathnames are supported")
 		.to_string();
+	#[cfg(debug_assertions)]
+	let mut appdata_rootdir = {
+		let mut appdata_rootdir = std::env::current_dir()
+			.expect("couldn't get current dir")
+			.to_str()
+			.expect("path is not valid UTF-8, only valid UTF-8 pathnames are supported")
+			.to_string();
+
+		appdata_rootdir.push_str("/dev-datadir");
+
+		if fs::metadata(&appdata_rootdir).is_err() {
+			fs::create_dir(&appdata_rootdir)
+				.unwrap_or_else(|_| panic!("couldn't create appdata_rootdir for dev: {appdata_rootdir}"));
+		}
+
+		appdata_rootdir
+	};
+
 	appdata_rootdir.reserve(appdata_rootdir.len() + DATASTORE_PATH.len() + 2);
 	appdata_rootdir.push('/');
 	appdata_rootdir.push_str(APPDATA_ROOTDIR);
