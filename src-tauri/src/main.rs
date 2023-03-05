@@ -4,6 +4,7 @@
 )]
 
 use tauri::{ TitleBarStyle, WindowBuilder, WindowUrl };
+use window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial };
 
 const WELCOME_WINDOW_NAME: &str = "welcome_window";
 
@@ -17,13 +18,22 @@ fn main() {
 
 	tauri::Builder::default()
 		.setup(|app| {
-			WindowBuilder::new(app, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
+			let welcome_window = WindowBuilder::new(app, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
 				.accept_first_mouse(false)
 				.enable_clipboard_access()
 				.title_bar_style(TitleBarStyle::Overlay)
-				.inner_size(700., 400.)
+				.inner_size(800., 500.)
 				.title("")
+				.transparent(true)
 				.build()?;
+
+			#[cfg(target_os = "macos")]
+			apply_vibrancy(
+				&welcome_window,
+				NSVisualEffectMaterial::HudWindow,
+				None,
+				None
+			).expect("apply_vibrancy is mac only lol");
 
 			Ok(())
 		})

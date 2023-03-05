@@ -16,6 +16,10 @@
 			"shell": {
 				"all": false,
 				"open": true
+			},
+			"window": {
+				"all": false,
+				"startDragging": true
 			}
 		},
 		"bundle": {
@@ -62,6 +66,6 @@
 		"updater": {
 			"active": false
 		},
-		"windows": []
+		"macOSPrivateApi": true
 	}
 }
