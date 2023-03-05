@@ -1,6 +1,6 @@
 <template>
 	<div class="h-full flex-grow py-8 px-6" data-tauri-drag-region>
-		<div class="overflow-scroll h-full">
+		<div class="overflow-scroll h-full flex flex-col">
 			<button
 				v-for="recent in p.recents"
 				class="
@@ -12,6 +12,7 @@
 				<div class="font-bold">{{ recent.name }}</div>
 				<div>{{ recent.path }}</div>
 			</button>
+			<div class="flex-grow" data-tauri-drag-region />
 		</div>
 	</div>
 </template>
