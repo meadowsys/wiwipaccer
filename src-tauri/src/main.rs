@@ -3,6 +3,7 @@
 	windows_subsystem = "windows"
 )]
 
+use mimalloc::MiMalloc;
 use surrealdb::Datastore;
 use tauri::{ TitleBarStyle, WindowBuilder, WindowUrl };
 use tauri::async_runtime;
@@ -12,6 +13,9 @@ use window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial };
 
 mod cmds;
 mod db;
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 const APPDATA_ROOTDIR: &str = ".wiwipaccer";
 const DATASTORE_PATH: &str = "data";
