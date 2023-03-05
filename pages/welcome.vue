@@ -4,8 +4,8 @@
 			class="bg-opacity-100 bg-white py-10 px-14 flex flex-col h-full"
 			data-tauri-drag-region
 		>
-			<div class="text-4xl pb-2 px-2" data-tauri-drag-region>wiwipaccer</div>
-			<div class="text-neutral-500 px-2" data-tauri-drag-region>Pack Builder&trade;</div>
+			<div class="cursor-default text-4xl pb-2 px-2" data-tauri-drag-region>wiwipaccer</div>
+			<div class="cursor-default text-neutral-500 px-2" data-tauri-drag-region>Pack Builder&trade;</div>
 
 			<div class="flex-grow" data-tauri-drag-region />
 
