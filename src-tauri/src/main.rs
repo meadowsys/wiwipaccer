@@ -23,6 +23,7 @@ fn main() {
 				.enable_clipboard_access()
 				.title_bar_style(TitleBarStyle::Overlay)
 				.inner_size(800., 500.)
+				.min_inner_size(800., 500.)
 				.title("")
 				.transparent(true)
 				.build()?;
