@@ -3,10 +3,23 @@
 	windows_subsystem = "windows"
 )]
 
+use surrealdb::Datastore;
 use tauri::{ TitleBarStyle, WindowBuilder, WindowUrl };
+use tauri::async_runtime;
+use std::fs;
+use tokio::sync::RwLock;
 use window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial };
 
+mod db;
+mod recent;
+
+const APPDATA_ROOTDIR: &str = ".wiwipaccer";
+const DATASTORE_PATH: &str = "data";
 const WELCOME_WINDOW_NAME: &str = "welcome_window";
+
+lazy_static::lazy_static! {
+	static ref DATASTORE: RwLock<Option<Datastore>> = RwLock::new(None);
+}
 
 fn main() {
 	let rt = tokio::runtime::Builder::new_multi_thread()
@@ -14,7 +27,38 @@ fn main() {
 		.worker_threads(2)
 		.build()
 		.unwrap();
-	tauri::async_runtime::set(rt.handle().clone());
+	async_runtime::set(rt.handle().clone());
+
+	let mut appdata_rootdir = tauri::api::path::home_dir()
+		.expect("cannot get home directory")
+		.to_str()
+		.expect("path is not valid UTF-8, only valid UTF-8 pathnames are supported")
+		.to_string();
+	appdata_rootdir.reserve(appdata_rootdir.len() + DATASTORE_PATH.len() + 2);
+	appdata_rootdir.push('/');
+	appdata_rootdir.push_str(APPDATA_ROOTDIR);
+
+	match fs::metadata(&appdata_rootdir) {
+		Ok(meta) => match meta.is_dir() {
+			true => { /* assuming its ours */ }
+			false => { panic!("path is already taken, isn't dir: {appdata_rootdir}") }
+		}
+		Err(_) => {
+			// probably doesn't exist?
+			fs::create_dir(&appdata_rootdir)
+				.unwrap_or_else(|_| panic!("couldn't create root appdata dir ~/{APPDATA_ROOTDIR}"));
+		}
+	}
+
+	let mut datastore_path = appdata_rootdir;
+	datastore_path.push('/');
+	datastore_path.push_str(DATASTORE_PATH);
+
+	let datastore = async_runtime::block_on(Datastore::new(&format!("file://{datastore_path}")))
+		.expect("Couldn't create datastore");
+	async_runtime::block_on(async {
+		*DATASTORE.write().await = Some(datastore);
+	});
 
 	tauri::Builder::default()
 		.setup(|app| {
@@ -38,11 +82,24 @@ fn main() {
 
 			Ok(())
 		})
-		.invoke_handler(tauri::generate_handler![])
+		.invoke_handler(tauri::generate_handler![
+			recent::add_recent_project,
+			recent::get_recent_projects
+		])
 		.build(tauri::generate_context!())
 		.expect("error while running application")
-		.run(|_apphandle, _event| {
-			// E
+		.run(|_apphandle, event| {
+			use tauri::RunEvent;
+
+			#[allow(clippy::single_match)]
+			match event {
+				RunEvent::Exit => {
+					let datastore = async_runtime::block_on(DATASTORE.write()).take().unwrap();
+					drop(datastore);
+					eprintln!("dropped datastore");
+				}
+				_ => {}
+			}
 		});
 }
 
