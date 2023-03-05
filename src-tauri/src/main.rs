@@ -10,8 +10,8 @@ use std::fs;
 use tokio::sync::RwLock;
 use window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial };
 
+mod cmds;
 mod db;
-mod recent;
 
 const APPDATA_ROOTDIR: &str = ".wiwipaccer";
 const DATASTORE_PATH: &str = "data";
@@ -83,8 +83,8 @@ fn main() {
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
-			recent::add_recent_project,
-			recent::get_recent_projects
+			cmds::add_recent_project,
+			cmds::get_recent_projects
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running application")
