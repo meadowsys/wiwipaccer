@@ -9,8 +9,8 @@
 					active:bg-opacity-20 active:shadow-inner
 				"
 			>
-				<div class="font-bold">{{ recent.name }}</div>
-				<div>{{ recent.path }}</div>
+				<div class="font-bold select-none">{{ recent.name }}</div>
+				<div class="select-none">{{ recent.path }}</div>
 			</button>
 			<div class="flex-grow" data-tauri-drag-region />
 		</div>

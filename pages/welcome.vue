@@ -1,7 +1,7 @@
 <template>
 	<div class="h-full flex flex-row">
 		<div
-			class="bg-opacity-100 bg-white py-10 px-14 flex flex-col h-full selection:bg-transparent"
+			class="bg-opacity-100 bg-white py-10 px-14 flex flex-col h-full select-none"
 			data-tauri-drag-region
 		>
 			<div class="cursor-default text-4xl pb-2 px-2" data-tauri-drag-region>wiwipaccer</div>
