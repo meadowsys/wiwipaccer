@@ -1,8 +1,13 @@
 use crate::db;
 use tauri::api::dialog::FileDialogBuilder;
 // use tauri::api::ipc::
-use tauri::{ Manager, Runtime, TitleBarStyle, WindowBuilder, WindowUrl };
-use window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial };
+use tauri::{ Manager, Runtime, WindowBuilder, WindowUrl };
+
+#[cfg(target_os = "macos")]
+use {
+	tauri::TitleBarStyle,
+	window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial }
+};
 
 #[tauri::command]
 pub async fn add_recent_project(path: String) {
@@ -39,17 +44,20 @@ pub async fn open_project<R: Runtime>(app: tauri::AppHandle<R>) {
 						.expect("couldn't focus the window");
 					return
 				}
-				let window = WindowBuilder::new(&app, &label, WindowUrl::App("project_folder".into()))
+				let builder = WindowBuilder::new(&app, &label, WindowUrl::App("project_folder".into()))
 					.accept_first_mouse(false)
 					.enable_clipboard_access()
-					.title_bar_style(TitleBarStyle::Overlay)
 					.min_inner_size(800., 500.)
 					.title("")
-					.transparent(true)
-					.build()
-					// TODO send a signal back to main or something if this is Err
-					// so that user gets an alert that opening it failed
-					.unwrap();
+					.transparent(true);
+
+				#[cfg(target_os = "macos")]
+				let builder = builder.title_bar_style(TitleBarStyle::Overlay);
+
+				// TODO send a signal back to main or something if this is Err
+				// so that user gets an alert that opening it failed
+				#[allow(unused)]
+				let window = builder.build().unwrap();
 
 				#[cfg(target_os = "macos")]
 				app.run_on_main_thread(move || {
@@ -62,4 +70,18 @@ pub async fn open_project<R: Runtime>(app: tauri::AppHandle<R>) {
 				}).unwrap();
 			}
 		});
+}
+
+#[tauri::command]
+pub async fn platform() -> String {
+	#[cfg(target_os = "macos")]
+	let platform = "macos";
+
+	#[cfg(target_os = "linux")]
+	let platform = "linux";
+
+	#[cfg(target_os = "windows")]
+	let platform = "windows";
+
+	platform.into()
 }

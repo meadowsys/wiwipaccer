@@ -5,11 +5,16 @@
 
 use mimalloc::MiMalloc;
 use surrealdb::Datastore;
-use tauri::{ TitleBarStyle, WindowBuilder, WindowUrl };
+use tauri::{ WindowBuilder, WindowUrl };
 use tauri::async_runtime;
 use std::fs;
 use tokio::sync::RwLock;
-use window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial };
+
+#[cfg(target_os = "macos")]
+use {
+	tauri::TitleBarStyle,
+	window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial }
+};
 
 mod cmds;
 mod db;
@@ -85,15 +90,19 @@ fn main() {
 
 	tauri::Builder::default()
 		.setup(|app| {
-			let welcome_window = WindowBuilder::new(app, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
+			let builder = WindowBuilder::new(app, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
 				.accept_first_mouse(false)
 				.enable_clipboard_access()
-				.title_bar_style(TitleBarStyle::Overlay)
 				.inner_size(800., 500.)
 				.min_inner_size(800., 500.)
 				.title("")
-				.transparent(true)
-				.build()?;
+				.transparent(true);
+
+			#[cfg(target_os = "macos")]
+			let builder = builder.title_bar_style(TitleBarStyle::Overlay);
+
+			#[allow(unused)]
+			let welcome_window = builder.build()?;
 
 			#[cfg(target_os = "macos")]
 			apply_vibrancy(
