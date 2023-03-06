@@ -4,16 +4,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-    container: ubuntu:18.04
+    runs-on: ubuntu-20.04
 
     steps:
     - name: install system dependencies
       run: |
-        apt-get update
-        apt-get install -y software-properties-common
-        add-apt-repository -y ppa:git-core/ppa
-        apt-get install -y \
+        sudo add-apt-repository -y ppa:git-core/ppa
+        sudo apt-get install -y \
            build-essential \
            curl \
            git \
@@ -25,27 +22,14 @@ jobs:
            libwebkit2gtk-4.0-dev \
            wget
 
-    - name: install glibc lol
-      run: |
-        curl -O http://security.debian.org/debian-security/pool/updates/main/g/glibc/libc6_2.28-10+deb10u2_amd64.deb
-        dpkg -i libc6_2.28-10+deb10u2_amd64.deb
-        rm libc6_2.28-10+deb10u2_amd64.deb
-
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-
-    - name: setup rustup
-      run: |
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh /dev/stdin --profile minimal -y --no-modify-path
-        echo "PATH=$PATH:$HOME/.cargo/bin" >> $GITHUB_ENV
 
     - name: setup rust
       run: rustc --version
 
     - name: setup pnpm
-      run: |
-        curl -fsSL https://get.pnpm.io/install.sh | PNPM_HOME="$(pwd)/.pnpm" PNPM_VERSION=7.28.0 SHELL="$(which bash)" sh
-        echo "PATH=$PATH:$(pwd)/.pnpm" >> $GITHUB_ENV
+      uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
 
     - name: setup node
       run: pnpm node -v
@@ -85,3 +69,6 @@ jobs:
       with:
         name: linux-appimage
         path: target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
+
+    - name: print glibc version
+      run: ldd --version
