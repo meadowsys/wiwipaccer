@@ -1,6 +1,11 @@
 import { Octokit } from "@octokit/rest";
-import fs from "fs";
-import path from "path";
+import {
+	readFileSync as read_file,
+	readdirSync as read_dir
+} from "fs";
+import {
+	resolve as resolve_path
+} from "path";
 
 (async () => {
 	let auth = get_env("github-pat");
@@ -9,7 +14,7 @@ import path from "path";
 	const owner = "meadowsys";
 	const repo = "wiwipaccer";
 
-	let version = JSON.parse(fs.readFileSync(path.resolve("./src-tauri/tauri.conf.json"), "utf-8"))
+	let version = JSON.parse(read_file(resolve_path("./src-tauri/tauri.conf.json"), "utf-8"))
 		.package
 		.version as string;
 
@@ -35,7 +40,7 @@ import path from "path";
 		name: `wiwipaccer ${tag_name}`
 	});
 
-	let artifacts = fs.readdirSync(path.resolve("./artifacts"));
+	let artifacts = read_dir(resolve_path("./artifacts"));
 	for (const artifact of artifacts) {
 		await gh.request({
 			url: release.data.upload_url,
@@ -43,7 +48,7 @@ import path from "path";
 			headers: {
 				"content-type": "application/octet-stream",
 			},
-			data: fs.readFileSync(path.resolve("./artifacts/" + artifact)),
+			data: read_file(resolve_path("./artifacts/" + artifact)),
 			name: artifact,
 		});
 	}
