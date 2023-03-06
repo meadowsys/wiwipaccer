@@ -38,8 +38,8 @@ jobs:
 
     - name: setup pnpm
       run: |
-        curl -fsSL https://get.pnpm.io/install.sh | PNPM_HOME="$HOME/.pnpm" PNPM_VERSION=7.28.0 SHELL="$(which sh)" sh
-        echo "PATH=$PATH:$HOME/.pnpm"
+        curl -fsSL https://get.pnpm.io/install.sh | PNPM_HOME="$(pwd)/.pnpm" PNPM_VERSION=7.28.0 SHELL="$(which bash)" sh
+        echo "PATH=$PATH:$(pwd)/.pnpm"
 
     - name: setup node
       run: pnpm node -v
