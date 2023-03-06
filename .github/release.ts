@@ -69,7 +69,7 @@ import {
 
 	function get_new_tag_name(): string {
 		let template = (n: number) => `v${version}-rolling.${n}`;
-		let latest = releases.data.find(r => r.tag_name.includes("rolling."))?.tag_name;
+		let latest = releases.data.find(r => r.tag_name.includes("rolling.") && !r.draft)?.tag_name;
 
 		if (!latest) return template(1);
 
