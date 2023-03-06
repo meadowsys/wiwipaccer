@@ -25,6 +25,12 @@ jobs:
            libwebkit2gtk-4.0-dev \
            wget
 
+    - name: install glibc lol
+      run: |
+        curl -O http://security.debian.org/debian-security/pool/updates/main/g/glibc/libc6_2.28-10+deb10u2_amd64.deb
+        dpkg -i libc6_2.28-10+deb10u2_amd64.deb
+        rm libc6_2.28-10+deb10u2_amd64.deb
+
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
