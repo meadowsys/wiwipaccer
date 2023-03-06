@@ -352,7 +352,7 @@ jobs:
         path: artifacts
 
     - name: create release
-      run: node -r @swc-node/register .github/release.ts
+      run: cp .github/release.ts . && node -r @swc-node/register release.ts
       env:
         github-pat: ${{ secrets.GHPAT }}
         target-commitish: ${{ github.sha }}
