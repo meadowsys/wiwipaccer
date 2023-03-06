@@ -133,12 +133,6 @@ jobs:
         name: macos-universal
         path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
 
-    - name: upload app artifact
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: macos-universal
-        path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
-
     - name: delete sccache caches from github cache
       uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
       with:
