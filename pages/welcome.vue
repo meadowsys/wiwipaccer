@@ -36,6 +36,6 @@
 	];
 
 	function open_project() {
-		console.log("hhhhh");
+		invoke_open_project();
 	}
 </script>
