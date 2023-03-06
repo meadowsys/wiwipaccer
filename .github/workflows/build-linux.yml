@@ -37,7 +37,9 @@ jobs:
       run: rustc --version
 
     - name: setup pnpm
-      uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+      run: |
+        curl -fsSL https://get.pnpm.io/install.sh | PNPM_HOME="$HOME/.pnpm" PNPM_VERSION=7.28.0 SHELL="$(which sh)" sh
+        echo "PATH=$PATH:$HOME/.pnpm"
 
     - name: setup node
       run: pnpm node -v
