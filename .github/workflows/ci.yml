@@ -4,6 +4,10 @@ on:
     branches:
     - "**"
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   build-macos:
@@ -353,7 +357,7 @@ jobs:
         path: artifacts
 
     - name: create release
-      run: cp .github/release.ts . && node -r @swc-node/register release.ts
+      run: cp .github/*.ts . && node -r @swc-node/register release.ts
       env:
         github-pat: ${{ secrets.GHPAT }}
         target-commitish: ${{ github.sha }}
