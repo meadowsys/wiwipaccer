@@ -102,6 +102,17 @@ jobs:
         key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: pnpm-store-${{ runner.os }}
 
+    - name: install sccache
+      run: |
+        mkdir sccache
+        cd sccache
+        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-apple-darwin.tar.gz
+        tar --strip-components 1 -xvf sccache.tar.gz
+        cd ..
+
+        echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
+        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+
     - name: restore sccache dir (aarch64)
       uses: actions/cache/restore@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
       with:
@@ -117,17 +128,6 @@ jobs:
 
     - name: install node deps
       run: pnpm i
-
-    - name: install sccache
-      run: |
-        mkdir sccache
-        cd sccache
-        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-apple-darwin.tar.gz
-        tar --strip-components 1 -xvf sccache.tar.gz
-        cd ..
-
-        echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
-        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
     - name: build app
       run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
