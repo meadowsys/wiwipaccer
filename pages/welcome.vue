@@ -9,10 +9,10 @@
 
 			<div class="flex-grow" data-tauri-drag-region />
 
-			<welcome-header-button>
-				New Project
+			<welcome-header-button disabled>
+				New Project (Coming Soon&trade;)
 			</welcome-header-button>
-			<welcome-header-button>
+			<welcome-header-button @click="open_project">
 				Open Project
 			</welcome-header-button>
 			<div class="flex flex-col">
@@ -34,4 +34,8 @@
 		{ name: "recent project", path: "/a/path/to/recent-project" },
 		{ name: "another recent asdfghgfdsasdfghgfdsasdfsadfghjgfdsaproject", path: "/a/path/to/anotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentproject"}
 	];
+
+	function open_project() {
+		console.log("hhhhh");
+	}
 </script>
