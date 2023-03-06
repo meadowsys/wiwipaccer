@@ -1,6 +1,8 @@
 name: ci
 on:
-- push
+  push:
+    branches:
+    - "**"
 
 jobs:
 
@@ -293,13 +295,12 @@ jobs:
   release-rolling:
     name: release (rolling)
     runs-on: ubuntu-22.04
-    if: ${{ github.ref == 'refs/heads/wiwi' }}
+    if: ${{ github.ref == 'refs/heads/wiwi' && contains(github.event.head_commit.message, "[release rolling]") }}
     needs:
     - build-macos
     - build-macos-universal
     - build-linux
     - build-windows
-
 
     steps:
     - name: checkout code
