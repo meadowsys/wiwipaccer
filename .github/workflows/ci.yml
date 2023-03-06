@@ -57,7 +57,7 @@ jobs:
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
     - name: build app
-      run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
+      run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std -Z no-index-update
 
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
@@ -132,7 +132,7 @@ jobs:
       run: pnpm i
 
     - name: build app
-      run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
+      run: pnpm tauri build --target universal-apple-darwin -- -Z build-std -Z no-index-update
     - name: upload universal app
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
@@ -211,7 +211,7 @@ jobs:
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
     - name: build app
-      run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
+      run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std -Z no-index-update
 
     - name: upload app artifact (deb)
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
@@ -281,7 +281,7 @@ jobs:
 
     - name: build app
       shell: bash
-      run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
+      run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std -Z no-index-update
 
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
