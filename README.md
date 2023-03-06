@@ -54,7 +54,6 @@ The app is built using a nightly Rust toolchain to allow to build Rust's standar
 - [Rust] nightly-2023-02-26: if rustup is installed, the right version will be fetched/used automatically (will not touch global config)
   - Install rustup on macOS/Linux: run `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`, and follow the prompts.
     - If only building, the `minimal` profile is enough. If developing, you likely want the `default` profile. Everything else should be okay to leave at default.
-  - Add std-src component: `rustup component add rust-src`
 
 #### macOS
 
