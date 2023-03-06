@@ -31,7 +31,7 @@ jobs:
     - name: setup rustup
       run: |
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh /dev/stdin --profile minimal -y --no-modify-path
-        echo "$HOME/.cargo/bin" >> $GITHUB_ENV
+        echo "PATH=$PATH:$HOME/.cargo/bin" >> $GITHUB_ENV
 
     - name: setup rust
       run: rustc --version
