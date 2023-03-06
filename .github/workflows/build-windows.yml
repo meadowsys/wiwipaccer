@@ -53,10 +53,10 @@ jobs:
 
     - name: build app
       shell: bash
-      run: pnpm tauri build --target x86_64-pc-windows-gnu -- -Z build-std # TODO THIS
+      run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
 
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
         name: windows-msi
-        path: target/x86_64-pc-windows-gnu/release/bundle/dmg/*.dmg # TODO THIS
+        path: target/x86_64-pc-windows-msvc/release/bundle/dmg/*.dmg
