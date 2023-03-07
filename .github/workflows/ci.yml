@@ -66,6 +66,8 @@ jobs:
 
     - name: build app
       run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
+      env:
+        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
@@ -141,6 +143,9 @@ jobs:
 
     - name: build app
       run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
+      env:
+        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
+
     - name: upload universal app
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
@@ -220,6 +225,8 @@ jobs:
 
     - name: build app
       run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
+      env:
+        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: upload app artifact (deb)
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
@@ -290,6 +297,8 @@ jobs:
     - name: build app
       shell: bash
       run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
+      env:
+        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
