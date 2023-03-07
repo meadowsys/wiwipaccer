@@ -7,7 +7,7 @@
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
-		"gen-versions": "node -r @swc-node/register gen-versions.ts"
+		"gen-versions": "node -r @swc-node/register scripts/gen-versions.ts"
 	},
 	"devDependencies": {
 		"@octokit/rest": "^19.0.7",
