@@ -1,6 +1,6 @@
 # changelog
 
-## upcoming
+## v0.0.0-rolling.2
 
 - correct version will now reflect in the app
 - created changelog (hopefully will be kept updated??)
