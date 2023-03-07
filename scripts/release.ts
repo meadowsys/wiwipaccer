@@ -7,7 +7,7 @@ import {
 import {
 	resolve as resolve_path
 } from "path";
-import { get_env } from "./lib";
+import { get_env, get_gh } from "./lib";
 import { tag_name as _tag_name } from "./update-tauri-version-to-next";
 
 (async () => {
@@ -17,10 +17,7 @@ import { tag_name as _tag_name } from "./update-tauri-version-to-next";
 	const owner = "meadowsys";
 	const repo = "wiwipaccer";
 
-	let gh = new Octokit({
-		auth,
-		userAgent: "meadowsys/wiwipaccer release script"
-	});
+	let gh = get_gh("release script", auth);
 
 	let { latest, tag_name } = await _tag_name;
 

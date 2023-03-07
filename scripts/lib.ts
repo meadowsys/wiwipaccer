@@ -18,8 +18,7 @@ export function get_env(env: string) {
 	return { get_optional, unwrap };
 }
 
-export function get_gh(ua: string) {
-	let auth = get_env("github_pat").unwrap();
+export function get_gh(ua: string, auth?: string) {
 	return new Octokit({
 		auth,
 		userAgent: `meadowsys/wiwipaccer ${ua}`
