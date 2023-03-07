@@ -8,8 +8,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
+env:
+  release_rolling: ${{ github.ref == 'refs/heads/wiwi' && contains(github.event.head_commit.message, '[release rolling]') }}
 
+jobs:
   build-macos:
     name: build (macOS)
     strategy:
@@ -63,6 +65,7 @@ jobs:
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
     - name: build app
+      # if: ${{ !env.release_rolling }}
       run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
 
     - name: upload app artifact
@@ -299,7 +302,7 @@ jobs:
   release-rolling:
     name: release (rolling)
     runs-on: ubuntu-22.04
-    if: ${{ github.ref == 'refs/heads/wiwi' && contains(github.event.head_commit.message, '[release rolling]') }}
+    if: ${{ env.release_rolling }}
     needs:
     - build-macos
     - build-macos-universal
