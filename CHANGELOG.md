@@ -5,6 +5,7 @@
 - created changelog (hopefully will be kept updated??)
 - change soon text for "New Project" button from "Coming Soon&trade;" to "Soon&trade;", makes it fit in one line
 - add documentation, changelog, about buttons to welcome
+- change title / tagline font on welcome screen to permanent marker
 
 ## v0.0.0-rolling.1
 
