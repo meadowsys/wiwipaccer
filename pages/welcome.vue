@@ -12,7 +12,7 @@
 			<welcome-header-button disabled>
 				New Project (Soon&trade;)
 			</welcome-header-button>
-			<welcome-header-button @click="open_project">
+			<welcome-header-button @click="invoke_open_project">
 				Open Project
 			</welcome-header-button>
 			<welcome-header-button disabled>
@@ -21,7 +21,7 @@
 			<welcome-header-button disabled>
 				Changelog
 			</welcome-header-button>
-			<welcome-header-button disabled>
+			<welcome-header-button @click="invoke_open_about">
 				About
 			</welcome-header-button>
 			<div class="flex flex-col">
@@ -43,8 +43,4 @@
 		{ name: "recent project", path: "/a/path/to/recent-project" },
 		{ name: "another recent asdfghgfdsasdfghgfdsasdfsadfghjgfdsaproject", path: "/a/path/to/anotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentproject"}
 	];
-
-	function open_project() {
-		invoke_open_project();
-	}
 </script>

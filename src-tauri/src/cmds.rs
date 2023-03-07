@@ -55,8 +55,13 @@ pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 		window.set_focus()
 			.expect("couldn't focus the window");
 	} else {
-		let window = get_window(&app, ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()));
-		apply_relevant_window_effects(&app, window);
+		let _window = get_window_builder(&app, ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
+			.transparent(false)
+			.inner_size(550., 350.)
+			.resizable(false)
+			// .min_inner_size(750., 350.)
+			.build()
+			.unwrap();
 	}
 }
 
@@ -75,7 +80,11 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>) {
 					window.set_focus()
 						.expect("couldn't focus the window");
 				} else {
-					let window = get_window(&app, &label, WindowUrl::App("project_folder".into()));
+					let window = get_window_builder(&app, &label, WindowUrl::App("project_folder".into()))
+						.inner_size(800., 500.)
+						.min_inner_size(800., 500.)
+						.build()
+						.unwrap();
 					apply_relevant_window_effects(&app, window);
 				}
 			}
@@ -84,21 +93,19 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>) {
 
 // internal helper functions and stuff below here
 
-fn get_window<R: Runtime>(app: &AppHandle<R>, label: &str, url: WindowUrl) -> Window<R> {
+fn get_window_builder<'h, R: Runtime>(app: &'h AppHandle<R>, label: &'h str, url: WindowUrl) -> WindowBuilder<'h, R> {
 	let builder = WindowBuilder::new(app, label, url)
 		.accept_first_mouse(false)
 		.enable_clipboard_access()
-		.min_inner_size(800., 500.)
 		.title("")
 		.transparent(true);
-
 
 	#[cfg(target_os = "macos")]
 	let builder = builder.title_bar_style(TitleBarStyle::Overlay);
 
 	// TODO send a signal back to main or something if this is Err
 	// so that user gets an alert that opening it failed
-	builder.build().unwrap()
+	builder
 }
 
 #[allow(unused)]
