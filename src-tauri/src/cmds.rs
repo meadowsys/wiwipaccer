@@ -1,7 +1,7 @@
 use crate::db;
 use tauri::api::dialog::FileDialogBuilder;
 // use tauri::api::ipc::
-use tauri::{ Manager, Runtime, WindowBuilder, WindowUrl };
+use tauri::{ AppHandle, command, Manager, Runtime, Window, WindowBuilder, WindowUrl };
 
 #[cfg(target_os = "macos")]
 use {
@@ -9,12 +9,12 @@ use {
 	window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial }
 };
 
-#[tauri::command]
+#[command]
 pub async fn add_recent_project(path: String) {
 	db::add_recent_project(&path).await
 }
 
-#[tauri::command]
+#[command]
 pub async fn decode_hex_string(string: String) -> Result<String, String> {
 	let bytevec = string.into_bytes().into_iter().collect::<Vec<_>>();
 	let decoded = hex::decode(bytevec)
@@ -23,13 +23,45 @@ pub async fn decode_hex_string(string: String) -> Result<String, String> {
 		.map_err(|e| e.to_string())
 }
 
-#[tauri::command]
+#[command]
+pub fn get_license() -> String {
+	const LICENSE_TEXT: &str = include_str!("../../LICENSE");
+	LICENSE_TEXT.into()
+}
+
+#[command]
+pub async fn get_platform() -> String {
+	#[cfg(target_os = "macos")]
+	let platform = "macos";
+
+	#[cfg(target_os = "linux")]
+	let platform = "linux";
+
+	#[cfg(target_os = "windows")]
+	let platform = "windows";
+
+	platform.into()
+}
+
+#[command]
 pub async fn get_recent_projects() {
 	db::get_recent_projects().await
 }
 
-#[tauri::command]
-pub async fn open_project<R: Runtime>(app: tauri::AppHandle<R>) {
+#[command]
+pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
+	const ABOUT_WINDOW_LABEL: &str = "about";
+	if let Some(window) = app.get_window(ABOUT_WINDOW_LABEL) {
+		window.set_focus()
+			.expect("couldn't focus the window");
+	} else {
+		let window = get_window(&app, ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()));
+		apply_relevant_window_effects(&app, window);
+	}
+}
+
+#[command]
+pub async fn open_project<R: Runtime>(app: AppHandle<R>) {
 	FileDialogBuilder::new()
 		.pick_folder(move |folder| {
 			if let Some(path) = folder {
@@ -42,46 +74,42 @@ pub async fn open_project<R: Runtime>(app: tauri::AppHandle<R>) {
 				if let Some(window) = existing {
 					window.set_focus()
 						.expect("couldn't focus the window");
-					return
+				} else {
+					let window = get_window(&app, &label, WindowUrl::App("project_folder".into()));
+					apply_relevant_window_effects(&app, window);
 				}
-				let builder = WindowBuilder::new(&app, &label, WindowUrl::App("project_folder".into()))
-					.accept_first_mouse(false)
-					.enable_clipboard_access()
-					.min_inner_size(800., 500.)
-					.title("")
-					.transparent(true);
-
-				#[cfg(target_os = "macos")]
-				let builder = builder.title_bar_style(TitleBarStyle::Overlay);
-
-				// TODO send a signal back to main or something if this is Err
-				// so that user gets an alert that opening it failed
-				#[allow(unused)]
-				let window = builder.build().unwrap();
-
-				#[cfg(target_os = "macos")]
-				app.run_on_main_thread(move || {
-					apply_vibrancy(
-						&window,
-						NSVisualEffectMaterial::HudWindow,
-						None,
-						None
-					).expect("apply_vibrancy is mac only lol");
-				}).unwrap();
 			}
 		});
 }
 
-#[tauri::command]
-pub async fn platform() -> String {
+// internal helper functions and stuff below here
+
+fn get_window<R: Runtime>(app: &AppHandle<R>, label: &str, url: WindowUrl) -> Window<R> {
+	let builder = WindowBuilder::new(app, label, url)
+		.accept_first_mouse(false)
+		.enable_clipboard_access()
+		.min_inner_size(800., 500.)
+		.title("")
+		.transparent(true);
+
+
 	#[cfg(target_os = "macos")]
-	let platform = "macos";
+	let builder = builder.title_bar_style(TitleBarStyle::Overlay);
 
-	#[cfg(target_os = "linux")]
-	let platform = "linux";
+	// TODO send a signal back to main or something if this is Err
+	// so that user gets an alert that opening it failed
+	builder.build().unwrap()
+}
 
-	#[cfg(target_os = "windows")]
-	let platform = "windows";
-
-	platform.into()
+#[allow(unused)]
+fn apply_relevant_window_effects<R: Runtime>(app: &AppHandle<R>, window: Window<R>) {
+	#[cfg(target_os = "macos")]
+	app.run_on_main_thread(move || {
+		apply_vibrancy(
+			&window,
+			NSVisualEffectMaterial::HudWindow,
+			None,
+			None
+		).expect("apply_vibrancy is mac only lol");
+	}).unwrap();
 }

@@ -117,7 +117,10 @@ fn main() {
 		.invoke_handler(tauri::generate_handler![
 			cmds::add_recent_project,
 			cmds::decode_hex_string,
+			cmds::get_license,
+			cmds::get_platform,
 			cmds::get_recent_projects,
+			cmds::open_about,
 			cmds::open_project
 		])
 		.build(tauri::generate_context!())
