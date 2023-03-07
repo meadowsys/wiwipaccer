@@ -11,8 +11,8 @@ import { get_env } from "./lib";
 import { tag_name as _tag_name } from "./update-tauri-version-to-next";
 
 (async () => {
-	let auth = get_env("github_pat");
-	let target_commitish = get_env("target_commitish");
+	let auth = get_env("github_pat").unwrap();
+	let target_commitish = get_env("target_commitish").unwrap();
 
 	const owner = "meadowsys";
 	const repo = "wiwipaccer";

@@ -3,14 +3,23 @@ import { Octokit } from "@octokit/rest";
 export const owner = "meadowsys";
 export const repo = "wiwipaccer";
 
-export function get_env(env: string): string {
+export function get_env(env: string) {
 	let value = process.env[env];
-	if (!value) throw new Error(`env ${env} does not exist!!!!`);
-	return value;
+
+	function get_optional() {
+		return value;
+	}
+
+	function unwrap() {
+		if (!value) throw new Error(`env ${env} does not exist!!!!`);
+		return value;
+	}
+
+	return { get_optional, unwrap };
 }
 
 export function get_gh(ua: string) {
-	let auth = get_env("github_pat");
+	let auth = get_env("github_pat").unwrap();
 	return new Octokit({
 		auth,
 		userAgent: `meadowsys/wiwipaccer ${ua}`
