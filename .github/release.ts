@@ -75,6 +75,6 @@ import {
 
 		let i = latest.lastIndexOf(".");
 		let n = Number.parseInt(latest.substring(i + 1), 10);
-		return template(n);
+		return template(n + 1);
 	}
 })();
