@@ -43,7 +43,7 @@ import {
 		target_commitish,
 		name: `wiwipaccer ${tag_name}`,
 		// body: `See the changelog for changelog: https://github.com/Meadowsys/wiwipaccer/blob/${tag_name}/CHANGELOG.md`
-		body: `See [CHANGELOG.md](https://github.com/Meadowsys/wiwipaccer/blob/wiwi/CHANGELOG.md#${tag_name.replace(".", "")}) for changelog, and [compare with previous tag](https://github.com/Meadowsys/wiwipaccer/compare/${latest}...${tag_name}) to see commits.`
+		body: `See [CHANGELOG.md](https://github.com/Meadowsys/wiwipaccer/blob/wiwi/CHANGELOG.md#${tag_name.replace(/\./g, "")}) for changelog, and [compare with previous tag](https://github.com/Meadowsys/wiwipaccer/compare/${latest}...${tag_name}) to see commits.`
 	});
 
 	let artifacts = read_dir(resolve_path("./artifacts"));
