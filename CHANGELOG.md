@@ -2,7 +2,7 @@
 
 ## v0.0.0-rolling.2
 
-- correct version will now reflect in the app
+- ~~correct version will now reflect in the app~~ nope! I overlooked something, oops >.<
 - created changelog (hopefully will be kept updated??)
 - change soon text for "New Project" button from "Coming Soon&trade;" to "Soon&trade;", makes it fit in one line
 - add documentation, changelog buttons to welcome
