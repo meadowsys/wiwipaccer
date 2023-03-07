@@ -1,5 +1,10 @@
 # changelog
 
+## upcoming
+
+- correct version will now reflect in the app (For Real this time)
+- builds not made with a release will have `-dev` at the end of the version
+
 ## v0.0.0-rolling.2
 
 - ~~correct version will now reflect in the app~~ nope! I overlooked something, oops >.<
