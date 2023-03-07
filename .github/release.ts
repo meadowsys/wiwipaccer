@@ -35,9 +35,9 @@ import {
 		repo,
 		tag_name,
 		draft: true,
-		generate_release_notes: true,
 		target_commitish,
-		name: `wiwipaccer ${tag_name}`
+		name: `wiwipaccer ${tag_name}`,
+		body: `See the changelog for changelog: https://github.com/Meadowsys/wiwipaccer/blob/${tag_name}/CHANGELOG.md`
 	});
 
 	let artifacts = read_dir(resolve_path("./artifacts"));
