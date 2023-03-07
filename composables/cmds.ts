@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 
 export async function invoke_add_recent_project(path: string) {
-	return await invoke("add_recent_project", { path }) as void;
+	await invoke("add_recent_project", { path }) as void;
 }
 
 export async function invoke_get_recent_projects() {
@@ -10,7 +10,7 @@ export async function invoke_get_recent_projects() {
 }
 
 export async function invoke_open_project() {
-	return await invoke("open_project");
+	await invoke("open_project");
 }
 
 export async function invoke_decode_hex_string(string: string) {
