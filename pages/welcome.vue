@@ -15,6 +15,15 @@
 			<welcome-header-button @click="open_project">
 				Open Project
 			</welcome-header-button>
+			<welcome-header-button disabled>
+				Documentation
+			</welcome-header-button>
+			<welcome-header-button disabled>
+				Changelog
+			</welcome-header-button>
+			<welcome-header-button disabled>
+				About
+			</welcome-header-button>
 			<div class="flex flex-col">
 			</div>
 		</div>
