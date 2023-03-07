@@ -8,6 +8,9 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  release: ${{ github.ref == 'refs/heads/wiwi' && contains(github.event.head_commit.message, '[release rolling]') }}
+
 jobs:
   build-macos:
     name: build (macOS)

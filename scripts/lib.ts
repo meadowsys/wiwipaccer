@@ -32,10 +32,17 @@ export async function get_new_tag_name(
 	repo: string,
 	version: string
 ) {
+	let is_release = Boolean(get_env("release").get_optional());
+	if (!is_release) {
+		if (version.endsWith("-dev")) return ["", `v${version}`] as const; // don't append infinitely
+		else return ["", `v${version}-dev`] as const;
+	}
+
 	let releases = await gh.rest.repos.listReleases({
 		owner,
 		repo
 	});
+
 	let template = (n: number) => `v${version}-rolling.${n}`;
 	let latest = releases.data.find(r => r.tag_name.includes("rolling.") && !r.draft)?.tag_name;
 
