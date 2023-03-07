@@ -75,13 +75,13 @@ pub async fn open_project<R: Runtime>(app: tauri::AppHandle<R>) {
 #[tauri::command]
 pub async fn platform() -> String {
 	#[cfg(target_os = "macos")]
-	let platform = "macos";
+	compile_error!("macos");
 
 	#[cfg(target_os = "linux")]
-	let platform = "linux";
+	compile_error!("linux");
 
 	#[cfg(target_os = "windows")]
-	let platform = "windows";
+	compile_error!("windows");
 
-	platform.into()
+	"e".into()
 }
