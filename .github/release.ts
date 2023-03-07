@@ -29,7 +29,7 @@ import {
 		repo
 	});
 
-	let tag_name = get_new_tag_name();
+	let [latest, tag_name] = get_new_tag_name();
 
 	// substring is to get rid of the prefix "v"
 	tauri_manifest_obj.package.version = tag_name.substring(1);
@@ -42,7 +42,8 @@ import {
 		draft: true,
 		target_commitish,
 		name: `wiwipaccer ${tag_name}`,
-		body: `See the changelog for changelog: https://github.com/Meadowsys/wiwipaccer/blob/${tag_name}/CHANGELOG.md`
+		// body: `See the changelog for changelog: https://github.com/Meadowsys/wiwipaccer/blob/${tag_name}/CHANGELOG.md`
+		body: `See [CHANGELOG.md](https://github.com/Meadowsys/wiwipaccer/blob/wiwi/CHANGELOG.md#${tag_name.replace(".", "")}) for changelog, and [compare with previous tag](https://github.com/Meadowsys/wiwipaccer/compare/${latest}...${tag_name}) to see commits.`
 	});
 
 	let artifacts = read_dir(resolve_path("./artifacts"));
@@ -72,7 +73,7 @@ import {
 		return value;
 	}
 
-	function get_new_tag_name(): string {
+	function get_new_tag_name() {
 		let template = (n: number) => `v${version}-rolling.${n}`;
 		let latest = releases.data.find(r => r.tag_name.includes("rolling.") && !r.draft)?.tag_name;
 
@@ -80,6 +81,6 @@ import {
 
 		let i = latest.lastIndexOf(".");
 		let n = Number.parseInt(latest.substring(i + 1), 10);
-		return template(n + 1);
+		return [latest, template(n + 1)] as const;
 	}
 })();
