@@ -10,7 +10,7 @@
 			<div class="flex-grow" data-tauri-drag-region />
 
 			<welcome-header-button disabled>
-				New Project (Coming Soon&trade;)
+				New Project (Soon&trade;)
 			</welcome-header-button>
 			<welcome-header-button @click="open_project">
 				Open Project
