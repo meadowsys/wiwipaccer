@@ -359,5 +359,5 @@ jobs:
     - name: create release
       run: cp .github/*.ts . && node -r @swc-node/register release.ts
       env:
-        github-pat: ${{ secrets.GHPAT }}
-        target-commitish: ${{ github.sha }}
+        github_pat: ${{ secrets.GHPAT }}
+        target_commitish: ${{ github.sha }}

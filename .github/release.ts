@@ -8,8 +8,8 @@ import {
 } from "path";
 
 (async () => {
-	let auth = get_env("github-pat");
-	let target_commitish = get_env("target-commitish");
+	let auth = get_env("github_pat");
+	let target_commitish = get_env("target_commitish");
 
 	const owner = "meadowsys";
 	const repo = "wiwipaccer";
