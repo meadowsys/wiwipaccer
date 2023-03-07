@@ -1,7 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import {
+	readdirSync as read_dir,
 	readFileSync as read_file,
-	readdirSync as read_dir
+	writeFileSync as write_file
 } from "fs";
 import {
 	resolve as resolve_path
@@ -14,9 +15,9 @@ import {
 	const owner = "meadowsys";
 	const repo = "wiwipaccer";
 
-	let version = JSON.parse(read_file(resolve_path("./src-tauri/tauri.conf.json"), "utf-8"))
-		.package
-		.version as string;
+	let tauri_manifest_path = resolve_path("./src-tauri/tauri.conf.json");
+	let tauri_manifest_obj = JSON.parse(read_file(tauri_manifest_path, "utf-8"));
+	let version = tauri_manifest_obj.package.version as string;
 
 	let gh = new Octokit({
 		auth,
@@ -29,6 +30,10 @@ import {
 	});
 
 	let tag_name = get_new_tag_name();
+
+	// substring is to get rid of the prefix "v"
+	tauri_manifest_obj.package.version = tag_name.substring(1);
+	write_file(tauri_manifest_path, JSON.stringify(tauri_manifest_obj, null, "\t"));
 
 	let release = await gh.rest.repos.createRelease({
 		owner,

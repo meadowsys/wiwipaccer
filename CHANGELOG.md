@@ -2,6 +2,7 @@
 
 ## upcoming
 
+- correct version will now reflect in the app
 - created changelog (hopefully will be kept updated??)
 - change soon text for "New Project" button from "Coming Soon&trade;" to "Soon&trade;", makes it fit in one line
 - add documentation, changelog, about buttons to welcome
