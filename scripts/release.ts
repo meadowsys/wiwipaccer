@@ -7,6 +7,8 @@ import {
 import {
 	resolve as resolve_path
 } from "path";
+import { get_env } from "./lib";
+import { tag_name as _tag_name } from "./update-tauri-version-to-next";
 
 (async () => {
 	let auth = get_env("github_pat");
@@ -15,25 +17,12 @@ import {
 	const owner = "meadowsys";
 	const repo = "wiwipaccer";
 
-	let tauri_manifest_path = resolve_path("./src-tauri/tauri.conf.json");
-	let tauri_manifest_obj = JSON.parse(read_file(tauri_manifest_path, "utf-8"));
-	let version = tauri_manifest_obj.package.version as string;
-
 	let gh = new Octokit({
 		auth,
 		userAgent: "meadowsys/wiwipaccer release script"
 	});
 
-	let releases = await gh.rest.repos.listReleases({
-		owner,
-		repo
-	});
-
-	let [latest, tag_name] = get_new_tag_name();
-
-	// substring is to get rid of the prefix "v"
-	tauri_manifest_obj.package.version = tag_name.substring(1);
-	write_file(tauri_manifest_path, JSON.stringify(tauri_manifest_obj, null, "\t"));
+	let { latest, tag_name } = await _tag_name;
 
 	let release = await gh.rest.repos.createRelease({
 		owner,
@@ -66,21 +55,4 @@ import {
 		make_latest: "true",
 		draft: false
 	});
-
-	function get_env(env: string): string {
-		let value = process.env[env];
-		if (!value) throw new Error(`env ${env} does not exist!!!!`);
-		return value;
-	}
-
-	function get_new_tag_name() {
-		let template = (n: number) => `v${version}-rolling.${n}`;
-		let latest = releases.data.find(r => r.tag_name.includes("rolling.") && !r.draft)?.tag_name;
-
-		if (!latest) return template(1);
-
-		let i = latest.lastIndexOf(".");
-		let n = Number.parseInt(latest.substring(i + 1), 10);
-		return [latest, template(n + 1)] as const;
-	}
 })();
