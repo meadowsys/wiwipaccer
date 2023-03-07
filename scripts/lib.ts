@@ -31,7 +31,7 @@ export async function get_new_tag_name(
 	repo: string,
 	version: string
 ) {
-	let is_release = Boolean(get_env("release").get_optional());
+	let is_release = get_env("release").get_optional() === "true";
 	if (!is_release) {
 		if (version.endsWith("-dev")) return ["", `v${version}`] as const; // don't append infinitely
 		else return ["", `v${version}-dev`] as const;
