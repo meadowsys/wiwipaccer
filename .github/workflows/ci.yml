@@ -64,6 +64,9 @@ jobs:
         echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
+    - name: update tauri app version
+      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+
     - name: build app
       run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
       env:
@@ -140,6 +143,9 @@ jobs:
 
     - name: install node deps
       run: pnpm i
+
+    - name: update tauri app version
+      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
     - name: build app
       run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
@@ -223,6 +229,9 @@ jobs:
         echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
+    - name: update tauri app version
+      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+
     - name: build app
       run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
       env:
@@ -293,6 +302,9 @@ jobs:
 
         echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+
+    - name: update tauri app version
+      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
     - name: build app
       shell: bash

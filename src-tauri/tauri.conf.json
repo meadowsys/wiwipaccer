@@ -1,7 +1,7 @@
 {
 	"build": {
 		"beforeDevCommand": "pnpm run dev",
-		"beforeBuildCommand": "node -r @swc-node/register scripts/update-tauri-version-to-next.ts && pnpm run generate",
+		"beforeBuildCommand": "pnpm run generate",
 		"devPath": "http://localhost:3000",
 		"distDir": "../.output/public",
 		"withGlobalTauri": false
