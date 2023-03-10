@@ -1,7 +1,7 @@
 use crate::db;
 use tauri::api::dialog::FileDialogBuilder;
 // use tauri::api::ipc::
-use tauri::{ AppHandle, command, Manager, Runtime, Window, WindowBuilder, WindowUrl };
+use tauri::{ AppHandle, Manager, Runtime, Window, WindowBuilder, WindowUrl };
 
 #[cfg(target_os = "macos")]
 use {
@@ -9,12 +9,12 @@ use {
 	window_vibrancy::{ apply_vibrancy, NSVisualEffectMaterial }
 };
 
-#[command]
+#[tauri::command]
 pub async fn add_recent_project(path: String) {
 	db::add_recent_project(&path).await
 }
 
-#[command]
+#[tauri::command]
 pub async fn decode_hex_string(string: String) -> Result<String, String> {
 	let bytevec = string.into_bytes().into_iter().collect::<Vec<_>>();
 	let decoded = hex::decode(bytevec)
@@ -23,13 +23,13 @@ pub async fn decode_hex_string(string: String) -> Result<String, String> {
 		.map_err(|e| e.to_string())
 }
 
-#[command]
-pub fn get_license() -> String {
+#[tauri::command]
+pub async fn get_license() -> String {
 	const LICENSE_TEXT: &str = include_str!("../../LICENSE");
 	LICENSE_TEXT.into()
 }
 
-#[command]
+#[tauri::command]
 pub async fn get_platform() -> String {
 	#[cfg(target_os = "macos")]
 	let platform = "macos";
@@ -43,12 +43,12 @@ pub async fn get_platform() -> String {
 	platform.into()
 }
 
-#[command]
+#[tauri::command]
 pub async fn get_recent_projects() {
 	db::get_recent_projects().await
 }
 
-#[command]
+#[tauri::command]
 pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 	const ABOUT_WINDOW_LABEL: &str = "about";
 	if let Some(window) = app.get_window(ABOUT_WINDOW_LABEL) {
@@ -65,7 +65,7 @@ pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 	}
 }
 
-#[command]
+#[tauri::command]
 pub async fn open_project<R: Runtime>(app: AppHandle<R>) {
 	FileDialogBuilder::new()
 		.pick_folder(move |folder| {
