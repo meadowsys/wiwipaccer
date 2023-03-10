@@ -44,7 +44,7 @@ pub async fn get_platform() -> String {
 }
 
 #[tauri::command]
-pub async fn get_recent_projects() {
+pub async fn get_recent_projects() -> Vec<String> {
 	db::get_recent_projects().await
 }
 

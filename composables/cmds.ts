@@ -18,7 +18,7 @@ export async function invoke_get_platform() {
 
 export async function invoke_get_recent_projects() {
 	// TODO figure out the db and its proper return value
-	return await invoke("get_recent_projects") as void;
+	return await invoke("get_recent_projects") as Array<string>;
 }
 
 export async function invoke_open_about() {
