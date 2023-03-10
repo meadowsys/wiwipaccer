@@ -200,7 +200,7 @@ let is_ci = !!process.env.CI;
 		spawn("git", ["config", "--unset-all", "http.https://github.com/.extraheader"]); // https://stackoverflow.com/a/69979203
 
 		spawn("git", ["add", "-A"]);
-		spawn("git", ["commit", "-m", "adding new mc releases from github actions"]);
+		spawn("git", ["commit", "-m", "(automated) updating mc releases"]);
 		spawn("git", ["push"]);
 
 		console.log("::endgroup::");
