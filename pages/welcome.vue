@@ -44,7 +44,7 @@
 
 	function update_recents() {
 		invoke_get_recent_projects()
-			.then(v => v.map(r => ({ name: "<not implemented yet>", path: r })))
+			.then(v => v.map(([name, path]) => ({ name, path })))
 			.then(v => {
 				while (recents.value.pop());
 				recents.value.push(...v);

@@ -5,7 +5,7 @@ export async function invoke_add_recent_project(path: string) {
 }
 
 export async function invoke_get_recent_projects() {
-	return await invoke("get_recent_projects") as Array<string>;
+	return await invoke("get_recent_projects") as Array<[string, string]>;
 }
 
 export async function invoke_open_project(path?: string) {

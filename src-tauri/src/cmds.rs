@@ -50,8 +50,19 @@ pub async fn get_platform() -> String {
 }
 
 #[tauri::command]
-pub async fn get_recent_projects() -> Vec<String> {
+pub async fn get_recent_projects() -> Vec<(String, String)> {
+	// TODO this is just temporary implementation of the recent projects
+	// later, store the name of the project in the db
+	// probably even more later, we can check and read it from dirs, marking them as unavailable if
+	// erroring, and reading the name from there
+
 	db::get_recent_projects().await
+		.into_iter()
+		.map(|p| (
+			Utf8PathBuf::from(&p).file_name().unwrap().to_string(),
+			p
+		))
+		.collect()
 }
 
 #[tauri::command]
