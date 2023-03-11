@@ -8,6 +8,7 @@ export async function invoke_get_recent_projects() {
 	return await invoke("get_recent_projects") as Array<string>;
 }
 
-export async function invoke_open_project() {
-	await invoke("open_project");
+export async function invoke_open_project(path?: string) {
+	if (path) await invoke("open_project", { path });
+	else await invoke("open_project");
 }

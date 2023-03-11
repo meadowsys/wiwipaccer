@@ -3,6 +3,7 @@
 		<div class="overflow-scroll h-full flex flex-col">
 			<button
 				v-for="recent in p.recents"
+				@click="invoke_open_project(recent.path)"
 				class="
 					w-full p-2 rounded bg-black bg-opacity-0 border-black border-opacity-0 border-2 text-left text-sm break-all
 					hover:border-opacity-10 hover:bg-opacity-10

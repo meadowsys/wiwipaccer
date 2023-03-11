@@ -1,3 +1,4 @@
+use camino::Utf8PathBuf;
 use crate::db;
 use tauri::api::dialog::FileDialogBuilder;
 // use tauri::api::ipc::
@@ -71,31 +72,37 @@ pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 }
 
 #[tauri::command]
-pub async fn open_project<R: Runtime>(app: AppHandle<R>) {
-	FileDialogBuilder::new()
-		.pick_folder(move |folder| {
-			if let Some(path) = folder {
-				let path = path.to_str()
-					.expect("only utf-8 paths are supported, could not open project")
-					.to_string();
+pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
+	fn open_project_window<R: Runtime>(app: &AppHandle<R>, path: &str) {
+		let label = hex::encode(path);
+		let existing = app.get_window(&label);
+		if let Some(window) = existing {
+			window.set_focus()
+				.expect("couldn't focus window");
+		} else {
+			// TODO maybe send a signal back to main or something if this is Err
+			// so that user gets an alert that opening it failed
+			let window = get_window_builder(app, &label, WindowUrl::App("project_folder".into()))
+				.inner_size(800., 500.)
+				.min_inner_size(800., 500.)
+				.build()
+				.unwrap();
+			apply_relevant_window_effects(app, window);
+		}
+	}
 
-				let label = hex::encode(path);
-				let existing = app.get_window(&label);
-				if let Some(window) = existing {
-					window.set_focus()
-						.expect("couldn't focus the window");
-				} else {
-					// TODO maybe send a signal back to main or something if this is Err
-					// so that user gets an alert that opening it failed
-					let window = get_window_builder(&app, &label, WindowUrl::App("project_folder".into()))
-						.inner_size(800., 500.)
-						.min_inner_size(800., 500.)
-						.build()
-						.unwrap();
-					apply_relevant_window_effects(&app, window);
-				}
+	if let Some(path) = path {
+		open_project_window(&app, &path);
+	} else {
+		FileDialogBuilder::new().pick_folder(move |folder| {
+			if let Some(path) = folder {
+				let path: Utf8PathBuf = path.try_into()
+					.expect("only utf-8 paths are supported, could not open project");
+
+				open_project_window(&app, path.as_str());
 			}
 		});
+	}
 }
 
 // internal helper functions and stuff below here

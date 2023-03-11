@@ -23,6 +23,7 @@ tauri = { version = "1.2", features = ["dialog", "macos-private-api", "shell-ope
 tokio = { version = "1.25.0", features = ["full"] }
 window-vibrancy = "0.3.2"
 hex = "0.4.3"
+camino = "1.1.4"
 
 [features]
 default = ["custom-protocol"]
