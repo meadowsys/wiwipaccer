@@ -5,7 +5,7 @@ on:
     - "**"
 
 concurrency:
-  group: ci-${{ github.ref }}-${{ env.release }}
+  group: ci-${{ github.ref }}-${{ github.ref == 'refs/heads/wiwi' && contains(github.event.head_commit.message, '[release rolling]') }}
   cancel-in-progress: true
 
 env:
