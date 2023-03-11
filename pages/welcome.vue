@@ -39,8 +39,26 @@
 </template>
 
 <script setup lang="ts">
-	let recents: Array<{ name: string, path: string }> = [
-		{ name: "recent project", path: "/a/path/to/recent-project" },
-		{ name: "another recent asdfghgfdsasdfghgfdsasdfsadfghjgfdsaproject", path: "/a/path/to/anotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentprojectanotherrecentproject"}
-	];
+	import { appWindow } from "@tauri-apps/api/window";
+	let recents = ref<Array<{ name: string, path: string }>>([]);
+
+	function update_recents() {
+		console.log("SCremsafe");
+		invoke_get_recent_projects()
+			.then(v => v.map(r => ({ name: "<not implemented yet>", path: r })))
+			.then(v => {
+				while (recents.value.pop());
+				recents.value.push(...v);
+			});
+	}
+
+	const unlisten = await appWindow.listen("refresh-recents", update_recents);
+
+	onMounted(() => {
+		update_recents();
+	});
+
+	onUnmounted(() => {
+		unlisten();
+	});
 </script>

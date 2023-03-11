@@ -76,6 +76,8 @@
 </template>
 
 <script setup lang="ts">
-	import { window } from "@tauri-apps/api";
-	let path = await invoke_decode_hex_string(window.appWindow.label);
+	import { appWindow, getAll } from "@tauri-apps/api/window";
+	let path = await invoke_decode_hex_string(appWindow.label);
+
+	invoke_add_recent_project(path);
 </script>

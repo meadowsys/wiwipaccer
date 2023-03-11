@@ -10,8 +10,13 @@ use {
 };
 
 #[tauri::command]
-pub async fn add_recent_project(path: String) {
-	db::add_recent_project(&path).await
+pub async fn add_recent_project<R: Runtime>(app: AppHandle<R>, path: String) {
+	db::add_recent_project(&path).await;
+
+	if let Some(window) = app.get_window(crate::WELCOME_WINDOW_NAME) {
+		window.emit("refresh-recents", "nothin")
+			.expect("failed to emit refresh-recents to welcome window");
+	}
 }
 
 #[tauri::command]
