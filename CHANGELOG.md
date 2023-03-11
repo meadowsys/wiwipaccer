@@ -2,6 +2,10 @@
 
 ## upcoming
 
+## v0.0.0-rolling.3
+
+- added support for `1.19.4-pre4`, `1.19.4-rc1`, and `1.19.4-rc2`
+- recents list is now actually a recents list, instead of static nonsense fake paths, and actually works (if you click an entry it opens/focuses the window)
 - correct version will now reflect in the app (For Real this time)
 - builds not made with a release will have `-dev` at the end of the version
 
