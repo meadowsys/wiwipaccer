@@ -43,7 +43,6 @@
 	let recents = ref<Array<{ name: string, path: string }>>([]);
 
 	function update_recents() {
-		console.log("SCremsafe");
 		invoke_get_recent_projects()
 			.then(v => v.map(r => ({ name: "<not implemented yet>", path: r })))
 			.then(v => {
