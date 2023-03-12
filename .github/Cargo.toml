@@ -1,0 +1,15 @@
+[workspace]
+members = [
+	"lib",
+	"src-tauri"
+]
+
+[profile.release]
+opt-level = 3 # all
+debug-assertions = false
+debug = false
+lto = true
+incremental = false
+codegen-units = 1
+panic = "unwind"
+overflow-checks = true

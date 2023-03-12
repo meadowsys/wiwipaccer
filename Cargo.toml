@@ -3,15 +3,12 @@ members = [
 	"lib",
 	"src-tauri"
 ]
-
 [profile.dev]
 opt-level = 0 # none
 debug-assertions = true
 debug = true
+lto = false
 incremental = true
-
-[profile.release]
-opt-level = 3 # all
-debug-assertions = false
-lto = true
-codegen-units = 1
+codegen-units = 1024
+panic = "unwind"
+overflow-checks = true

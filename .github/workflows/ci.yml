@@ -64,13 +64,20 @@ jobs:
         echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
-    - name: update tauri app version
-      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    - name: prepare to build
+      run: |
+        echo copying build-specific cargo configs...
+        cp .github/Cargo.toml Cargo.toml
+        mkdir .cargo
+        cp .github/cargo-config.toml .cargo/config.toml
+
+        echo updating tauri app version...
+        node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: build app
-      run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
+      run: pnpm tauri build --target ${{ matrix.target.triple }} -vv -- -Z build-std -vv
 
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
@@ -144,13 +151,20 @@ jobs:
     - name: install node deps
       run: pnpm i
 
-    - name: update tauri app version
-      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    - name: prepare to build
+      run: |
+        echo copying build-specific cargo configs...
+        cp .github/Cargo.toml Cargo.toml
+        mkdir .cargo
+        cp .github/cargo-config.toml .cargo/config.toml
+
+        echo updating tauri app version...
+        node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: build app
-      run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
+      run: pnpm tauri build --target universal-apple-darwin -vv -- -Z build-std -vv
 
     - name: upload universal app
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
@@ -229,13 +243,20 @@ jobs:
         echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
-    - name: update tauri app version
-      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    - name: prepare to build
+      run: |
+        echo copying build-specific cargo configs...
+        cp .github/Cargo.toml Cargo.toml
+        mkdir .cargo
+        cp .github/cargo-config.toml .cargo/config.toml
+
+        echo updating tauri app version...
+        node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: build app
-      run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
+      run: pnpm tauri build --target x86_64-unknown-linux-gnu -vv -- -Z build-std -vv
 
     - name: upload app artifact (deb)
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
@@ -303,14 +324,21 @@ jobs:
         echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
-    - name: update tauri app version
-      run: node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    - name: prepare to build
+      run: |
+        echo copying build-specific cargo configs...
+        cp .github/Cargo.toml Cargo.toml
+        mkdir .cargo
+        cp .github/cargo-config.toml .cargo/config.toml
+
+        echo updating tauri app version...
+        node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: build app
       shell: bash
-      run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
+      run: pnpm tauri build --target x86_64-pc-windows-msvc -vv -- -Z build-std -vv
 
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
