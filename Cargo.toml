@@ -4,6 +4,9 @@ members = [
 	"src-tauri"
 ]
 
+[registries.crates-io]
+protocol = "sparse"
+
 [profile.dev]
 opt-level = 0 # none
 debug-assertions = true
