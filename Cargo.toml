@@ -3,6 +3,7 @@ members = [
 	"lib",
 	"src-tauri"
 ]
+
 [profile.dev]
 opt-level = 0 # none
 debug-assertions = true
