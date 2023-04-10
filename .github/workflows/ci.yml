@@ -328,6 +328,7 @@ jobs:
         echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
     - name: prepare to build
+      shell: bash
       run: |
         echo copying build-specific cargo configs...
         cp .github/Cargo.toml Cargo.toml
@@ -336,7 +337,7 @@ jobs:
 
         # echo updating tauri app version...
         # node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
-        echo skipping updating tauri app version because wix is really stupid and doesn\'t support semver properly
+        echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
