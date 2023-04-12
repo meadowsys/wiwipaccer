@@ -1,15 +1,8 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { extend_base } from "./base.nuxt.config";
 
-export default defineNuxtConfig({
-	telemetry: false,
-	ssr: false,
-	devServer: {
-		port: 3000
-	},
-	postcss: {
-		plugins: {
-			tailwindcss: {},
-			autoprefixer: {}
-		}
-	}
+const cfg = defineNuxtConfig({
+	ssr: false
 });
+
+extend_base(cfg);
+export default cfg;
