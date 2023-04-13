@@ -8,7 +8,7 @@ import {
 	resolve as resolve_path
 } from "path";
 import { get_env, get_gh } from "./lib";
-import { tag_name as _tag_name } from "./update-tauri-version-to-next";
+import { tag_name as _tag_name } from "./update-tauri-app-version-to-next";
 
 (async () => {
 	let auth = get_env("github_pat").unwrap();
