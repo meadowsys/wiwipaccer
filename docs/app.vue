@@ -1,5 +1,5 @@
 <template>
-	<div>
-		<nuxt-welcome />
+	<div data-tauri-drag-region>
+		hello this is docs
 	</div>
 </template>

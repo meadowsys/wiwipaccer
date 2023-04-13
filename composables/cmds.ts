@@ -15,3 +15,7 @@ export async function invoke_get_platform() {
 export async function invoke_open_about() {
 	await invoke("open_about");
 }
+
+export async function invoke_open_docs() {
+	await invoke("open_docs");
+}

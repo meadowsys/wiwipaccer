@@ -2,9 +2,9 @@
 	"private": true,
 	"packageManager": "pnpm@7.28.0",
 	"scripts": {
-		"dev": "nuxt dev --no-clear",
+		"dev": "node -r @swc-node/register scripts/devservers.ts",
 		"build": "nuxt build",
-		"generate": "nuxt generate",
+		"generate": "nuxt generate && cd docs && nuxt generate && cd .. && mv docs/dist dist/docs",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
 		"gen-versions": "node -r @swc-node/register scripts/gen-versions.ts"

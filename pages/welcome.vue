@@ -15,7 +15,7 @@
 			<welcome-header-button @click="invoke_open_project">
 				Open Project
 			</welcome-header-button>
-			<welcome-header-button disabled>
+			<welcome-header-button @click="invoke_open_docs">
 				Documentation
 			</welcome-header-button>
 			<welcome-header-button disabled>

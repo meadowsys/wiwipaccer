@@ -83,6 +83,22 @@ pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 }
 
 #[tauri::command]
+pub async fn open_docs<R: Runtime>(app: AppHandle<R>) {
+	const DOCS_WINDOW_LABEL: &str = "docs";
+	if let Some(window) = app.get_window(DOCS_WINDOW_LABEL) {
+		window.set_focus()
+			.expect("couldn't focus the window");
+	} else {
+		let _window = get_window_builder(&app, DOCS_WINDOW_LABEL, WindowUrl::App("docs".into()))
+			.transparent(false)
+			.inner_size(800., 500.)
+			.min_inner_size(800., 500.)
+			.build()
+			.unwrap();
+	}
+}
+
+#[tauri::command]
 pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 	fn open_project_window<R: Runtime>(app: &AppHandle<R>, path: &str) {
 		let label = hex::encode(path);

@@ -121,6 +121,7 @@ fn main() {
 			cmds::get_platform,
 			cmds::get_recent_projects,
 			cmds::open_about,
+			cmds::open_docs,
 			cmds::open_project
 		])
 		.build(tauri::generate_context!())
