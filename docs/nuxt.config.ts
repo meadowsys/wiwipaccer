@@ -6,7 +6,10 @@ const cfg = defineNuxtConfig({
 	},
 	devServer: {
 		port: 3001
-	}
+	},
+	modules: [
+		"@nuxt/content"
+	]
 });
 
 extend_base(cfg);

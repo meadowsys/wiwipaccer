@@ -8,6 +8,7 @@
 		"postinstall": "nuxt prepare"
 	},
 	"devDependencies": {
+		"@nuxt/content": "^2.5.2",
 		"@tauri-apps/api": "^1.2.0",
 		"@types/node": "^18.15.11",
 		"autoprefixer": "^10.4.14",
