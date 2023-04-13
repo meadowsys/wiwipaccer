@@ -2,6 +2,7 @@
 	<div class="h-full flex-grow py-8 px-6" data-tauri-drag-region>
 		<div class="overflow-scroll h-full flex flex-col">
 			<button
+				v-if="p.recents.length > 0"
 				v-for="recent in p.recents"
 				@click="invoke_open_project(recent.path)"
 				class="
@@ -13,6 +14,10 @@
 				<div class="font-bold select-none">{{ recent.name }}</div>
 				<div class="select-none">{{ recent.path }}</div>
 			</button>
+
+			<div v-else class="text-center select-none cursor-default" data-tauri-drag-region>
+				No recent projects
+			</div>
 			<div class="flex-grow" data-tauri-drag-region />
 		</div>
 	</div>
