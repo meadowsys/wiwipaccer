@@ -1,1 +1,1 @@
-module.exports = require("../tailwind.config");
+module.exports = require("../tailwind.config").gen_config("..");
