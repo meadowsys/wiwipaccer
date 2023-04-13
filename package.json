@@ -17,7 +17,7 @@
 		"@tauri-apps/cli": "^1.2.3",
 		"@types/node": "^18.15.11",
 		"autoprefixer": "^10.4.14",
-		"nuxt": "^3.4.0",
+		"nuxt": "~3.3.3",
 		"postcss": "^8.4.21",
 		"tailwindcss": "^3.3.1",
 		"typescript": "^5.0.4",
