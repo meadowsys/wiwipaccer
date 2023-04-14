@@ -57,6 +57,26 @@ importers:
   i18n/nuxt-module:
     specifiers: {}
 
+  site:
+    specifiers:
+      '@types/node': ^18.15.11
+      autoprefixer: ^10.4.14
+      i18n: workspace:*
+      nuxt: ~3.2.3
+      postcss: ^8.4.21
+      tailwindcss: ^3.3.1
+      typescript: ^5.0.4
+      zod: ^3.21.4
+    devDependencies:
+      '@types/node': 18.15.11
+      autoprefixer: 10.4.14_postcss@8.4.21
+      i18n: link:../i18n/nuxt-module
+      nuxt: 3.2.3_bhanhq442dy43ncydsavgi4jfi
+      postcss: 8.4.21
+      tailwindcss: 3.3.1_postcss@8.4.21
+      typescript: 5.0.4
+      zod: 3.21.4
+
 packages:
 
   /@ampproject/remapping/2.2.1:
