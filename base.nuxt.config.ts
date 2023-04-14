@@ -16,5 +16,10 @@ export function extend_base(cfg: NuxtConfig) {
 	// cfg.modules ??= [];
 	// cfg.modules.push("i18n");
 
+	cfg.typescript ??= {}
+	cfg.typescript.shim ??= false;
+	cfg.typescript.strict ??= true;
+	cfg.typescript.typeCheck ??= "build";
+
 	return cfg;
 }
