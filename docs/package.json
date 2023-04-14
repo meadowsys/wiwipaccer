@@ -16,6 +16,7 @@
 		"nuxt": "~3.2.3",
 		"postcss": "^8.4.21",
 		"tailwindcss": "^3.3.1",
-		"typescript": "^5.0.4"
+		"typescript": "^5.0.4",
+		"vue-tsc": "^1.2.0"
 	}
 }
