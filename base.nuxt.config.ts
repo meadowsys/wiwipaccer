@@ -13,8 +13,8 @@ export function extend_base(cfg: NuxtConfig) {
 	cfg.postcss.plugins.tailwindcss ??= {};
 	cfg.postcss.plugins.autoprefixer ??= {};
 
-	cfg.modules ??= [];
-	cfg.modules.push("i18n");
+	// cfg.modules ??= [];
+	// cfg.modules.push("i18n");
 
 	return cfg;
 }
