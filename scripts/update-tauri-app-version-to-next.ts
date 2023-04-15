@@ -23,7 +23,7 @@ export const tag_name = (async () => {
 		write_file(tauri_manifest_path, JSON.stringify(tauri_manifest_obj, null, "\t"));
 	}
 
-	let version_file_path = resolve_path("./.github/version");
+	let version_file_path = resolve_path("./src-tauri/meta/version");
 	write_file(version_file_path, tag_name);
 
 	return { latest, tag_name };
