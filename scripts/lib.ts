@@ -34,7 +34,7 @@ export async function get_new_tag_name(
 ) {
 	let is_release = get_env("release").get_optional() === "true";
 	if (!is_release) {
-		let date = exec("date +%Y%m%d%S").toString().trim();
+		let date = exec("date +%Y%m%d%H%M%S").toString().trim();
 		let regex = /-dev\d{10}$/;
 
 		if (regex.test(version)) {
