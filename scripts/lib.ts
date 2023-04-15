@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/rest";
+import { execSync as exec } from "child_process";
 
 export const owner = "meadowsys";
 export const repo = "wiwipaccer";
@@ -29,12 +30,17 @@ export async function get_new_tag_name(
 	gh: Octokit,
 	owner: string,
 	repo: string,
-	version: string
+	version: string // no v prefix
 ) {
 	let is_release = get_env("release").get_optional() === "true";
 	if (!is_release) {
-		if (version.endsWith("-dev")) return ["", `v${version}`] as const; // don't append infinitely
-		else return ["", `v${version}-dev`] as const;
+		let date = exec("date +%Y%m%d%S").toString().trim();
+		let regex = /-dev\d{10}$/;
+
+		if (regex.test(version)) {
+			return ["", `v${version.replace(regex, `-dev${date}`)}`] as const;
+		}
+		return ["", `v${version}-dev${date}`] as const;
 	}
 
 	let releases = await gh.rest.repos.listReleases({

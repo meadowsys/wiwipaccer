@@ -67,12 +67,14 @@ pub async fn get_recent_projects() -> Vec<(String, String)> {
 
 #[tauri::command]
 pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
-	const ABOUT_WINDOW_LABEL: &str = "about";
-	if let Some(window) = app.get_window(ABOUT_WINDOW_LABEL) {
+	lazy_static::lazy_static! {
+		static ref ABOUT_WINDOW_LABEL: String = format!("about-{}", hex::encode(super::ACTUAL_APP_VERSION));
+	}
+	if let Some(window) = app.get_window(&ABOUT_WINDOW_LABEL) {
 		window.set_focus()
 			.expect("couldn't focus the window");
 	} else {
-		let _window = get_window_builder(&app, ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
+		let _window = get_window_builder(&app, &ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
 			.transparent(false)
 			.inner_size(550., 350.)
 			.resizable(false)

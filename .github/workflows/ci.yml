@@ -347,9 +347,9 @@ jobs:
         mkdir .cargo
         cp .github/cargo-config.toml .cargo/config.toml
 
-        # echo updating tauri app version...
-        # node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
-        echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
+        echo updating tauri app version...
+        node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+        # echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 

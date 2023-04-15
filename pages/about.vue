@@ -22,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
-	import { app } from "@tauri-apps/api";
-	let version = await app.getVersion();
+	import { appWindow } from "@tauri-apps/api/window";
+	let version = appWindow.label.replace(/^about-(.*)$/, "$1");
+	version = await invoke_decode_hex_string(version);
+
 </script>

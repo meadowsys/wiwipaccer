@@ -17,9 +17,14 @@ export const tag_name = (async () => {
 
 	let [latest, tag_name] = await get_new_tag_name(gh, owner, repo, version);
 
-	// substring is to get rid of the prefix "v"
-	tauri_manifest_obj.package.version = tag_name.substring(1);
-	write_file(tauri_manifest_path, JSON.stringify(tauri_manifest_obj, null, "\t"));
+	if (process.platform !== "win32") {
+		// substring is to get rid of the prefix "v"
+		tauri_manifest_obj.package.version = tag_name.substring(1);
+		write_file(tauri_manifest_path, JSON.stringify(tauri_manifest_obj, null, "\t"));
+	}
+
+	let version_file_path = resolve_path("./.github/version");
+	write_file(version_file_path, tag_name);
 
 	return { latest, tag_name };
 })();

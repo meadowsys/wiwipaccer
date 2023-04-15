@@ -26,6 +26,9 @@ const APPDATA_ROOTDIR: &str = ".wiwipaccer";
 const DATASTORE_PATH: &str = "data";
 const WELCOME_WINDOW_NAME: &str = "welcome_window";
 
+// WINDOWS WIX DOESN'T SUPPORT PROPER SEMVER AAAAAAAAAAAAAAAAAAA
+const ACTUAL_APP_VERSION: &str = include_str!("../../.github/version");
+
 lazy_static::lazy_static! {
 	static ref DATASTORE: RwLock<Option<Datastore>> = RwLock::new(None);
 }
