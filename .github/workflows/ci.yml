@@ -73,6 +73,12 @@ jobs:
 
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+
+        echo enabling updater if supported...
+        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+
+        echo putting nice platform name...
+        echo -n macos-${{ matrix.target.name }} > src-tauri/meta/updater-nice-platform-name
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
@@ -169,6 +175,12 @@ jobs:
 
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+
+        echo enabling updater if supported...
+        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+
+        echo putting nice platform name...
+        echo -n macos-universal > src-tauri/meta/updater-nice-platform-name
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
@@ -270,6 +282,12 @@ jobs:
 
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+
+        echo enabling updater if supported...
+        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+
+        echo putting nice platform name...
+        echo -n linux > src-tauri/meta/updater-nice-platform-name
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
@@ -354,6 +372,12 @@ jobs:
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
         # echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
+
+        echo enabling updater if supported...
+        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+
+        echo putting nice platform name...
+        echo -n windows > src-tauri/meta/updater-nice-platform-name
       env:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 

@@ -29,6 +29,9 @@ const WELCOME_WINDOW_NAME: &str = "welcome_window";
 // WINDOWS WIX DOESN'T SUPPORT PROPER SEMVER AAAAAAAAAAAAAAAAAAA
 const ACTUAL_APP_VERSION: &str = include_str!("../meta/version");
 
+const UPDATER_ENABLED: bool = include!("../meta/updater-enabled");
+const UPDATER_NICE_PLATFORM_NAME: &str = include_str!("../meta/updater-nice-platform-name");
+
 lazy_static::lazy_static! {
 	static ref DATASTORE: RwLock<Option<Datastore>> = RwLock::new(None);
 }
