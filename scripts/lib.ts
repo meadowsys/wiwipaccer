@@ -34,7 +34,7 @@ export async function get_new_tag_name(
 ) {
 	let is_release = get_env("release").get_optional() === "true";
 	if (!is_release) {
-		let date = get_env("DATE").get_optional() || "";
+		let date = get_env("DATE").get_optional() || "0".repeat(14);
 		let regex = /-dev\d{14}$/;
 
 		if (regex.test(version)) {
