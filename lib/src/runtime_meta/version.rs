@@ -242,7 +242,19 @@ impl VersionRuntimeMeta {
 			}
 		};
 
-		let supported = versions.iter().any(|v| v.contains(&mc_version));
+		let supported = {
+			let iter = versions.iter();
+			let mut res = false;
+
+			// iter through all of them because then we can find invalid
+			for v in iter {
+				if v.contains(&mc_version)? {
+					res = true;
+				}
+			}
+			res
+		};
+
 		if !supported {
 			return Ok(Self::Unavailable(UnavailableVersionRuntimeMeta(InnerUnavailable {
 				path: path.into(),

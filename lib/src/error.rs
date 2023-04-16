@@ -43,6 +43,10 @@ pub enum Error {
 	ManifestIsNotFile {
 		path: String
 	},
+	#[error("Minecraft version is unknown: {version}")]
+	MCVersionUnknown {
+		version: String
+	},
 	#[error("There are multiple available versions for this: {available_versions_shortnames_formatted}. Please check that they don't overlap in which versions they provide for")]
 	MultipleAvailableVersions {
 		available_versions_shortnames_formatted: String
@@ -94,6 +98,7 @@ impl Error {
 			InvalidBlockID { .. } => { MessageSeverity::Fatal }
 			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
+			MCVersionUnknown { .. } => { MessageSeverity::Error }
 			MultipleAvailableVersions { .. } => { MessageSeverity::Error }
 			OptionNotFound { .. } => { MessageSeverity::Error }
 			OptionUnavailable { .. } => { MessageSeverity::Warning }
