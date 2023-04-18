@@ -5560,6 +5560,7 @@ dependencies = [
  "camino",
  "hex",
  "lazy_static",
+ "lib",
  "mimalloc",
  "serde",
  "serde_json",
