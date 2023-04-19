@@ -98,14 +98,6 @@ impl VersionRuntimeMeta {
 
 				let assets_contents = crate::util::walk_dir(&assets_path).await?;
 				for file in assets_contents {
-					if !file.ends_with(".png") && !file.to_ascii_lowercase().ends_with(".png") {
-						messages.push(Message {
-							message: format!("File does not appear to be a PNG image (file extension not `.png`): {file}"),
-							severity: MessageSeverity::Info
-						});
-						continue
-					}
-
 					let mut relative_path = &file[path.len()..];
 					if relative_path.starts_with('/') {
 						// while next_char is being called, this will be one more than the index of
