@@ -13,7 +13,7 @@ pub enum Version {
 	}
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum OptionType {
 	/// Option should be copy pasted into the output, with no modifications
 	CopyPaste,

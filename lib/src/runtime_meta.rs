@@ -9,13 +9,13 @@ const META_NAME: &str = "manifest.wpm";
 const ASSETS_DIR_NAME: &str = "assets";
 const TEXTURES_DIR: &str = "textures";
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Message {
 	pub message: String,
 	pub severity: MessageSeverity
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum MessageSeverity {
 	Info,
 	Warning,

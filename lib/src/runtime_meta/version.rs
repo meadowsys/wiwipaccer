@@ -16,7 +16,19 @@ use super::{ ASSETS_DIR_NAME, META_NAME };
 use tokio::fs;
 
 #[derive(Debug)]
-pub enum VersionRuntimeMeta {
+pub struct VersionWithoutMCVersion(InnerVersionWithoutMCVersion);
+
+#[derive(Debug)]
+pub struct InnerVersionWithoutMCVersion {
+	pub path: String,
+	pub shortpath: String,
+	pub versions: Vec<PackVersionSpecifier>,
+	pub processing_option: OptionType,
+	pub messages: Vec<Message>
+}
+
+#[derive(Debug)]
+pub enum VersionWithMCVersion {
 	Available(AvailableVersionRuntimeMeta),
 	Unavailable(UnavailableVersionRuntimeMeta)
 }
@@ -30,6 +42,7 @@ pub struct UnavailableVersionRuntimeMeta(InnerUnavailable);
 pub struct InnerAvailable {
 	pub path: String,
 	pub shortpath: String,
+	pub selected_version: PackVersionSpecifierRuntimeMeta,
 	pub versions: Vec<PackVersionSpecifier>,
 	pub processing_option: OptionType,
 	pub actions: Vec<Action>,
@@ -40,16 +53,19 @@ pub struct InnerAvailable {
 pub struct InnerUnavailable {
 	pub path: String,
 	pub shortpath: String,
+	pub selected_version: PackVersionSpecifierRuntimeMeta,
 	pub versions: Vec<PackVersionSpecifier>,
+	pub processing_option: OptionType,
 	pub messages: Vec<Message>
 }
 
+crate::impl_deref!(VersionWithoutMCVersion, target InnerVersionWithoutMCVersion);
 crate::impl_deref!(AvailableVersionRuntimeMeta, target InnerAvailable);
 crate::impl_deref!(UnavailableVersionRuntimeMeta, target InnerUnavailable);
 
-impl VersionRuntimeMeta {
-	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
-		let mut messages = vec![];
+impl VersionWithoutMCVersion {
+	pub async fn new(path: &str) -> Result<Self> {
+		let messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
 		let manifest_file_meta = fs::metadata(&manifest_path).await
@@ -92,7 +108,26 @@ impl VersionRuntimeMeta {
 			.unwrap()
 			.into();
 
-		let actions = match &processing_option {
+		Ok(Self(InnerVersionWithoutMCVersion {
+			path: path.into(),
+			shortpath,
+			versions,
+			processing_option,
+			messages
+		}))
+	}
+}
+
+impl VersionWithMCVersion {
+	pub async fn from(
+		version_without_mc_version: &VersionWithoutMCVersion,
+		mc_version: PackVersionSpecifierRuntimeMeta
+	) -> Result<Self> {
+		let mut messages = version_without_mc_version.messages.clone();
+		let path = &version_without_mc_version.path;
+		let assets_path = format!("{path}/{ASSETS_DIR_NAME}");
+
+		let actions = match &version_without_mc_version.processing_option {
 			OptionType::CopyPaste => {
 				let mut actions = vec![];
 
@@ -235,7 +270,7 @@ impl VersionRuntimeMeta {
 		};
 
 		let supported = {
-			let iter = versions.iter();
+			let iter = version_without_mc_version.versions.iter();
 			let mut res = false;
 
 			// iter through all of them because then we can find invalid
@@ -250,17 +285,20 @@ impl VersionRuntimeMeta {
 		if !supported {
 			return Ok(Self::Unavailable(UnavailableVersionRuntimeMeta(InnerUnavailable {
 				path: path.into(),
-				shortpath,
-				versions,
+				shortpath: version_without_mc_version.shortpath.clone(),
+				selected_version: mc_version,
+				versions: version_without_mc_version.versions.clone(),
+				processing_option: version_without_mc_version.processing_option.clone(),
 				messages
 			})))
 		}
 
 		Ok(Self::Available(AvailableVersionRuntimeMeta(InnerAvailable {
 			path: path.into(),
-			shortpath,
-			versions,
-			processing_option,
+			shortpath: version_without_mc_version.shortpath.clone(),
+			selected_version: mc_version,
+			versions: version_without_mc_version.versions.clone(),
+			processing_option: version_without_mc_version.processing_option.clone(),
 			actions,
 			messages
 		})))

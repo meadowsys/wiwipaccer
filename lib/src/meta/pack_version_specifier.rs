@@ -21,7 +21,7 @@ pub enum PackFormat {
 	None
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum PackVersionSpecifier {
 	PackVersion(u8),
 	MCVersion(String),
