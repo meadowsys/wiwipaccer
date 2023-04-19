@@ -3,36 +3,36 @@ use crate::error::{ Error, Result };
 use crate::meta::option::TextureOption;
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::{ Message, MessageSeverity };
-use crate::runtime_meta::version::{ self, VersionWithoutMCVersion, VersionWithMCVersion, AvailableVersionRuntimeMeta, UnavailableVersionRuntimeMeta };
+use crate::runtime_meta::version;
 use crate::util::RON;
 use std::collections::HashMap;
 use super::META_NAME;
 use tokio::fs;
 
 #[derive(Debug)]
-pub struct OptionWithoutMCVersion(InnerOptionWithoutMCVersion);
+pub struct WithoutMCVersion(InnerWithoutMCVersion);
 
 #[derive(Debug)]
-pub struct InnerOptionWithoutMCVersion {
+pub struct InnerWithoutMCVersion {
 	pub path: String,
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
 	pub default: bool,
-	pub versions: HashMap<String, VersionWithoutMCVersion, RandomState>,
+	pub versions: HashMap<String, version::WithoutMCVersion, RandomState>,
 	pub messages: Vec<Message>
 }
 
 #[derive(Debug)]
-pub enum OptionWithMCVersion {
-	Available(AvailableOptionRuntimeMeta),
-	Unavailable(UnavailableOptionRuntimeMeta)
+pub enum WithMCVersion {
+	Available(Available),
+	Unavailable(Unavailable)
 }
 
 #[derive(Debug)]
-pub struct AvailableOptionRuntimeMeta(InnerAvailable);
+pub struct Available(InnerAvailable);
 #[derive(Debug)]
-pub struct UnavailableOptionRuntimeMeta(InnerUnavailable);
+pub struct Unavailable(InnerUnavailable);
 
 
 #[derive(Debug)]
@@ -42,8 +42,8 @@ pub struct InnerAvailable {
 	pub name: String,
 	pub description: String,
 	pub default: bool,
-	pub available_version: AvailableVersionRuntimeMeta,
-	pub unavailable_versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
+	pub available_version: version::Available,
+	pub unavailable_versions: HashMap<String, version::Unavailable, RandomState>,
 	pub messages: Vec<Message>
 }
 
@@ -54,15 +54,15 @@ pub struct InnerUnavailable {
 	pub name: String,
 	pub description: String,
 	pub default: bool,
-	pub versions: HashMap<String, UnavailableVersionRuntimeMeta, RandomState>,
+	pub versions: HashMap<String, version::Unavailable, RandomState>,
 	pub messages: Vec<Message>
 }
 
-crate::impl_deref!(OptionWithoutMCVersion, target InnerOptionWithoutMCVersion);
-crate::impl_deref!(AvailableOptionRuntimeMeta, target InnerAvailable);
-crate::impl_deref!(UnavailableOptionRuntimeMeta, target InnerUnavailable);
+crate::impl_deref!(WithoutMCVersion, target InnerWithoutMCVersion);
+crate::impl_deref!(Available, target InnerAvailable);
+crate::impl_deref!(Unavailable, target InnerUnavailable);
 
-impl OptionWithoutMCVersion {
+impl WithoutMCVersion {
 	pub async fn new(path: &str) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
@@ -97,7 +97,7 @@ impl OptionWithoutMCVersion {
 			}
 		};
 
-		let mut versions = HashMap::<String, VersionWithoutMCVersion, RandomState>::new();
+		let mut versions = HashMap::<String, version::WithoutMCVersion, RandomState>::new();
 
 		let mut dir_contents = fs::read_dir(&path).await
 			.map_err(|e| Error::IOError { source: e })?;
@@ -118,7 +118,7 @@ impl OptionWithoutMCVersion {
 				continue
 			}
 
-			match VersionWithoutMCVersion::new(dir_entry_path).await {
+			match version::WithoutMCVersion::new(dir_entry_path).await {
 				Ok(version) => { versions.insert(version.shortpath.clone(), version); }
 				Err(e) => { messages.push(e.to_message()) }
 			}
@@ -138,7 +138,7 @@ impl OptionWithoutMCVersion {
 			}.to_message());
 		}
 
-		Ok(Self(InnerOptionWithoutMCVersion {
+		Ok(Self(InnerWithoutMCVersion {
 			path: path.into(),
 			shortpath,
 			name,
@@ -150,59 +150,59 @@ impl OptionWithoutMCVersion {
 	}
 }
 
-impl OptionWithMCVersion {
+impl WithMCVersion {
 	pub async fn from(
-		option_without_mc_version: &OptionWithoutMCVersion,
+		option_without_mc_version: &WithoutMCVersion,
 		mc_version: PackVersionSpecifierRuntimeMeta
 	) -> Result<Self> {
 		if option_without_mc_version.versions.is_empty() {
-			return Ok(OptionWithMCVersion::Unavailable(UnavailableOptionRuntimeMeta(InnerUnavailable {
+			return Ok(WithMCVersion::Unavailable(Unavailable(InnerUnavailable {
 				path: option_without_mc_version.path.clone(),
 				shortpath: option_without_mc_version.shortpath.clone(),
 				name: option_without_mc_version.name.clone(),
 				description: option_without_mc_version.description.clone(),
 				default: option_without_mc_version.default,
-				versions:  HashMap::<String, UnavailableVersionRuntimeMeta, RandomState>::new(),
+				versions: HashMapExt::new(),
 				messages: option_without_mc_version.messages.clone()
 			})))
 		}
 
 		let mut messages = option_without_mc_version.messages.clone();
-		let mut available_versions = HashMap::<String, AvailableVersionRuntimeMeta, RandomState>::new();
-		let mut unavailable_versions = HashMap::<String, UnavailableVersionRuntimeMeta, RandomState>::new();
+		let mut available = HashMap::<String, version::Available, RandomState>::new();
+		let mut unavailable = HashMap::<String, version::Unavailable, RandomState>::new();
 
 		for (shortpath, version) in option_without_mc_version.versions.iter() {
-			use VersionWithMCVersion::*;
-			match VersionWithMCVersion::from(version, mc_version.clone()).await {
+			use version::WithMCVersion::*;
+			match version::WithMCVersion::from(version, mc_version.clone()).await {
 				Ok(version) => match version {
-					Available(version) => { available_versions.insert(shortpath.clone(), version); }
-					Unavailable(version) => { unavailable_versions.insert(shortpath.clone(), version); }
+					Available(version) => { available.insert(shortpath.clone(), version); }
+					Unavailable(version) => { unavailable.insert(shortpath.clone(), version); }
 				}
 				Err(e) => { messages.push(e.to_message()) }
 			}
 		}
 
-		if available_versions.is_empty() {
+		if available.is_empty() {
 			messages.push(Error::UnavailableInfo {
 				thing: format!("Option {}", option_without_mc_version.shortpath),
 				reason: "no compatible versions are available".into()
 			}.to_message());
 
-			return Ok(OptionWithMCVersion::Unavailable(UnavailableOptionRuntimeMeta(InnerUnavailable {
+			return Ok(Self::Unavailable(Unavailable(InnerUnavailable {
 				path: option_without_mc_version.path.clone(),
 				shortpath: option_without_mc_version.shortpath.clone(),
 				name: option_without_mc_version.name.clone(),
 				description: option_without_mc_version.description.clone(),
 				default: option_without_mc_version.default,
-				versions: unavailable_versions,
+				versions: unavailable,
 				messages
 			})))
 		}
 
-		if available_versions.len() > 1 {
+		if available.len() > 1 {
 			return Err(Error::MultipleAvailableVersions {
 				available_versions_shortnames_formatted: {
-					available_versions.iter()
+					available.iter()
 						.map::<&str, _>(|v| &v.1.shortpath)
 						.collect::<Vec<_>>()
 						.join(", ")
@@ -210,14 +210,14 @@ impl OptionWithMCVersion {
 			})
 		}
 
-		Ok(OptionWithMCVersion::Available(AvailableOptionRuntimeMeta(InnerAvailable {
+		Ok(Self::Available(Available(InnerAvailable {
 			path: option_without_mc_version.path.clone(),
 			shortpath: option_without_mc_version.shortpath.clone(),
 			name: option_without_mc_version.name.clone(),
 			description: option_without_mc_version.description.clone(),
 			default: option_without_mc_version.default,
-			available_version: available_versions.into_iter().next().unwrap().1,
-			unavailable_versions,
+			available_version: available.into_iter().next().unwrap().1,
+			unavailable_versions: unavailable,
 			messages
 		})))
 	}

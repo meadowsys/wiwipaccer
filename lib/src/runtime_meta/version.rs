@@ -16,10 +16,10 @@ use super::{ ASSETS_DIR_NAME, META_NAME };
 use tokio::fs;
 
 #[derive(Debug)]
-pub struct VersionWithoutMCVersion(InnerVersionWithoutMCVersion);
+pub struct WithoutMCVersion(InnerWithoutMCVersion);
 
 #[derive(Debug)]
-pub struct InnerVersionWithoutMCVersion {
+pub struct InnerWithoutMCVersion {
 	pub path: String,
 	pub shortpath: String,
 	pub versions: Vec<PackVersionSpecifier>,
@@ -28,15 +28,15 @@ pub struct InnerVersionWithoutMCVersion {
 }
 
 #[derive(Debug)]
-pub enum VersionWithMCVersion {
-	Available(AvailableVersionRuntimeMeta),
-	Unavailable(UnavailableVersionRuntimeMeta)
+pub enum WithMCVersion {
+	Available(Available),
+	Unavailable(Unavailable)
 }
 
 #[derive(Debug)]
-pub struct AvailableVersionRuntimeMeta(InnerAvailable);
+pub struct Available(InnerAvailable);
 #[derive(Debug)]
-pub struct UnavailableVersionRuntimeMeta(InnerUnavailable);
+pub struct Unavailable(InnerUnavailable);
 
 #[derive(Debug)]
 pub struct InnerAvailable {
@@ -59,11 +59,11 @@ pub struct InnerUnavailable {
 	pub messages: Vec<Message>
 }
 
-crate::impl_deref!(VersionWithoutMCVersion, target InnerVersionWithoutMCVersion);
-crate::impl_deref!(AvailableVersionRuntimeMeta, target InnerAvailable);
-crate::impl_deref!(UnavailableVersionRuntimeMeta, target InnerUnavailable);
+crate::impl_deref!(WithoutMCVersion, target InnerWithoutMCVersion);
+crate::impl_deref!(Available, target InnerAvailable);
+crate::impl_deref!(Unavailable, target InnerUnavailable);
 
-impl VersionWithoutMCVersion {
+impl WithoutMCVersion {
 	pub async fn new(path: &str) -> Result<Self> {
 		let messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
@@ -108,7 +108,7 @@ impl VersionWithoutMCVersion {
 			.unwrap()
 			.into();
 
-		Ok(Self(InnerVersionWithoutMCVersion {
+		Ok(Self(InnerWithoutMCVersion {
 			path: path.into(),
 			shortpath,
 			versions,
@@ -118,9 +118,9 @@ impl VersionWithoutMCVersion {
 	}
 }
 
-impl VersionWithMCVersion {
+impl WithMCVersion {
 	pub async fn from(
-		version_without_mc_version: &VersionWithoutMCVersion,
+		version_without_mc_version: &WithoutMCVersion,
 		mc_version: PackVersionSpecifierRuntimeMeta
 	) -> Result<Self> {
 		let mut messages = version_without_mc_version.messages.clone();
@@ -283,7 +283,7 @@ impl VersionWithMCVersion {
 		};
 
 		if !supported {
-			return Ok(Self::Unavailable(UnavailableVersionRuntimeMeta(InnerUnavailable {
+			return Ok(Self::Unavailable(Unavailable(InnerUnavailable {
 				path: path.into(),
 				shortpath: version_without_mc_version.shortpath.clone(),
 				selected_version: mc_version,
@@ -293,7 +293,7 @@ impl VersionWithMCVersion {
 			})))
 		}
 
-		Ok(Self::Available(AvailableVersionRuntimeMeta(InnerAvailable {
+		Ok(Self::Available(Available(InnerAvailable {
 			path: path.into(),
 			shortpath: version_without_mc_version.shortpath.clone(),
 			selected_version: mc_version,
