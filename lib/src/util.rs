@@ -30,6 +30,7 @@ pub async fn walk_dir(path: &str) -> Result<Vec<String>> {
 	Ok(paths)
 }
 
+#[inline]
 pub fn hash(thing: &str) -> String {
 	let hex = blake3::hash(thing.as_bytes()).to_hex();
 
