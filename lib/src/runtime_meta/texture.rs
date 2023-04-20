@@ -3,7 +3,7 @@ use crate::error::{ Error, Result };
 use crate::meta::texture::Texture;
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::option;
-use crate::runtime_meta::{ Message, MessageSeverity };
+use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
 use crate::util::RON;
 use std::collections::HashMap;
 use super::META_NAME;
@@ -64,21 +64,7 @@ crate::impl_deref!(Unavailable, target InnerUnavailable);
 impl WithoutMCVersion {
 	pub async fn new(path: &str) -> Result<Self> {
 		let mut messages = vec![];
-		let manifest_path = format!("{path}/{META_NAME}");
-
-		let manifest_file_meta = fs::metadata(&manifest_path).await
-			.map_err(|e| Error::ManifestDoesNotExist { path: manifest_path.clone(), source: e })?;
-		if !manifest_file_meta.is_file() {
-			return Err(Error::ManifestIsNotFile { path: manifest_path })
-		}
-
-		let file = fs::read_to_string(&manifest_path).await
-			.map_err(|e| Error::IOError { source: e })?;
-		let texture = RON.from_str::<Texture>(&file)
-			.map_err(|e| Error::ParseErrorRonSpannedError {
-				path: manifest_path,
-				source: e
-			})?;
+		let texture = read_meta_file::<Texture>(path).await?;
 
 		struct Destructure {
 			name: String,

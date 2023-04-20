@@ -3,7 +3,7 @@ use crate::error::{ Error, Result };
 use crate::meta::datasource::{ Datasource as DatasourceMeta, Version };
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::texture;
-use crate::runtime_meta::{ Message, MessageSeverity };
+use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
 use crate::runtime_meta::action::Action;
 use crate::util::RON;
 use std::collections::HashMap;
@@ -58,21 +58,7 @@ pub enum BuildType {
 impl Datasource {
 	pub async fn new(path: &str) -> Result<Self> {
 		let mut messages = vec![];
-		let manifest_path = format!("{path}/{META_NAME}");
-
-		let manifest_file_meta = fs::metadata(&manifest_path).await
-			.map_err(|e| Error::ManifestDoesNotExist { path: manifest_path.clone(), source: e })?;
-		if !manifest_file_meta.is_file() {
-			return Err(Error::ManifestIsNotFile { path: manifest_path })
-		}
-
-		let file = fs::read_to_string(&manifest_path).await
-			.map_err(|e| Error::IOError { source: e })?;
-		let datasource = RON.from_str::<DatasourceMeta>(&file)
-			.map_err(|e| Error::ParseErrorRonSpannedError {
-				path: manifest_path,
-				source: e
-			})?;
+		let datasource = read_meta_file::<DatasourceMeta>(path).await?;
 
 		struct Destructure {
 			name: String,

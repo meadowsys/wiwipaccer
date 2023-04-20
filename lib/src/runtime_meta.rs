@@ -5,6 +5,11 @@ pub mod pack_version_specifier;
 pub mod texture;
 pub mod version;
 
+use crate::error::{ Error, Result };
+use crate::util::RON;
+use serde::de::DeserializeOwned;
+use tokio::fs;
+
 const META_NAME: &str = "manifest.wpm";
 const ASSETS_DIR_NAME: &str = "assets";
 const TEXTURES_DIR: &str = "textures";
@@ -33,4 +38,24 @@ macro_rules! impl_deref {
 			}
 		}
 	}
+}
+
+pub async fn read_meta_file<T: DeserializeOwned>(dir: &str) -> Result<T> {
+	let manifest_path = format!("{dir}/{META_NAME}");
+
+	let manifest_file_meta = fs::metadata(&manifest_path).await
+		.map_err(|e| Error::ManifestDoesNotExist { path: manifest_path.clone(), source: e })?;
+	if !manifest_file_meta.is_file() {
+		return Err(Error::ManifestIsNotFile { path: manifest_path })
+	}
+
+	let file = fs::read_to_string(&manifest_path).await
+		.map_err(|e| Error::IOError { source: e })?;
+	let parsed = RON.from_str::<T>(&file)
+		.map_err(|e| Error::ParseErrorRonSpannedError {
+			path: manifest_path,
+			source: e
+		})?;
+
+	Ok(parsed)
 }

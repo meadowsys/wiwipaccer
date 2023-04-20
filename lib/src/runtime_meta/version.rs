@@ -5,7 +5,7 @@ use crate::mc_structs::model::Model;
 use crate::meta::pack_version_specifier::PackVersionSpecifier;
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
-use crate::runtime_meta::{ Message, MessageSeverity };
+use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::util::hash;
 use crate::util::RON;
@@ -66,21 +66,7 @@ crate::impl_deref!(Unavailable, target InnerUnavailable);
 impl WithoutMCVersion {
 	pub async fn new(path: &str) -> Result<Self> {
 		let messages = vec![];
-		let manifest_path = format!("{path}/{META_NAME}");
-
-		let manifest_file_meta = fs::metadata(&manifest_path).await
-			.map_err(|e| Error::ManifestDoesNotExist { path: manifest_path.clone(), source: e })?;
-		if !manifest_file_meta.is_file() {
-			return Err(Error::ManifestIsNotFile { path: manifest_path })
-		}
-
-		let file = fs::read_to_string(&manifest_path).await
-			.map_err(|e| Error::IOError { source: e })?;
-		let version = RON.from_str::<Version>(&file)
-			.map_err(|e| Error::ParseErrorRonSpannedError {
-				path: manifest_path,
-				source: e
-			})?;
+		let version = read_meta_file::<Version>(path).await?;
 
 		struct Destructure {
 			versions: Vec<PackVersionSpecifier>,
