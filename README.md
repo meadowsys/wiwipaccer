@@ -1,12 +1,12 @@
 <!-- markdownlint-disable MD024 -->
 # wiwipaccer, aka, Pack Builder&trade; <!-- omit from toc -->
 
-The Pack Builder&trade; is a desktop app that provides the ability to create a customised resource pack, offering extremely fine grained options, like the ability to choose what to include on as fine as a per-texture level. It does this by providing a new format for resource pack "source code", which seperates out textures seperately. It also allows you to maintain different variations of the same texture, for different minecraft versions, and allowing you to build a resource pack for any pack version / minecraft version that supports resource packs, provided the "source code" provides the necessary textures.
+The Pack Builder&trade; is a desktop app that provides the ability to create a customised resource pack, offering extremely fine grained options, like the ability to choose what to include on as fine as a per-texture level. It does this by providing a new format for resource pack "source code", which seperates out textures into their own directories. It also allows pack developers to maintain different variations of the same texture, as well as for different minecraft versions, which allows one to build a resource pack for any pack version / minecraft version that supports resource packs, provided the "source code" provides the necessary textures for the right versions.
 
 ## Table of Contents <!-- omit from toc -->
 
-- [Feature list (nonexhaustive, pack authors)](#feature-list-nonexhaustive-pack-authors)
-- [Feature list (nonexhaustive, pack consumers)](#feature-list-nonexhaustive-pack-consumers)
+- [Feature list (nonexhaustive, pack developers)](#feature-list-nonexhaustive-pack-developers)
+- [Feature list (nonexhaustive, pack users)](#feature-list-nonexhaustive-pack-users)
 - [Documentation](#documentation)
 - [Building from source](#building-from-source)
   - [Dependencies](#dependencies)
@@ -21,7 +21,7 @@ The Pack Builder&trade; is a desktop app that provides the ability to create a c
     - [Linux](#linux-1)
     - [Windows](#windows-1)
 
-## Feature list (nonexhaustive, pack authors)
+## Feature list (nonexhaustive, pack developers)
 
 - a new way to organise pack textures in a "source code" format (datasource)
 - ability to provide different (configurable) options for textures
@@ -29,15 +29,15 @@ The Pack Builder&trade; is a desktop app that provides the ability to create a c
 - easier, more straightforward, less tedious methods to make textures in common patterns (random textures, etc)
 <!-- - in dev mode: Will rebuild the pack on save, and with an installed mod, will auto reload the textures ingame after build success -->
 
-## Feature list (nonexhaustive, pack consumers)
+## Feature list (nonexhaustive, pack users)
 
-- ability to choose which textures to include, for custom builds
-- ability to choose textures from and make a custom pack with textures from multiple different pack projects
+- ability to choose which textures to include and which variant, creating custom builds
+- ability to choose textures from multiple different pack projects
 - ability to export and share presets with friends (coming soon)
 
 ## Documentation
 
-Documentation will be available in-app once written (Coming Soon™).
+Documentation will be available in-app once written (Coming Soon&trade;).
 
 ## Building from source
 
