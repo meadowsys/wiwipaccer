@@ -47,6 +47,10 @@ pub enum Error {
 	MCVersionUnknown {
 		version: String
 	},
+	/// this is a bug because the frontend should have made the user choose one
+	/// before letting the user do anything else
+	#[error("Minecraft version is not specified, please specify it first (this is a bug, please report it)")]
+	MCVersionUnspecified,
 	#[error("There are multiple available versions for this: {available_versions_shortnames_formatted}. Please check that they don't overlap in which versions they provide for")]
 	MultipleAvailableVersions {
 		available_versions_shortnames_formatted: String
@@ -99,6 +103,7 @@ impl Error {
 			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
 			MCVersionUnknown { .. } => { MessageSeverity::Error }
+			MCVersionUnspecified => { MessageSeverity::Fatal }
 			MultipleAvailableVersions { .. } => { MessageSeverity::Error }
 			OptionNotFound { .. } => { MessageSeverity::Error }
 			OptionUnavailable { .. } => { MessageSeverity::Warning }

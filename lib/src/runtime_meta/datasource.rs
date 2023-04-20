@@ -1,8 +1,8 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
-use crate::meta::datasource::{ Datasource, Version };
+use crate::meta::datasource::{ Datasource as DatasourceMeta, Version };
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
-use crate::runtime_meta::texture::{ TextureRuntimeMeta, AvailableTextureRuntimeMeta, UnavailableTextureRuntimeMeta };
+use crate::runtime_meta::texture;
 use crate::runtime_meta::{ Message, MessageSeverity };
 use crate::runtime_meta::action::Action;
 use crate::util::RON;
@@ -14,21 +14,40 @@ use tokio::fs;
 use tokio::process::Command;
 
 #[derive(Debug)]
-pub struct DatasourceRuntimeMeta(Inner);
+pub enum Datasource {
+	WithoutMCVersion(WithoutMCVersion),
+	WithMCVersion {
+		without_mc_version: WithoutMCVersion,
+		with_mc_version: WithMCVersion
+	}
+}
 
 #[derive(Debug)]
-pub struct Inner {
+pub struct WithoutMCVersion(InnerWithoutMCVersion);
+
+#[derive(Debug)]
+pub struct InnerWithoutMCVersion {
 	pub path: String,
 	pub name: String,
 	pub description: String,
 	pub version: String,
-	pub mc_version: PackVersionSpecifierRuntimeMeta,
-	pub available_textures: HashMap<String, AvailableTextureRuntimeMeta, RandomState>,
-	pub unavailable_textures: HashMap<String, UnavailableTextureRuntimeMeta, RandomState>,
+	pub textures: HashMap<String, texture::WithoutMCVersion, RandomState>,
 	pub messages: Vec<Message>
 }
 
-crate::impl_deref!(DatasourceRuntimeMeta, target Inner);
+#[derive(Debug)]
+pub struct WithMCVersion(InnerWithMCVersion);
+
+#[derive(Debug)]
+pub struct InnerWithMCVersion {
+	pub mc_version: PackVersionSpecifierRuntimeMeta,
+	pub available_textures: HashMap<String, texture::Available, RandomState>,
+	pub unavailable_textures: HashMap<String, texture::Unavailable, RandomState>,
+	pub messages: Vec<Message>
+}
+
+crate::impl_deref!(WithoutMCVersion, target InnerWithoutMCVersion);
+crate::impl_deref!(WithMCVersion, target InnerWithMCVersion);
 
 #[derive(Debug)]
 pub enum BuildType {
@@ -36,8 +55,8 @@ pub enum BuildType {
 	FromScratch
 }
 
-impl DatasourceRuntimeMeta {
-	pub async fn new(path: &str, mc_version: PackVersionSpecifierRuntimeMeta) -> Result<Self> {
+impl Datasource {
+	pub async fn new(path: &str) -> Result<Self> {
 		let mut messages = vec![];
 		let manifest_path = format!("{path}/{META_NAME}");
 
@@ -49,7 +68,7 @@ impl DatasourceRuntimeMeta {
 
 		let file = fs::read_to_string(&manifest_path).await
 			.map_err(|e| Error::IOError { source: e })?;
-		let datasource = RON.from_str::<Datasource>(&file)
+		let datasource = RON.from_str::<DatasourceMeta>(&file)
 			.map_err(|e| Error::ParseErrorRonSpannedError {
 				path: manifest_path,
 				source: e
@@ -62,7 +81,7 @@ impl DatasourceRuntimeMeta {
 		}
 
 		let Destructure { name, version, description } = match datasource {
-			Datasource::V1 { name, version, description } => {
+			DatasourceMeta::V1 { name, version, description } => {
 				Destructure {
 					name,
 					version: version.unwrap_or_else(|| Version::String("unknown".into())),
@@ -71,8 +90,9 @@ impl DatasourceRuntimeMeta {
 			}
 		};
 
-		let mut available_textures: HashMap<String, AvailableTextureRuntimeMeta, RandomState> = HashMapExt::new();
-		let mut unavailable_textures: HashMap<String, UnavailableTextureRuntimeMeta, RandomState> = HashMapExt::new();
+		// let mut available_textures: HashMap<String, texture::Available, RandomState> = HashMapExt::new();
+		// let mut unavailable_textures: HashMap<String, texture::Unavailable, RandomState> = HashMapExt::new();
+		let mut textures = HashMap::<String, texture::WithoutMCVersion, RandomState>::new();
 
 		let textures_dir = format!("{path}/{TEXTURES_DIR}");
 		let mut dir_contents = fs::read_dir(&textures_dir).await
@@ -95,18 +115,9 @@ impl DatasourceRuntimeMeta {
 				continue
 			}
 
-			match TextureRuntimeMeta::new(dir_entry_path, mc_version.clone()).await {
-				Ok(texture) => match texture {
-					TextureRuntimeMeta::Available(texture) => {
-						available_textures.insert(texture.shortpath.clone(), texture);
-					}
-					TextureRuntimeMeta::Unavailable(texture) => {
-						unavailable_textures.insert(texture.shortpath.clone(), texture);
-					}
-				}
-				Err(err) => {
-					messages.push(err.to_message());
-				}
+			match texture::WithoutMCVersion::new(dir_entry_path).await {
+				Ok(texture) => { textures.insert(texture.shortpath.clone(), texture); }
+				Err(e) => { messages.push(e.to_message()) }
 			}
 		}
 
@@ -124,16 +135,51 @@ impl DatasourceRuntimeMeta {
 			Version::String(v) => { v }
 		};
 
-		Ok(DatasourceRuntimeMeta(Inner {
+		Ok(Datasource::WithoutMCVersion(WithoutMCVersion(InnerWithoutMCVersion {
 			path: path.into(),
 			name,
 			description,
 			version,
-			mc_version,
-			available_textures,
-			unavailable_textures,
+			textures,
 			messages
-		}))
+		})))
+	}
+
+	pub async fn with_mc_version(self, mc_version: PackVersionSpecifierRuntimeMeta) -> Self {
+		let without_mc_version = match self {
+			Datasource::WithMCVersion { without_mc_version, .. } => { without_mc_version }
+			Datasource::WithoutMCVersion(without_mc_version) => { without_mc_version }
+		};
+
+		let mut messages = vec![];
+		let mut available = HashMap::<String, texture::Available, RandomState>::new();
+		let mut unavailable = HashMap::<String, texture::Unavailable, RandomState>::new();
+
+		for (shortpath, texture) in &without_mc_version.textures {
+			match texture::WithMCVersion::from(texture, mc_version.clone()).await {
+				Ok(texture) => match texture {
+					texture::WithMCVersion::Available(texture) => {
+						available.insert(shortpath.clone(), texture);
+					}
+					texture::WithMCVersion::Unavailable(texture) => {
+						unavailable.insert(shortpath.clone(), texture);
+					}
+				}
+				Err(err) => {
+					messages.push(err.to_message());
+				}
+			}
+		}
+
+		Self::WithMCVersion {
+			without_mc_version,
+			with_mc_version: WithMCVersion(InnerWithMCVersion {
+				mc_version,
+				available_textures: available,
+				unavailable_textures: unavailable,
+				messages
+			})
+		}
 	}
 
 	pub async fn build(
@@ -142,19 +188,27 @@ impl DatasourceRuntimeMeta {
 		choices: impl Iterator<Item = (&String, &String)>,
 		buildtype: BuildType,
 	) -> Result<()> {
+		let versioned = match self {
+			Datasource::WithMCVersion { with_mc_version, .. } => { Ok(with_mc_version) }
+			Datasource::WithoutMCVersion(_) => { Err(Error::MCVersionUnspecified) }
+		}?;
+
 		let mut messages = vec![];
 		let include_default = matches!(buildtype, BuildType::CustomiseDefault);
 
 		fs::create_dir_all(dir).await
-			.map_err(|e| Error::ActionFailedToExecute { error: Box::new(Error::IOError { source: e }) })?;
+			.map_err(|e| {
+				let error = Box::new(Error::IOError { source: e });
+				Error::ActionFailedToExecute { error }
+			})?;
 
 		let mut executed = vec![];
 
 		for (texture, option) in choices {
-			let texture = match self.available_textures.get(texture) {
+			let texture = match versioned.available_textures.get(texture) {
 				Some(texture) => { texture }
 				None => {
-					if self.unavailable_textures.contains_key(texture) {
+					if versioned.unavailable_textures.contains_key(texture) {
 						messages.push(Error::TextureUnavailable {
 							texture: texture.into()
 						}.to_message());
@@ -194,7 +248,7 @@ impl DatasourceRuntimeMeta {
 		}
 
 		if include_default {
-			for (texture_name, texture) in &self.available_textures {
+			for (texture_name, texture) in &versioned.available_textures {
 				if executed.contains(&texture_name) { continue }
 
 				if let Some(option) = &texture.default {
