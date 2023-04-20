@@ -5,7 +5,7 @@ use crate::error::{ Error, Result };
 
 // TODO, try panicking, see how the frontend reacts (to see what the user will see when the expect calls fail)
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct PackVersion {
 	pub name: &'static str,
 	pub release_type: MCVersionType,

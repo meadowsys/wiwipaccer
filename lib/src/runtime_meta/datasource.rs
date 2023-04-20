@@ -1,6 +1,8 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::datasource::{ Datasource as DatasourceMeta, Version };
+use crate::meta::pack_formats::PACK_FORMATS;
+use crate::meta::pack_version_specifier::PackVersion;
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::texture;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
@@ -129,6 +131,33 @@ impl Datasource {
 			textures,
 			messages
 		})))
+	}
+
+	pub fn get_supported_mc_versions(&self) -> Result<Vec<PackVersion>> {
+		let mut versions = vec![];
+
+		let without_mc_version = match self {
+			Datasource::WithMCVersion { ref without_mc_version, .. } => { without_mc_version }
+			Datasource::WithoutMCVersion(ref without_mc_version) => { without_mc_version }
+		};
+
+		for version in without_mc_version.textures.values() {
+			versions.append(&mut version.get_supported_mc_versions()?);
+		}
+
+		versions.dedup_by_key(|v| v.name);
+
+		// inefficient sort
+
+		let mut sorted_versions = Vec::with_capacity(versions.len());
+
+		for version in PACK_FORMATS {
+			if let Some(version) = versions.iter().find(|v| v.name == version.name) {
+				sorted_versions.push(version.clone());
+			}
+		}
+
+		Ok(sorted_versions)
 	}
 
 	pub async fn with_mc_version(self, mc_version: PackVersionSpecifierRuntimeMeta) -> Self {

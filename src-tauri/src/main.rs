@@ -125,6 +125,8 @@ fn main() {
 			cmds::decode_hex_string,
 			cmds::get_license,
 			cmds::get_platform,
+			cmds::get_project_meta,
+			cmds::get_project_supported_versions,
 			cmds::get_recent_projects,
 			cmds::open_about,
 			cmds::open_docs,

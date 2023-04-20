@@ -2,9 +2,10 @@ use ahash::{ HashMapExt, HashSetExt, RandomState };
 use crate::error::{ Error, Result };
 use crate::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
 use crate::mc_structs::model::Model;
-use crate::meta::pack_version_specifier::PackFormat;
-use crate::meta::pack_version_specifier::PackVersionSpecifier;
 use crate::meta::pack_formats::PACK_FORMATS;
+use crate::meta::pack_version_specifier::PackFormat;
+use crate::meta::pack_version_specifier::PackVersion;
+use crate::meta::pack_version_specifier::PackVersionSpecifier;
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
@@ -136,6 +137,28 @@ impl WithoutMCVersion {
 			processing_option,
 			messages
 		}))
+	}
+
+	pub fn get_supported_mc_versions(&self) -> Result<Vec<PackVersion>> {
+		// this is kinda inefficient, optimisation opportunity?
+		// though to be fair this isn't hot code, so its not too important
+
+		let mut versions = vec![];
+
+		// for version in &self.versions {
+		// 	version.contains(runtime_specifier)
+		// }
+
+		'outer: for version in PACK_FORMATS {
+			for supported_version in &self.versions {
+				if supported_version.contains(&PackVersionSpecifierRuntimeMeta::MCVersion(version.name.into()))? {
+					versions.push(version);
+					continue 'outer
+				}
+			}
+		}
+
+		Ok(versions.into_iter().cloned().collect())
 	}
 }
 

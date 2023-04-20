@@ -1,6 +1,7 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::option::TextureOption;
+use crate::meta::pack_version_specifier::PackVersion;
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
 use crate::runtime_meta::version;
@@ -127,6 +128,17 @@ impl WithoutMCVersion {
 			versions,
 			messages
 		}))
+	}
+
+	pub fn get_supported_mc_versions(&self) -> Result<Vec<PackVersion>> {
+		let mut versions = vec![];
+
+		for version in self.versions.values() {
+			versions.append(&mut version.get_supported_mc_versions()?);
+		}
+
+		versions.dedup_by_key(|v| v.name);
+		Ok(versions)
 	}
 }
 

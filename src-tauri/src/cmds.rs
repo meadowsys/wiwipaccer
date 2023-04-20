@@ -1,5 +1,7 @@
 use camino::Utf8PathBuf;
 use crate::db;
+use lib::meta::pack_version_specifier::PackVersion;
+use lib::runtime_meta::datasource::Datasource;
 use tauri::api::dialog::FileDialogBuilder;
 // use tauri::api::ipc::
 use tauri::{ AppHandle, Manager, Runtime, Window, WindowBuilder, WindowUrl };
@@ -47,6 +49,16 @@ pub async fn get_platform() -> String {
 	let platform = "windows";
 
 	platform.into()
+}
+
+#[tauri::command]
+pub async fn get_project_meta(path: String) -> lib::error::Result<Datasource> {
+	Datasource::new(&path).await
+}
+
+#[tauri::command]
+pub async fn get_project_supported_versions(path: String) -> lib::error::Result<Vec<PackVersion>> {
+	Datasource::new(&path).await?.get_supported_mc_versions()
 }
 
 #[tauri::command]

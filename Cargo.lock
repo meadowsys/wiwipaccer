@@ -5557,6 +5557,7 @@ dependencies = [
 name = "wiwipaccer"
 version = "0.0.0"
 dependencies = [
+ "ahash",
  "camino",
  "hex",
  "lazy_static",
