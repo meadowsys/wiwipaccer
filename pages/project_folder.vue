@@ -15,8 +15,8 @@
 	import { appWindow } from "@tauri-apps/api/window";
 	let path = await invoke_decode_hex_string(appWindow.label);
 
-	let supported_versions = await invoke_get_project_supported_versions(path);
-	let meta = await invoke_get_project_meta(path);
+	let supported_versions = JSON.stringify(await invoke_get_project_supported_versions(path), null, "   ");
+	let meta = JSON.stringify(await invoke_get_project_meta(path), null, "   ");
 
 	invoke_add_recent_project(path);
 </script>

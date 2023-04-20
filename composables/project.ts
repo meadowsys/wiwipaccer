@@ -5,7 +5,7 @@ export async function invoke_add_recent_project(path: string) {
 }
 
 export async function invoke_get_project_meta(path: string) {
-	return JSON.stringify(await invoke("get_project_meta", { path }), null, "   ");
+	return await invoke("get_project_meta", { path });
 }
 
 export async function invoke_get_project_supported_versions(path: string) {
