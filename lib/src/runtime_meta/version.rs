@@ -2,7 +2,9 @@ use ahash::{ HashMapExt, HashSetExt, RandomState };
 use crate::error::{ Error, Result };
 use crate::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
 use crate::mc_structs::model::Model;
+use crate::meta::pack_version_specifier::PackFormat;
 use crate::meta::pack_version_specifier::PackVersionSpecifier;
+use crate::meta::pack_formats::PACK_FORMATS;
 use crate::meta::version::Version;
 use crate::meta::version::OptionType;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
@@ -66,7 +68,7 @@ crate::impl_deref!(Unavailable, target InnerUnavailable);
 
 impl WithoutMCVersion {
 	pub async fn new(path: &str) -> Result<Self> {
-		let messages = vec![];
+		let mut messages = vec![];
 		let version = read_meta_file::<Version>(path).await?;
 
 		struct Destructure {
@@ -82,6 +84,38 @@ impl WithoutMCVersion {
 				}
 			}
 		};
+
+		let versions = versions.into_iter()
+			.filter(|mv| {
+				let res = match mv {
+					PackVersionSpecifier::PackVersion(mv) => {
+						PACK_FORMATS.iter()
+							.any(|rv| match rv.format {
+								PackFormat::Verified(rv) | PackFormat::Unverified(rv) | PackFormat::Maybe(rv) => { rv == *mv }
+								PackFormat::Unknown | PackFormat::None => { false }
+							})
+					}
+					PackVersionSpecifier::MCVersion(mv) => { PACK_FORMATS.iter().any(|rv| rv.name == mv) }
+					PackVersionSpecifier::MCVersionRange(lowerv, upperv) => {
+						let lowerv = PACK_FORMATS.iter().position(|rv| rv.name == lowerv);
+						let upperv = PACK_FORMATS.iter().position(|rv| rv.name == upperv);
+						lowerv.is_some() || upperv.is_some()
+					}
+				};
+
+				if !res {
+					match mv.to_mc_versions() {
+						Ok(v) => {
+							v.iter()
+								.for_each(|v| messages.push(Error::MCVersionUnknown { version: v.clone() }.to_message()));
+						}
+						Err(e) => { messages.push(e.to_message()) }
+					}
+				}
+
+				res
+			})
+			.collect::<Vec<_>>();
 
 		let assets_path = format!("{path}/{ASSETS_DIR_NAME}");
 		let assets_metadata = fs::metadata(&assets_path).await
