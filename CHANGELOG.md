@@ -4,10 +4,25 @@
 
 ## v0.0.0-rolling.3
 
+In this not-fully-released release, we have made project windows display generated metadata from a datasource lol
+
 - added support for `1.19.4-pre4`, `1.19.4-rc1`, and `1.19.4-rc2`
+- macOS releases now signed!
+- app knows its _real_ version instead of the manifest declared one, will be used in auto updates, about screen, and probably others
+  - this is because wix, windows' packaging toolkit, doesn't support proper semver, and i'm not about to rewrite my entire build/publish pipeline just for this. Especially since nsis targets are on the way (maybe???) and that supports semver proper.
 - recents list is now actually a recents list, instead of static nonsense fake paths, and actually works (if you click an entry it opens/focuses the window)
 - correct version will now reflect in the app (For Real this time)
 - builds not made with a release will have `-dev` at the end of the version
+- created docs project, will fill with documentation soon&trade;, its currently empty with a _tiny_ bit of filler content lol
+- "No recent projects" message when there is none
+- played with creating my own i18n module (existing solutions aren't good enough for what i want), shelved for now its relatively low priority
+- created site project, nothing in it for now h
+- use purple coloured selection (uwu)
+- fix title bar weirdly resizing itself on window resize
+- internally allow creating meta objects for datasource/etc without specifying an mc version, and allow to create version specifics from there
+- `default` is now specified on Texture using a string (that is the same name as the dir of the option) instead of `default: true` on the default option. This way, you cannot specify multiple defaults by accident, and it makes it easier to write code to handle too.
+- make project windows not transparent
+- filter invalid mc versions specified in a Version and raise an error
 
 ## v0.0.0-rolling.2
 
