@@ -240,7 +240,7 @@ impl Datasource {
 			};
 
 			for action in &option.available_version.actions {
-				execute(dir, action).await
+				action.execute_in(dir).await
 					.map_err(|e| Error::ActionFailedToExecute { error: Box::new(e) })?;
 			}
 
@@ -254,7 +254,7 @@ impl Datasource {
 				if let Some(option) = &texture.default {
 					let option = texture.available_options.get(option).unwrap();
 					for action in &option.available_version.actions {
-						execute(dir, action).await
+						action.execute_in(dir).await
 							.map_err(|e| Error::ActionFailedToExecute { error: Box::new(e) })?;
 					}
 				}
@@ -263,45 +263,4 @@ impl Datasource {
 
 		Ok(())
 	}
-}
-
-async fn execute(base_dir: &str, action: &Action) -> Result<()> {
-	use Action::*;
-	match action {
-		CopyFile { from, to } => {
-			let mut to_path = path::PathBuf::new();
-			to_path.push(base_dir);
-			to_path.push(to);
-
-			if fs::metadata(&to_path).await.is_ok() {
-				return Err(Error::FileAlreadyExists { path: to_path.to_str().unwrap().into() })
-			}
-
-			fs::create_dir_all(to_path.parent().unwrap()).await
-				.map_err(|e| Error::IOError { source: e })?;
-
-			fs::copy(from, to_path).await
-				.map_err(|e| Error::IOError { source: e })?;
-		}
-		WriteBytes { data, path, src_files: _ } => {
-			let mut to_path = path::PathBuf::new();
-			to_path.push(base_dir);
-			to_path.push(path);
-
-			fs::create_dir_all(to_path.parent().unwrap()).await
-				.map_err(|e| Error::IOError { source: e })?;
-
-			let mut file = fs::OpenOptions::new()
-				.create_new(true)
-				.write(true)
-				.open(&to_path)
-				.await
-				.map_err(|e| Error::IOError { source: e })?;
-
-			file.write_all(data).await
-				.map_err(|e| Error::IOError { source: e })?;
-		}
-	}
-
-	Ok(())
 }
