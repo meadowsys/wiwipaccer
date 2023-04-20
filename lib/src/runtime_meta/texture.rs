@@ -9,10 +9,10 @@ use std::collections::HashMap;
 use super::META_NAME;
 use tokio::fs;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct WithoutMCVersion(InnerWithoutMCVersion);
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct InnerWithoutMCVersion {
 	pub path: String,
 	pub shortpath: String,
@@ -29,12 +29,12 @@ pub enum WithMCVersion {
 	Unavailable(Unavailable)
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct Available(InnerAvailable);
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct Unavailable(InnerUnavailable);
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct InnerAvailable {
 	pub path: String,
 	pub shortpath: String,
@@ -46,7 +46,7 @@ pub struct InnerAvailable {
 	pub messages: Vec<Message>
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct InnerUnavailable {
 	pub path: String,
 	pub shortpath: String,

@@ -13,7 +13,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::fs;
 use tokio::process::Command;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub enum Datasource {
 	WithoutMCVersion(WithoutMCVersion),
 	WithMCVersion {
@@ -22,10 +22,10 @@ pub enum Datasource {
 	}
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct WithoutMCVersion(InnerWithoutMCVersion);
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct InnerWithoutMCVersion {
 	pub path: String,
 	pub name: String,
@@ -35,10 +35,10 @@ pub struct InnerWithoutMCVersion {
 	pub messages: Vec<Message>
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct WithMCVersion(InnerWithMCVersion);
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct InnerWithMCVersion {
 	pub mc_version: PackVersionSpecifierRuntimeMeta,
 	pub available_textures: HashMap<String, texture::Available, RandomState>,

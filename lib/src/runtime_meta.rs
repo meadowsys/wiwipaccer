@@ -14,13 +14,13 @@ const META_NAME: &str = "manifest.wpm";
 const ASSETS_DIR_NAME: &str = "assets";
 const TEXTURES_DIR: &str = "textures";
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, serde::Serialize)]
 pub struct Message {
 	pub message: String,
 	pub severity: MessageSeverity
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, serde::Serialize)]
 pub enum MessageSeverity {
 	Info,
 	Warning,
