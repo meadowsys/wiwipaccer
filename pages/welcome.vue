@@ -27,12 +27,6 @@
 		</div>
 
 		<welcome-project-history :recents="recents" />
-
-		<!-- <div class="py-8 px-12">
-			<table class="w-full">
-				<welcome-recents-entry-button v-for="item in recent_stuff" :item="item" />
-			</table>
-		</div> -->
 	</div>
 </template>
 
