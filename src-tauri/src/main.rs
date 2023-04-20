@@ -80,7 +80,7 @@ fn main() {
 		Err(_) => {
 			// probably doesn't exist?
 			fs::create_dir(&appdata_rootdir)
-				.unwrap_or_else(|_| panic!("couldn't create root appdata dir ~/{APPDATA_ROOTDIR}"));
+				.unwrap_or_else(|_| panic!("couldn't create root appdata dir {appdata_rootdir}"));
 		}
 	}
 
