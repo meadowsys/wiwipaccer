@@ -458,6 +458,11 @@ jobs:
       with:
         name: linux-appimage
         path: artifacts
+    - name: download artifact windows-msi
+      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      with:
+        name: windows-msi
+        path: artifacts
 
     - name: create release
       run: node -r @swc-node/register scripts/release.ts
