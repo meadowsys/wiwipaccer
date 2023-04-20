@@ -13,6 +13,10 @@ pub enum Error {
 	AssetsPathIsNotDir {
 		path: String
 	},
+	#[error("The default {default} doesn't exist")]
+	DefaultDoesNotExist {
+		default: String
+	},
 	#[error("Failed to parse MC versions response from Mojang: {source}")]
 	FailedToFetchMCVersionsInvalidUTF8 {
 		source: std::string::FromUtf8Error
@@ -95,6 +99,7 @@ impl Error {
 		let severity = match self {
 			ActionFailedToExecute { .. } => { MessageSeverity::Error }
 			AssetsPathIsNotDir { .. } => { MessageSeverity::Error }
+			DefaultDoesNotExist { .. } => { MessageSeverity::Error }
 			FailedToFetchMCVersionsInvalidUTF8 { .. } => { MessageSeverity::Fatal }
 			FileAlreadyExists { .. } => { MessageSeverity::Error }
 			FileDoesNotExist { .. } => { MessageSeverity::Warning }

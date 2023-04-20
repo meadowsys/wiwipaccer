@@ -18,6 +18,7 @@ pub struct InnerWithoutMCVersion {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
+	pub default: Option<String>,
 	pub options: HashMap<String, option::WithoutMCVersion, RandomState>,
 	pub messages: Vec<Message>
 }
@@ -51,6 +52,7 @@ pub struct InnerUnavailable {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
+	pub default: Option<String>,
 	pub options: HashMap<String, option::WithMCVersion, RandomState>,
 	pub messages: Vec<Message>
 }
@@ -80,14 +82,16 @@ impl WithoutMCVersion {
 
 		struct Destructure {
 			name: String,
-			description: String
+			description: String,
+			default: Option<String>
 		}
 
-		let Destructure { name, description } = match texture {
-			Texture::V1 { name, description } => {
+		let Destructure { name, description, default } = match texture {
+			Texture::V1 { name, description, default } => {
 				Destructure {
 					name,
-					description: description.unwrap_or_else(|| "description not provided".into())
+					description: description.unwrap_or_else(|| "description not provided".into()),
+					default
 				}
 			}
 		};
@@ -99,7 +103,15 @@ impl WithoutMCVersion {
 		let mut dir_contents = fs::read_dir(&path).await
 			.map_err(|e| Error::IOError { source: e })?;
 
+		let mut default_found = false;
+
 		while let Some(dir_entry) = dir_contents.next_entry().await.map_err(|e| Error::IOError { source: e })? {
+			if let Some(ref default) = default {
+				if !default_found && default == dir_entry.file_name().to_str().unwrap() {
+					default_found = true;
+				}
+			}
+
 			let dir_entry_path = dir_entry.path();
 			let dir_entry_path = dir_entry_path.to_str()
 				.expect("invalid unicode paths unsupported");
@@ -125,6 +137,12 @@ impl WithoutMCVersion {
 			}
 		}
 
+		if let Some(ref default) = default {
+			if !default_found {
+				return Err(Error::DefaultDoesNotExist { default: default.clone() })
+			}
+		}
+
 		let shortpath = std::path::Path::new(path)
 			.file_name()
 			.unwrap()
@@ -137,6 +155,7 @@ impl WithoutMCVersion {
 			shortpath,
 			name,
 			description,
+			default,
 			options,
 			messages
 		}))
@@ -154,13 +173,13 @@ impl WithMCVersion {
 				shortpath: texture_without_mc_version.shortpath.clone(),
 				name: texture_without_mc_version.name.clone(),
 				description: texture_without_mc_version.description.clone(),
+				default: texture_without_mc_version.default.clone(),
 				options: HashMapExt::new(),
 				messages: texture_without_mc_version.messages.clone()
 			})))
 		}
 
 		let mut messages = texture_without_mc_version.messages.clone();
-		let mut default = vec![]; // TODO change this
 		let mut available = HashMap::<String, option::Available, RandomState>::new();
 		let mut unavailable = HashMap::<String, option::Unavailable, RandomState>::new();
 
@@ -169,7 +188,6 @@ impl WithMCVersion {
 			match option::WithMCVersion::from(option, mc_version.clone()).await {
 				Ok(option) => match option {
 					Available(option) => {
-						if option.default { default.push(option.shortpath.clone()) }
 						available.insert(shortpath.clone(), option);
 					}
 					Unavailable(option) => {
@@ -193,47 +211,18 @@ impl WithMCVersion {
 				shortpath: texture_without_mc_version.shortpath.clone(),
 				name: texture_without_mc_version.name.clone(),
 				description: texture_without_mc_version.description.clone(),
+				default: texture_without_mc_version.default.clone(),
 				options: unavailable.into_iter().map(|(s, o)| (s, option::WithMCVersion::Unavailable(o))).collect(),
 				messages
 			})))
 		}
-
-		if default.len() > 1 {
-			messages.push(Error::UnavailableError {
-				thing: format!("Texture {}", texture_without_mc_version.shortpath),
-				reason: "more than 1 default was specified".into()
-			}.to_message());
-
-			return Ok(Self::Unavailable(Unavailable(InnerUnavailable {
-				path: texture_without_mc_version.path.clone(),
-				shortpath: texture_without_mc_version.shortpath.clone(),
-				name: texture_without_mc_version.name.clone(),
-				description: texture_without_mc_version.description.clone(),
-				options: {
-					let unavailable_iter = unavailable.into_iter()
-						.map(|(shortpath, o)| (shortpath, option::WithMCVersion::Unavailable(o)));
-					available.into_iter()
-						.map(|(shortpath, o)| (shortpath, option::WithMCVersion::Available(o)))
-						.chain(unavailable_iter)
-						.collect()
-				},
-				messages
-			})))
-		}
-
-		// TODO this needs to be moved to be declared in self instead of in the options
-		let default = if default.is_empty() {
-			None
-		} else {
-			Some(default.into_iter().next().unwrap())
-		};
 
 		Ok(WithMCVersion::Available(Available(InnerAvailable {
 			path: texture_without_mc_version.path.clone(),
 			shortpath: texture_without_mc_version.shortpath.clone(),
 			name: texture_without_mc_version.name.clone(),
 			description: texture_without_mc_version.description.clone(),
-			default,
+			default: texture_without_mc_version.default.clone(),
 			available_options: available,
 			unavailable_options: unavailable,
 			messages

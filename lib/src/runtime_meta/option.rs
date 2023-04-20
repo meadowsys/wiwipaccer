@@ -18,7 +18,6 @@ pub struct InnerWithoutMCVersion {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
-	pub default: bool,
 	pub versions: HashMap<String, version::WithoutMCVersion, RandomState>,
 	pub messages: Vec<Message>
 }
@@ -41,7 +40,6 @@ pub struct InnerAvailable {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
-	pub default: bool,
 	pub available_version: version::Available,
 	pub unavailable_versions: HashMap<String, version::Unavailable, RandomState>,
 	pub messages: Vec<Message>
@@ -53,7 +51,6 @@ pub struct InnerUnavailable {
 	pub shortpath: String,
 	pub name: String,
 	pub description: String,
-	pub default: bool,
 	pub versions: HashMap<String, version::Unavailable, RandomState>,
 	pub messages: Vec<Message>
 }
@@ -83,16 +80,14 @@ impl WithoutMCVersion {
 
 		struct Destructure {
 			name: String,
-			description: String,
-			default: bool
+			description: String
 		}
 
-		let Destructure { name, description, default } = match option {
-			TextureOption::V1 { name, description, default } => {
+		let Destructure { name, description } = match option {
+			TextureOption::V1 { name, description } => {
 				Destructure {
 					name,
-					description: description.unwrap_or_else(|| "description not provided".into()),
-					default: default.unwrap_or(false)
+					description: description.unwrap_or_else(|| "description not provided".into())
 				}
 			}
 		};
@@ -143,7 +138,6 @@ impl WithoutMCVersion {
 			shortpath,
 			name,
 			description,
-			default,
 			versions,
 			messages
 		}))
@@ -161,7 +155,6 @@ impl WithMCVersion {
 				shortpath: option_without_mc_version.shortpath.clone(),
 				name: option_without_mc_version.name.clone(),
 				description: option_without_mc_version.description.clone(),
-				default: option_without_mc_version.default,
 				versions: HashMapExt::new(),
 				messages: option_without_mc_version.messages.clone()
 			})))
@@ -193,7 +186,6 @@ impl WithMCVersion {
 				shortpath: option_without_mc_version.shortpath.clone(),
 				name: option_without_mc_version.name.clone(),
 				description: option_without_mc_version.description.clone(),
-				default: option_without_mc_version.default,
 				versions: unavailable,
 				messages
 			})))
@@ -215,7 +207,6 @@ impl WithMCVersion {
 			shortpath: option_without_mc_version.shortpath.clone(),
 			name: option_without_mc_version.name.clone(),
 			description: option_without_mc_version.description.clone(),
-			default: option_without_mc_version.default,
 			available_version: available.into_iter().next().unwrap().1,
 			unavailable_versions: unavailable,
 			messages
