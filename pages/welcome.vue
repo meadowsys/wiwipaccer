@@ -24,8 +24,6 @@
 			<welcome-header-button @click="invoke_open_about">
 				About
 			</welcome-header-button>
-			<div class="flex flex-col">
-			</div>
 		</div>
 
 		<welcome-project-history :recents="recents" />
