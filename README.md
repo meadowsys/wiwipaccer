@@ -9,6 +9,7 @@ The Pack Builder&trade; is a desktop app that provides the ability to create a c
 - [Feature list (nonexhaustive, pack users)](#feature-list-nonexhaustive-pack-users)
 - [Documentation](#documentation)
 - [Building from source](#building-from-source)
+  - [Don't care about building std from source?](#dont-care-about-building-std-from-source)
   - [Dependencies](#dependencies)
     - [All](#all)
     - [macOS](#macos)
@@ -42,6 +43,10 @@ Documentation will be available in-app once written (Coming Soon&trade;).
 ## Building from source
 
 The app is built using a nightly Rust toolchain to allow to build Rust's standard library from source. This has a few benefits, including smaller binary size, better optimisations, and faster/more efficient binaries. The tradeoff is longer compile times, but this is a tradeoff we (Meadowsys) were willing to make.
+
+### Don't care about building std from source?
+
+You can simply run `pnpm tauri build` instead of any of the build commands listed below. This also means you don't need to know your exact target triple, so its easier and faster to run this if you're building for yourself.
 
 ### Dependencies
 
@@ -99,7 +104,7 @@ pnpm tauri build --target x86_64-apple-darwin -- -Z build-std
 
 #### macOS (Universal)
 
-This is for the people who aren't sure which processor architecture/vendor their Mac has. It is preferred to use one of the other two methods. Build time and app size are both nearly double when building for this target (as it is quite literally both aarch64 and x64 builds glued together).
+This is for the people who aren't sure which processor architecture/vendor their Mac has. It is preferred to use one of the other two methods, or skip building std from source so you don't have to provide a target triple (see [earlier in this section](#dont-care-about-building-std-from-source)). Build time and app size are both nearly double when building for this target (as it is quite literally both aarch64 and x64 builds glued together).
 
 Install compilation targets:
 
