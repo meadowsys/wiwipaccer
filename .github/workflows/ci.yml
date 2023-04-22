@@ -66,11 +66,6 @@ jobs:
 
     - name: prepare to build
       run: |
-        echo copying build-specific cargo configs...
-        cp .github/Cargo.toml Cargo.toml
-        mkdir .cargo
-        cp .github/cargo-config.toml .cargo/config.toml
-
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
@@ -83,8 +78,8 @@ jobs:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: build app
-      run: pnpm tauri build --target ${{ matrix.target.triple }}
-      # run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
+      # run: pnpm tauri build --target ${{ matrix.target.triple }}
+      run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
       env:
         APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -168,11 +163,6 @@ jobs:
 
     - name: prepare to build
       run: |
-        echo copying build-specific cargo configs...
-        cp .github/Cargo.toml Cargo.toml
-        mkdir .cargo
-        cp .github/cargo-config.toml .cargo/config.toml
-
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
@@ -185,8 +175,8 @@ jobs:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: build app
-      run: pnpm tauri build --target universal-apple-darwin
-      # run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
+      # run: pnpm tauri build --target universal-apple-darwin
+      run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
       env:
         APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
@@ -275,11 +265,6 @@ jobs:
 
     - name: prepare to build
       run: |
-        echo copying build-specific cargo configs...
-        cp .github/Cargo.toml Cargo.toml
-        mkdir .cargo
-        cp .github/cargo-config.toml .cargo/config.toml
-
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
@@ -292,8 +277,8 @@ jobs:
         github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
     - name: build app
-      run: pnpm tauri build --target x86_64-unknown-linux-gnu
-      # run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
+      # run: pnpm tauri build --target x86_64-unknown-linux-gnu
+      run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
       env:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -367,11 +352,6 @@ jobs:
     - name: prepare to build
       shell: bash
       run: |
-        echo copying build-specific cargo configs...
-        cp .github/Cargo.toml Cargo.toml
-        mkdir .cargo
-        cp .github/cargo-config.toml .cargo/config.toml
-
         echo updating tauri app version...
         DATE=$(date +%Y%m%d%H) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
         # echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
@@ -386,8 +366,8 @@ jobs:
 
     - name: build app
       shell: bash
-      run: pnpm tauri build --target x86_64-pc-windows-msvc
-      # run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
+      # run: pnpm tauri build --target x86_64-pc-windows-msvc
+      run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
       env:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
