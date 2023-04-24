@@ -123,6 +123,13 @@ impl Error {
 	}
 }
 
+impl std::fmt::Display for Message {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		let Self { severity, message } = self;
+		write!(f, "{severity}: {message}")
+	}
+}
+
 impl serde::Serialize for Error {
 	fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
 	where

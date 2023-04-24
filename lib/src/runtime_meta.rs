@@ -28,6 +28,19 @@ pub enum MessageSeverity {
 	Fatal
 }
 
+impl std::fmt::Display for MessageSeverity {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		use MessageSeverity::*;
+
+		match self {
+			Info => { write!(f, "Info") }
+			Warning => { write!(f, "Warning") }
+			Error => { write!(f, "Error") }
+			Fatal => { write!(f, "Fatal") }
+		}
+	}
+}
+
 #[macro_export]
 macro_rules! impl_deref {
 	($type:ty, target $target:ty) => {
