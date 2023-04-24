@@ -72,7 +72,7 @@ pub enum Error {
 		path: String,
 		source: ron::error::SpannedError
 	},
-	#[error("texture is not found: {texture}")]
+	#[error("texture cannot be found: {texture}")]
 	TextureNotFound {
 		texture: String
 	},
@@ -102,9 +102,9 @@ impl Error {
 			DefaultDoesNotExist { .. } => { MessageSeverity::Error }
 			FailedToFetchMCVersionsInvalidUTF8 { .. } => { MessageSeverity::Fatal }
 			FileAlreadyExists { .. } => { MessageSeverity::Error }
-			FileDoesNotExist { .. } => { MessageSeverity::Warning }
-			IOError { .. } => { MessageSeverity::Warning }
-			InvalidBlockID { .. } => { MessageSeverity::Fatal }
+			FileDoesNotExist { .. } => { MessageSeverity::Error }
+			IOError { .. } => { MessageSeverity::Error }
+			InvalidBlockID { .. } => { MessageSeverity::Error }
 			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
 			MCVersionUnknown { .. } => { MessageSeverity::Error }
