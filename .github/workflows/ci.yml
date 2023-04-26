@@ -23,7 +23,7 @@ jobs:
         - name: x64
           triple: x86_64-apple-darwin
 
-    runs-on: macos-12
+    runs-on: macos-13
 
     steps:
     - name: checkout code
@@ -105,7 +105,7 @@ jobs:
   build-macos-universal:
     name: build (macOS universal)
     needs: build-macos
-    runs-on: macos-12
+    runs-on: macos-13
 
     steps:
     - name: checkout code
