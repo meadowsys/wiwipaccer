@@ -29,13 +29,6 @@ jobs:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
-    - name: temp testing
-      run: |
-        # MARKER remove me
-        git show -s --format=%ci ${{ github.sha }}
-        TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S
-        exit 1
-
     - name: setup rust
       run: rustup target add ${{ matrix.target.triple }}
 
@@ -74,7 +67,7 @@ jobs:
     - name: prepare to build
       run: |
         echo updating tauri app version...
-        DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+        DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" "$(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S)" node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
         echo enabling updater if supported...
         echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
@@ -117,13 +110,6 @@ jobs:
     steps:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-
-    - name: temp testing
-      run: |
-        # MARKER remove me
-        git show -s --format=%ci ${{ github.sha }}
-        TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S
-        exit 1
 
     - name: setup rust
       run: |
@@ -178,7 +164,7 @@ jobs:
     - name: prepare to build
       run: |
         echo updating tauri app version...
-        DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+        DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" "$(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S)" node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
         echo enabling updater if supported...
         echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
@@ -242,13 +228,6 @@ jobs:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
-    - name: temp testing
-      run: |
-        # MARKER remove me
-        git show -s --format=%ci ${{ github.sha }}
-        TZ=UTC date -d $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S
-        exit 1
-
     - name: setup rust
       run: rustc --version
 
@@ -287,7 +266,7 @@ jobs:
     - name: prepare to build
       run: |
         echo updating tauri app version...
-        DATE=$(TZ=UTC date -d $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+        DATE=$(TZ=UTC date -d "$(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S)" node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
         echo enabling updater if supported...
         echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
@@ -327,14 +306,6 @@ jobs:
     steps:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-
-    - name: temp testing
-      shell: bash
-      run: |
-        # MARKER remove me
-        git show -s --format=%ci ${{ github.sha }}
-        TZ=UTC date -d $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S
-        exit 1
 
     - name: setup rust
       shell: bash
@@ -382,7 +353,7 @@ jobs:
       shell: bash
       run: |
         echo updating tauri app version...
-        DATE=$(TZ=UTC date -d $(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+        DATE=$(TZ=UTC date -d "$(git show -s --format=%ci ${{ github.sha }}) +%Y%m%d%H%M%S)" node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
         # echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
 
         echo enabling updater if supported...
