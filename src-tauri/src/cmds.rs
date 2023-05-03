@@ -123,7 +123,7 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 		} else {
 			// TODO maybe send a signal back to main or something if this is Err
 			// so that user gets an alert that opening it failed
-			let window = get_window_builder(app, &label, WindowUrl::App("project_folder".into()))
+			let _window = get_window_builder(app, &label, WindowUrl::App("project_folder".into()))
 				.transparent(false)
 				.inner_size(800., 500.)
 				.min_inner_size(800., 500.)
