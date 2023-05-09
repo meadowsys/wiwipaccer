@@ -1,4 +1,6 @@
 use crate::error::{ Error, Result };
+use crate::meta::pack_formats::PACK_FORMATS;
+use crate::meta::pack_version_specifier::PackVersion;
 use ron::extensions::Extensions;
 use tokio::fs;
 
@@ -40,4 +42,17 @@ pub fn hash(thing: &str) -> String {
 	let rv = hex.to_string();
 
 	rv
+}
+
+pub fn sort_versions_inefficient(versions: &mut Vec<PackVersion>) {
+	versions.dedup_by_key(|v| v.name);
+
+	let mut sorted = Vec::with_capacity(versions.len());
+	for version in PACK_FORMATS {
+		if let Some(version) = versions.iter().find(|v| v.name == version.name) {
+			sorted.push(version.clone());
+		}
+	}
+
+	*versions = sorted;
 }

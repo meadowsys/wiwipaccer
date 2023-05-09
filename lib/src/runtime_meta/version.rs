@@ -45,7 +45,7 @@ pub struct Unavailable(InnerUnavailable);
 pub struct InnerAvailable {
 	pub path: String,
 	pub shortpath: String,
-	pub selected_version: PackVersionSpecifierRuntimeMeta,
+	pub selected_version: String,
 	pub versions: Vec<PackVersionSpecifier>,
 	pub processing_option: OptionType,
 	#[serde(skip_serializing)]
@@ -57,7 +57,7 @@ pub struct InnerAvailable {
 pub struct InnerUnavailable {
 	pub path: String,
 	pub shortpath: String,
-	pub selected_version: PackVersionSpecifierRuntimeMeta,
+	pub selected_version: String,
 	pub versions: Vec<PackVersionSpecifier>,
 	pub processing_option: OptionType,
 	pub messages: Vec<Message>
@@ -165,7 +165,7 @@ impl WithoutMCVersion {
 impl WithMCVersion {
 	pub async fn from(
 		version_without_mc_version: &WithoutMCVersion,
-		mc_version: PackVersionSpecifierRuntimeMeta
+		mc_version: String
 	) -> Result<Self> {
 		let mut messages = version_without_mc_version.messages.clone();
 		let path = &version_without_mc_version.path;
@@ -314,6 +314,7 @@ impl WithMCVersion {
 		};
 
 		let supported = {
+			let mc_version = PackVersionSpecifierRuntimeMeta::MCVersion(mc_version.clone());
 			let iter = version_without_mc_version.versions.iter();
 			let mut res = false;
 

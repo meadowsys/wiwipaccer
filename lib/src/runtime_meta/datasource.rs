@@ -8,8 +8,10 @@ use crate::runtime_meta::texture;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
 use crate::runtime_meta::action::Action;
 use crate::util::RON;
+use crate::util::sort_versions_inefficient;
 use std::collections::HashMap;
 use std::path;
+use std::sync::Arc;
 use super::{ META_NAME, TEXTURES_DIR };
 use tokio::io::AsyncWriteExt;
 use tokio::fs;
@@ -42,7 +44,7 @@ pub struct WithMCVersion(InnerWithMCVersion);
 
 #[derive(Debug, serde::Serialize)]
 pub struct InnerWithMCVersion {
-	pub mc_version: PackVersionSpecifierRuntimeMeta,
+	pub mc_version: String,
 	pub available_textures: HashMap<String, texture::Available, RandomState>,
 	pub unavailable_textures: HashMap<String, texture::Unavailable, RandomState>,
 	pub messages: Vec<Message>
@@ -51,7 +53,7 @@ pub struct InnerWithMCVersion {
 crate::impl_deref!(WithoutMCVersion, target InnerWithoutMCVersion);
 crate::impl_deref!(WithMCVersion, target InnerWithMCVersion);
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum BuildType {
 	CustomiseDefault,
 	FromScratch
@@ -134,33 +136,31 @@ impl Datasource {
 	}
 
 	pub fn get_supported_mc_versions(&self) -> Result<Vec<PackVersion>> {
-		let mut versions = vec![];
+		let mut versions = self.get_supported_mc_versions_no_sort()?;
+		sort_versions_inefficient(&mut versions);
+		Ok(versions)
+	}
 
+	/// pub for use with workspace
+	pub(crate) fn get_supported_mc_versions_no_sort(&self) -> Result<Vec<PackVersion>> {
 		let without_mc_version = match self {
 			Datasource::WithMCVersion { ref without_mc_version, .. } => { without_mc_version }
 			Datasource::WithoutMCVersion(ref without_mc_version) => { without_mc_version }
 		};
 
+		let mut versions = Vec::with_capacity(without_mc_version.textures.len());
 		for version in without_mc_version.textures.values() {
-			versions.append(&mut version.get_supported_mc_versions()?);
+			versions.push(version.get_supported_mc_versions()?);
 		}
 
-		versions.dedup_by_key(|v| v.name);
+		let versions = versions.into_iter()
+			.flatten()
+			.collect();
 
-		// inefficient sort
-
-		let mut sorted_versions = Vec::with_capacity(versions.len());
-
-		for version in PACK_FORMATS {
-			if let Some(version) = versions.iter().find(|v| v.name == version.name) {
-				sorted_versions.push(version.clone());
-			}
-		}
-
-		Ok(sorted_versions)
+		Ok(versions)
 	}
 
-	pub async fn with_mc_version(self, mc_version: PackVersionSpecifierRuntimeMeta) -> Self {
+	pub async fn with_mc_version(self, mc_version: String) -> Self {
 		let without_mc_version = match self {
 			Datasource::WithMCVersion { without_mc_version, .. } => { without_mc_version }
 			Datasource::WithoutMCVersion(without_mc_version) => { without_mc_version }
@@ -200,7 +200,7 @@ impl Datasource {
 	pub async fn build(
 		&self,
 		dir: &str,
-		choices: impl Iterator<Item = (&String, &String)>,
+		choices: &HashMap<String, String, RandomState>,
 		buildtype: BuildType,
 	) -> Result<()> {
 		let versioned = match self {
@@ -219,7 +219,7 @@ impl Datasource {
 
 		let mut executed = vec![];
 
-		for (texture, option) in choices {
+		for (texture, option) in choices.iter() {
 			let texture = match versioned.available_textures.get(texture) {
 				Some(texture) => { texture }
 				None => {

@@ -163,7 +163,7 @@ impl WithoutMCVersion {
 impl WithMCVersion {
 	pub async fn from(
 		texture_without_mc_version: &WithoutMCVersion,
-		mc_version: PackVersionSpecifierRuntimeMeta
+		mc_version: String
 	) -> Result<Self> {
 		if texture_without_mc_version.options.is_empty() {
 			return Ok(WithMCVersion::Unavailable(Unavailable(InnerUnavailable {

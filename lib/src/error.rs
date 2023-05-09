@@ -59,6 +59,8 @@ pub enum Error {
 	MultipleAvailableVersions {
 		available_versions_shortnames_formatted: String
 	},
+	#[error("must specify at least one datasource path (this is likely a bug, please report)")]
+	MustSpecifyAtLeastOneSource,
 	#[error("option is not found: {option}")]
 	OptionNotFound {
 		option: String
@@ -89,6 +91,11 @@ pub enum Error {
 	UnavailableInfo {
 		thing: String,
 		reason: String
+	},
+	#[error("Length of vec of choices, {choices_len}, passed in does not match up with amount of datasources, {sources_len}")]
+	WorkspaceChoicesLenDoesntMatch {
+		choices_len: usize,
+		sources_len: usize
 	}
 }
 
@@ -110,6 +117,7 @@ impl Error {
 			MCVersionUnknown { .. } => { MessageSeverity::Error }
 			MCVersionUnspecified => { MessageSeverity::Fatal }
 			MultipleAvailableVersions { .. } => { MessageSeverity::Error }
+			MustSpecifyAtLeastOneSource => { MessageSeverity::Fatal }
 			OptionNotFound { .. } => { MessageSeverity::Error }
 			OptionUnavailable { .. } => { MessageSeverity::Warning }
 			ParseErrorRonSpannedError { .. } => { MessageSeverity::Fatal }
@@ -117,6 +125,7 @@ impl Error {
 			TextureUnavailable { .. } => { MessageSeverity::Warning }
 			UnavailableError { .. } => { MessageSeverity::Error }
 			UnavailableInfo { .. } => { MessageSeverity::Info }
+			WorkspaceChoicesLenDoesntMatch { .. } => { MessageSeverity::Fatal }
 		};
 
 		Message { message: self.to_string(), severity }

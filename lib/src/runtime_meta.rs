@@ -4,6 +4,7 @@ pub mod option;
 pub mod pack_version_specifier;
 pub mod texture;
 pub mod version;
+pub mod workspace;
 
 use crate::error::{ Error, Result };
 use crate::util::RON;

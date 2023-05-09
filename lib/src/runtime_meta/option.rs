@@ -145,7 +145,7 @@ impl WithoutMCVersion {
 impl WithMCVersion {
 	pub async fn from(
 		option_without_mc_version: &WithoutMCVersion,
-		mc_version: PackVersionSpecifierRuntimeMeta
+		mc_version: String
 	) -> Result<Self> {
 		if option_without_mc_version.versions.is_empty() {
 			return Ok(WithMCVersion::Unavailable(Unavailable(InnerUnavailable {
