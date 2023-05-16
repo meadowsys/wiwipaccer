@@ -87,7 +87,7 @@ pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 			.expect("couldn't focus the window");
 	} else {
 		let _window = get_window_builder(&app, &ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
-			.transparent(false)
+			// .transparent(false)
 			.inner_size(550., 350.)
 			.resizable(false)
 			// .min_inner_size(750., 350.)
@@ -104,7 +104,7 @@ pub async fn open_docs<R: Runtime>(app: AppHandle<R>) {
 			.expect("couldn't focus the window");
 	} else {
 		let _window = get_window_builder(&app, DOCS_WINDOW_LABEL, WindowUrl::App("docs".into()))
-			.transparent(false)
+			// .transparent(false)
 			.inner_size(800., 500.)
 			.min_inner_size(800., 500.)
 			.build()
@@ -124,7 +124,7 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 			// TODO maybe send a signal back to main or something if this is Err
 			// so that user gets an alert that opening it failed
 			let _window = get_window_builder(app, &label, WindowUrl::App("project_folder".into()))
-				.transparent(false)
+				// .transparent(false)
 				.inner_size(800., 500.)
 				.min_inner_size(800., 500.)
 				.build()
@@ -152,8 +152,8 @@ fn get_window_builder<'h, R: Runtime>(app: &'h AppHandle<R>, label: &'h str, url
 	let builder = WindowBuilder::new(app, label, url)
 		.accept_first_mouse(false)
 		.enable_clipboard_access()
-		.title("")
-		.transparent(true);
+		// .transparent(true)
+		.title("");
 
 	#[cfg(target_os = "macos")]
 	let builder = builder.title_bar_style(TitleBarStyle::Overlay);
@@ -161,15 +161,15 @@ fn get_window_builder<'h, R: Runtime>(app: &'h AppHandle<R>, label: &'h str, url
 	builder
 }
 
-#[allow(unused)]
-fn apply_relevant_window_effects<R: Runtime>(app: &AppHandle<R>, window: Window<R>) {
-	#[cfg(target_os = "macos")]
-	app.run_on_main_thread(move || {
-		apply_vibrancy(
-			&window,
-			NSVisualEffectMaterial::HudWindow,
-			None,
-			None
-		).expect("apply_vibrancy is mac only lol");
-	}).unwrap();
-}
+// #[allow(unused)]
+// fn apply_relevant_window_effects<R: Runtime>(app: &AppHandle<R>, window: Window<R>) {
+// 	#[cfg(target_os = "macos")]
+// 	app.run_on_main_thread(move || {
+// 		apply_vibrancy(
+// 			&window,
+// 			NSVisualEffectMaterial::HudWindow,
+// 			None,
+// 			None
+// 		).expect("apply_vibrancy is mac only lol");
+// 	}).unwrap();
+// }

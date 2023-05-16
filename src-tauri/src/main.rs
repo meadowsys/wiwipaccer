@@ -102,8 +102,8 @@ fn main() {
 				.enable_clipboard_access()
 				.inner_size(800., 500.)
 				.min_inner_size(800., 500.)
-				.title("")
-				.transparent(true);
+				// .transparent(true)
+				.title("");
 
 			#[cfg(target_os = "macos")]
 			let builder = builder.title_bar_style(TitleBarStyle::Overlay);
@@ -111,13 +111,13 @@ fn main() {
 			#[allow(unused)]
 			let welcome_window = builder.build()?;
 
-			#[cfg(target_os = "macos")]
-			apply_vibrancy(
-				&welcome_window,
-				NSVisualEffectMaterial::HudWindow,
-				None,
-				None
-			).expect("apply_vibrancy is mac only lol");
+			// #[cfg(target_os = "macos")]
+			// apply_vibrancy(
+			// 	&welcome_window,
+			// 	NSVisualEffectMaterial::HudWindow,
+			// 	None,
+			// 	None
+			// ).expect("apply_vibrancy is mac only lol");
 
 			Ok(())
 		})
