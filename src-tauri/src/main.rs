@@ -69,7 +69,7 @@ fn main() {
 		appdata_rootdir
 	};
 
-	appdata_rootdir.reserve(appdata_rootdir.len() + DATASTORE_PATH.len() + 2);
+	appdata_rootdir.reserve(APPDATA_ROOTDIR.len() + DATASTORE_PATH.len() + 2);
 	appdata_rootdir.push('/');
 	appdata_rootdir.push_str(APPDATA_ROOTDIR);
 
