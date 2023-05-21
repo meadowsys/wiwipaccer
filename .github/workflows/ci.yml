@@ -367,7 +367,7 @@ jobs:
     - name: build app
       shell: bash
       # run: pnpm tauri build --target x86_64-pc-windows-msvc
-      run: pnpm tauri build --target x86_64-pc-windows-msvc --bundle nsis -- -Z build-std
+      run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
       env:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -375,8 +375,8 @@ jobs:
     - name: upload app artifact
       uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
-        name: windows-nsis
-        path: target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+        name: windows-msi
+        path: target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
 
 
   release-rolling:
@@ -438,10 +438,10 @@ jobs:
       with:
         name: linux-appimage
         path: artifacts
-    - name: download artifact windows-nsis
+    - name: download artifact windows-msi
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
       with:
-        name: windows-nsis
+        name: windows-msi
         path: artifacts
 
     - name: create release
