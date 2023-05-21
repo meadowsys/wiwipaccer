@@ -64,6 +64,18 @@ impl Workspace {
 		}))
 	}
 
+	pub fn get_names(&self) -> Vec<&str> {
+		match &self.sources {
+			WorkspaceDatasources::WithoutMCVersion(WithoutMCVersion { sources })
+				| WorkspaceDatasources::WithMCVersion(WithMCVersion { sources, .. })
+			=> {
+				sources.iter()
+					.map(|s| s.get_name())
+					.collect()
+			}
+		}
+	}
+
 	pub fn get_supported_mc_versions(&self) -> Result<Vec<PackVersion>> {
 		let versions_results = match &self.sources {
 			WorkspaceDatasources::WithMCVersion(sources) => { &sources.sources }

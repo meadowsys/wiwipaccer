@@ -62,7 +62,15 @@ pub enum BuildType {
 impl Datasource {
 	pub async fn new(path: &str) -> Result<Self> {
 		let mut messages = vec![];
-		let datasource = read_meta_file::<DatasourceMeta>(path).await?;
+		let datasource = match read_meta_file::<DatasourceMeta>(path).await {
+			Err(e) => match e {
+				Error::ManifestDoesNotExist { path, .. } | Error::ManifestIsNotFile { path } => {
+					Err(Error::ManifestDoesNotExistLikelyNotProject { path })
+				}
+				e => { Err(e) }
+			}
+			res => { res }
+		}?;
 
 		struct Destructure {
 			name: String,
@@ -133,6 +141,15 @@ impl Datasource {
 			textures,
 			messages
 		})))
+	}
+
+	pub fn get_name(&self) -> &str {
+		use Datasource::*;
+		match self {
+			WithMCVersion { without_mc_version, .. } | WithoutMCVersion(without_mc_version) => {
+				&without_mc_version.name
+			}
+		}
 	}
 
 	pub fn get_supported_mc_versions(&self) -> Result<Vec<PackVersion>> {

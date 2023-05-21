@@ -43,6 +43,10 @@ pub enum Error {
 		path: String,
 		source: std::io::Error
 	},
+	#[error("Manifest doesn't exist at path {path}. This doesn't look like a valid project")]
+	ManifestDoesNotExistLikelyNotProject {
+		path: String
+	},
 	#[error("Item at manifest path is not a file: {path}")]
 	ManifestIsNotFile {
 		path: String
@@ -113,6 +117,7 @@ impl Error {
 			IOError { .. } => { MessageSeverity::Error }
 			InvalidBlockID { .. } => { MessageSeverity::Error }
 			ManifestDoesNotExist { .. } => { MessageSeverity::Warning }
+			ManifestDoesNotExistLikelyNotProject { .. } => { MessageSeverity::Fatal }
 			ManifestIsNotFile { .. } => { MessageSeverity::Warning }
 			MCVersionUnknown { .. } => { MessageSeverity::Error }
 			MCVersionUnspecified => { MessageSeverity::Fatal }

@@ -1,7 +1,7 @@
 use camino::Utf8PathBuf;
 use crate::db;
 use lib::meta::pack_version_specifier::PackVersion;
-use lib::runtime_meta::datasource::Datasource;
+use lib::runtime_meta::workspace::Workspace;
 use tauri::api::dialog::FileDialogBuilder;
 // use tauri::api::ipc::
 use tauri::{ AppHandle, Manager, Runtime, Window, WindowBuilder, WindowUrl };
@@ -52,13 +52,24 @@ pub async fn get_platform() -> String {
 }
 
 #[tauri::command]
-pub async fn get_project_meta(path: String) -> lib::error::Result<Datasource> {
-	Datasource::new(&path).await
+pub async fn get_project_meta(path: String) -> lib::error::Result<Workspace> {
+	Workspace::single_dir(&path).await
+}
+
+#[derive(serde::Serialize)]
+pub struct ProjectSupportedVersions {
+	names: Vec<String>,
+	versions: Vec<PackVersion>
 }
 
 #[tauri::command]
-pub async fn get_project_supported_versions(path: String) -> lib::error::Result<Vec<PackVersion>> {
-	Datasource::new(&path).await?.get_supported_mc_versions()
+pub async fn get_project_supported_versions(path: String) -> lib::error::Result<ProjectSupportedVersions> {
+	let workspace = Workspace::single_dir(&path).await?;
+
+	Ok(ProjectSupportedVersions {
+		names: workspace.get_names().iter().map(|s| (*s).into()).collect(),
+		versions: workspace.get_supported_mc_versions()?
+	})
 }
 
 #[tauri::command]

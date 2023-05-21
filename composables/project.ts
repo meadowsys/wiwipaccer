@@ -4,14 +4,6 @@ export async function invoke_add_recent_project(path: string) {
 	await invoke("add_recent_project", { path }) as void;
 }
 
-export async function invoke_get_project_meta(path: string) {
-	return await invoke("get_project_meta", { path });
-}
-
-export async function invoke_get_project_supported_versions(path: string) {
-	return await invoke("get_project_supported_versions", { path }) as Array<object>;
-}
-
 export async function invoke_get_recent_projects() {
 	return await invoke("get_recent_projects") as Array<[string, string]>;
 }
