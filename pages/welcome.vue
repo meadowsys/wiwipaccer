@@ -9,21 +9,21 @@
 
 			<div class="flex-grow" data-tauri-drag-region />
 
-			<welcome-header-button disabled>
+			<wiwi-button disabled>
 				New Project (Soon&trade;)
-			</welcome-header-button>
-			<welcome-header-button @click="invoke_open_project">
+			</wiwi-button>
+			<wiwi-button @click="invoke_open_project">
 				Open Project
-			</welcome-header-button>
-			<welcome-header-button @click="invoke_open_docs">
+			</wiwi-button>
+			<wiwi-button @click="invoke_open_docs">
 				Documentation
-			</welcome-header-button>
-			<welcome-header-button disabled>
+			</wiwi-button>
+			<wiwi-button disabled>
 				Changelog
-			</welcome-header-button>
-			<welcome-header-button @click="invoke_open_about">
+			</wiwi-button>
+			<wiwi-button @click="invoke_open_about">
 				About
-			</welcome-header-button>
+			</wiwi-button>
 		</div>
 
 		<welcome-project-history :recents="recents" />
