@@ -26,6 +26,8 @@
 			</wiwi-button>
 		</div>
 
+		<div class="my-10 border border-neutral-200" />
+
 		<welcome-project-history :recents="recents" />
 	</div>
 </template>
