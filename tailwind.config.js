@@ -1,5 +1,3 @@
-// @ts-check
-
 const plugin = require("tailwindcss/plugin");
 
 const var_prefix = "kiwin-";
@@ -10,6 +8,9 @@ const weight_var = `--${var_prefix}font-wght`;
 // const slant_var = `--${var_prefix}font-slnt`;
 // const cursive_var = `--${var_prefix}font-crsv`;
 
+const colors = require("daisyui/src/colors/themes");
+const daisy_dark = colors["[data-theme=dark]"];
+
 /** @type {(rel: string) => import('tailwindcss').Config} */
 const gen_config = (rel) => ({
 	content: [
@@ -19,6 +20,20 @@ const gen_config = (rel) => ({
 	darkMode: "class",
 	theme: {
 		extend: {}
+	},
+	daisyui: {
+		base: false,
+		themes: [
+			{
+				wiwi: {
+					// ...daisy_dark,
+					// "color-scheme": "light",
+					primary: "#9e6bff",
+					secondary: "#ff794c",
+					accent: "#8CFFDB"
+				}
+			}
+		]
 	},
 	plugins: [
 		plugin(({ addBase }) => {
@@ -193,7 +208,9 @@ const gen_config = (rel) => ({
 					"font-family": "Permanent Marker"
 				}
 			});
-		})
+		}),
+
+		require("daisyui")
 	]
 });
 
