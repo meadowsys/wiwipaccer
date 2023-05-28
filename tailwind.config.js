@@ -210,6 +210,7 @@ const gen_config = (rel) => ({
 			});
 		}),
 
+		require("@tailwindcss/typography"),
 		require("daisyui")
 	]
 });
