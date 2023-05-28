@@ -27,7 +27,7 @@ const APPDATA_ROOTDIR: &str = ".wiwipaccer";
 const DATASTORE_PATH: &str = "data";
 const WELCOME_WINDOW_NAME: &str = "welcome_window";
 
-// WINDOWS WIX DOESN'T SUPPORT PROPER SEMVER AAAAAAAAAAAAAAAAAAA
+// WINDOWS WIX DOESN'T SUPPORT PROPER SEMVER AAAAAAAAAAAAAAAAAAAA
 const ACTUAL_APP_VERSION: &str = include_str!("../meta/version");
 
 const UPDATER_ENABLED: bool = include!("../meta/updater-enabled");
