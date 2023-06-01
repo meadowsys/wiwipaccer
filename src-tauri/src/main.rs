@@ -5,11 +5,9 @@
 )]
 
 use mimalloc::MiMalloc;
-use surrealdb::Datastore;
 use tauri::{ WindowBuilder, WindowUrl };
 use tauri::async_runtime;
 use std::fs;
-use tokio::sync::RwLock;
 
 #[cfg(target_os = "macos")]
 use {
@@ -33,9 +31,7 @@ const ACTUAL_APP_VERSION: &str = include_str!("../meta/version");
 const UPDATER_ENABLED: bool = include!("../meta/updater-enabled");
 const UPDATER_NICE_PLATFORM_NAME: &str = include_str!("../meta/updater-nice-platform-name");
 
-lazy_static::lazy_static! {
-	static ref DATASTORE: RwLock<Option<Datastore>> = RwLock::new(None);
-}
+// static DATASTORE: Surreal<RocksDb> = Surreal::new();
 
 fn main() {
 	let rt = tokio::runtime::Builder::new_multi_thread()
@@ -89,11 +85,7 @@ fn main() {
 	datastore_path.push('/');
 	datastore_path.push_str(DATASTORE_PATH);
 
-	let datastore = async_runtime::block_on(Datastore::new(&format!("file://{datastore_path}")))
-		.expect("Couldn't create datastore");
-	async_runtime::block_on(async {
-		*DATASTORE.write().await = Some(datastore);
-	});
+	db::init_db(&datastore_path);
 
 	tauri::Builder::default()
 		.setup(|app| {
@@ -141,9 +133,7 @@ fn main() {
 			#[allow(clippy::single_match)]
 			match event {
 				RunEvent::Exit => {
-					let datastore = async_runtime::block_on(DATASTORE.write()).take().unwrap();
-					drop(datastore);
-					eprintln!("dropped datastore");
+					db::drop_db();
 				}
 				_ => {}
 			}
