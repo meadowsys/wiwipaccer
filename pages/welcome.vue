@@ -13,7 +13,7 @@
 				New Project (Soon&trade;)
 			</button>
 			<button
-				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
+				class="btn block btn-sm normal-case btn-outline mt-1 text-left btn-primary"
 				@click="invoke_open_project()"
 			>
 				Open Project

@@ -30,7 +30,7 @@
 							Path: <code>{{ recent.path }}</code>
 							<div class="h-2" />
 							<button
-								class="btn btn-outline btn-sm rounded-lg mr-4 normal-case"
+								class="btn btn-outline btn-sm rounded-lg mr-4 normal-case btn-primary"
 								@click="invoke_open_project(recent.path)"
 							>
 								Open
