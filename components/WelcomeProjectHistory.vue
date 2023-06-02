@@ -3,14 +3,20 @@
 		<div class="overflow-scroll h-full flex flex-col">
 			<div v-if="p.recents.length > 0">
 				<div class="flex flex-row pb-6">
-					<div class="flex-grow" />
-					<button class="btn btn-outline btn-sm">Clear recents</button>
-					<div class="flex-grow" />
+					<div class="flex-grow" data-tauri-drag-region />
+					<button
+						class="btn btn-outline btn-sm"
+						@click="invoke_clear_recent_projects"
+					>
+						Clear recents
+					</button>
+					<div class="flex-grow" data-tauri-drag-region />
 				</div>
-				<div :class="joiner" class="border border-base-300">
+				<div :class="joiner" class="border border-base-300 rounded-lg">
 					<div
 						v-for="recent, i in p.recents"
-						class="collapse bg-base-200 border-b-2 border-b-base-300 last:border-b-0"
+						:key="recent.path"
+						class="collapse bg-base-200 border-b-2 border-b-base-300 last:border-b-0 rounded-lg"
 						:class="joiner_item"
 					>
 						<input

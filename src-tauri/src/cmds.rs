@@ -15,11 +15,13 @@ use {
 #[tauri::command]
 pub async fn add_recent_project<R: Runtime>(app: AppHandle<R>, path: String) {
 	db::add_recent_project(&path).await;
+	emit_refresh_recents_to_welcome(&app);
+}
 
-	if let Some(window) = app.get_window(crate::WELCOME_WINDOW_NAME) {
-		window.emit("refresh-recents", "nothin")
-			.expect("failed to emit refresh-recents to welcome window");
-	}
+#[tauri::command]
+pub async fn clear_recent_projects<R: Runtime>(app: AppHandle<R>) {
+	db::clear_recent_projects().await;
+	emit_refresh_recents_to_welcome(&app);
 }
 
 #[tauri::command]
@@ -158,6 +160,13 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 }
 
 // internal helper functions and stuff below here
+
+fn emit_refresh_recents_to_welcome<R: Runtime>(app: &AppHandle<R>) {
+	if let Some(window) = app.get_window(crate::WELCOME_WINDOW_NAME) {
+		window.emit("refresh-recents", "nothin")
+			.expect("failed to emit refresh-recents to welcome window");
+	}
+}
 
 fn get_window_builder<'h, R: Runtime>(app: &'h AppHandle<R>, label: &'h str, url: WindowUrl) -> WindowBuilder<'h, R> {
 	let builder = WindowBuilder::new(app, label, url)

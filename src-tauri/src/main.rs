@@ -115,6 +115,7 @@ fn main() {
 		})
 		.invoke_handler(tauri::generate_handler![
 			cmds::add_recent_project,
+			cmds::clear_recent_projects,
 			cmds::decode_hex_string,
 			cmds::get_license,
 			cmds::get_platform,

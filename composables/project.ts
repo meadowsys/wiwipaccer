@@ -4,6 +4,10 @@ export async function invoke_add_recent_project(path: string) {
 	await invoke("add_recent_project", { path }) as void;
 }
 
+export async function invoke_clear_recent_projects() {
+	await invoke("clear_recent_projects");
+}
+
 export async function invoke_get_recent_projects() {
 	return await invoke("get_recent_projects") as Array<[string, string]>;
 }

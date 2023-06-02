@@ -78,6 +78,17 @@ pub async fn add_recent_project(project_path: &str) {
 	}
 }
 
+pub async fn clear_recent_projects() {
+	let datastore = DATASTORE.read()
+		.await;
+	let datastore = datastore.as_ref()
+		.unwrap();
+
+	let _: Vec<Recent> = datastore.delete("recents")
+		.await
+		.unwrap();
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 struct Recent {
 	path: String,
