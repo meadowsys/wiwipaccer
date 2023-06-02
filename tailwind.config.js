@@ -44,7 +44,8 @@ const gen_config = (rel) => ({
 		tailwind_typography,
 		daisyui,
 		iconsPlugin({
-			collections: getIconCollections("all")
+			// https://icones.js.org
+			collections: getIconCollections(["octicon"])
 		}),
 
 		plugin(({ addBase }) => {
