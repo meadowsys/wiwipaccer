@@ -12,6 +12,7 @@ use tokio::sync::RwLock;
 
 const NS: &str = "e";
 const DB: &str = "h";
+const RECENTS: &str = "recents";
 
 lazy_static::lazy_static! {
 	static ref DATASTORE: RwLock<Option<Surreal<Db>>> = RwLock::new(None);
@@ -55,12 +56,12 @@ pub async fn add_recent_project(project_path: &str) {
 	let datastore = datastore.as_ref()
 		.unwrap();
 
-	let recent: Option<Recent> = datastore.select(("recents", project_path))
+	let recent: Option<Recent> = datastore.select((RECENTS, project_path))
 		.await
 		.unwrap();
 
 	if let Some(recent) = recent {
-		let _: Recent = datastore.update(("recents", project_path))
+		let _: Recent = datastore.update((RECENTS, project_path))
 			.content(Recent {
 				path: recent.path,
 				time: Datetime::default()
@@ -68,7 +69,7 @@ pub async fn add_recent_project(project_path: &str) {
 			.await
 			.unwrap();
 	} else {
-		let _: Recent = datastore.create(("recents", project_path))
+		let _: Recent = datastore.create((RECENTS, project_path))
 			.content(Recent {
 				path: project_path.into(),
 				time: Datetime::default()
@@ -78,13 +79,24 @@ pub async fn add_recent_project(project_path: &str) {
 	}
 }
 
+pub async fn remove_recent_project(project_path: &str) {
+	let datastore = DATASTORE.read()
+		.await;
+	let datastore = datastore.as_ref()
+		.unwrap();
+
+	let _: Recent = datastore.delete((RECENTS, project_path))
+		.await
+		.unwrap();
+}
+
 pub async fn clear_recent_projects() {
 	let datastore = DATASTORE.read()
 		.await;
 	let datastore = datastore.as_ref()
 		.unwrap();
 
-	let _: Vec<Recent> = datastore.delete("recents")
+	let _: Vec<Recent> = datastore.delete(RECENTS)
 		.await
 		.unwrap();
 }

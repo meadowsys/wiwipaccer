@@ -22,7 +22,7 @@
 						<input
 							type="checkbox"
 							:checked="current_checked === i"
-							@change="current_checked = i"
+							@change="current_checked === i ? current_checked = -1 : current_checked = i"
 						/>
 						<div class="collapse-title font-bold select-none">{{ recent.name }}</div>
 						<div class="collapse-content select-none overflow-scroll whitespace-nowrap">
@@ -37,7 +37,7 @@
 							</button>
 							<button
 								class="btn btn-outline btn-sm rounded-lg mr-4"
-								disabled
+								@click="current_checked = -1, invoke_remove_recent_project(recent.path)"
 							>
 								Remove from recents
 							</button>

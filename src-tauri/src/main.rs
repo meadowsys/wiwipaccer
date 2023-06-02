@@ -124,7 +124,8 @@ fn main() {
 			cmds::get_recent_projects,
 			cmds::open_about,
 			cmds::open_docs,
-			cmds::open_project
+			cmds::open_project,
+			cmds::remove_recent_project
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running application")

@@ -159,6 +159,12 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 	}
 }
 
+#[tauri::command]
+pub async fn remove_recent_project<R: Runtime>(app: AppHandle<R>, path: String) {
+	db::remove_recent_project(&path).await;
+	emit_refresh_recents_to_welcome(&app);
+}
+
 // internal helper functions and stuff below here
 
 fn emit_refresh_recents_to_welcome<R: Runtime>(app: &AppHandle<R>) {
