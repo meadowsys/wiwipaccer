@@ -8,9 +8,6 @@ const weight_var = `--${var_prefix}font-wght`;
 // const slant_var = `--${var_prefix}font-slnt`;
 // const cursive_var = `--${var_prefix}font-crsv`;
 
-const colors = require("daisyui/src/colors/themes");
-const daisy_dark = colors["[data-theme=dark]"];
-
 /** @type {(rel: string) => import('tailwindcss').Config} */
 const gen_config = (rel) => ({
 	content: [
@@ -24,18 +21,25 @@ const gen_config = (rel) => ({
 	daisyui: {
 		base: false,
 		themes: [
-			{
-				wiwi: {
-					// ...daisy_dark,
-					// "color-scheme": "light",
-					primary: "#9e6bff",
-					secondary: "#ff794c",
-					accent: "#8CFFDB"
-				}
-			}
+			// {
+			// 	light: {
+			// 		primary: "#9e6bff",
+			// 		secondary: "#ff794c",
+			// 		accent: "#8cffdb",
+			// 		neutral: "#bababa",
+			// 		"base-100": "#ffffff",
+			// 		info: "#3abff8",
+			// 		success: "#36d399",
+			// 		warning: "#fbbd23",
+			// 		error: "#f87272"
+			// 	}
+			// }
 		]
 	},
 	plugins: [
+		require("@tailwindcss/typography"),
+		require("daisyui"),
+
 		plugin(({ addBase }) => {
 			// this deserves its own plugin
 			addBase({
@@ -208,10 +212,7 @@ const gen_config = (rel) => ({
 					"font-family": "Permanent Marker"
 				}
 			});
-		}),
-
-		require("@tailwindcss/typography"),
-		require("daisyui")
+		})
 	]
 });
 

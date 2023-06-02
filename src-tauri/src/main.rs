@@ -92,8 +92,8 @@ fn main() {
 			let builder = WindowBuilder::new(app, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
 				.accept_first_mouse(false)
 				.enable_clipboard_access()
-				.inner_size(800., 500.)
-				.min_inner_size(800., 500.)
+				.inner_size(850., 500.)
+				.min_inner_size(850., 500.)
 				// .transparent(true)
 				.title("");
 
