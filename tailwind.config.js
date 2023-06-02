@@ -1,5 +1,9 @@
 const plugin = require("tailwindcss/plugin");
 
+const daisyui = require("daisyui");
+const tailwind_typography = require("@tailwindcss/typography");
+const { getIconCollections, iconsPlugin } = require("@egoist/tailwindcss-icons");
+
 const var_prefix = "kiwin-";
 const weight_var = `--${var_prefix}font-wght`;
 // const width_var = `--${var_prefix}font-wdth`;
@@ -37,8 +41,11 @@ const gen_config = (rel) => ({
 		]
 	},
 	plugins: [
-		require("@tailwindcss/typography"),
-		require("daisyui"),
+		tailwind_typography,
+		daisyui,
+		iconsPlugin({
+			collections: getIconCollections("all")
+		}),
 
 		plugin(({ addBase }) => {
 			// this deserves its own plugin
