@@ -43,7 +43,6 @@ pub async fn get_recent_projects() -> Vec<String> {
 		.unwrap();
 
 	let recents: Vec<Recent> = res.take(0).unwrap();
-	dbg!(&recents);
 
 	recents.into_iter()
 		.map(|r| r.path)
@@ -51,17 +50,6 @@ pub async fn get_recent_projects() -> Vec<String> {
 }
 
 pub async fn add_recent_project(project_path: &str) {
-	let txt = r#"
-		let $record_id = type::thing("recents", $path);
-		let $existing = (select * from $record_id);
-
-		if array::len($existing) = 0 then
-			(create $record_id set path = $path, time = time::now())
-		else
-			(update $record_id set time = time::now())
-		end
-	"#;
-
 	let datastore = DATASTORE.read()
 		.await;
 	let datastore = datastore.as_ref()
@@ -70,26 +58,23 @@ pub async fn add_recent_project(project_path: &str) {
 	let recent: Option<Recent> = datastore.select(("recents", project_path))
 		.await
 		.unwrap();
-	dbg!(&recent);
 
 	if let Some(recent) = recent {
-		let e: Recent = datastore.update(("recents", project_path))
+		let _: Recent = datastore.update(("recents", project_path))
 			.content(Recent {
 				path: recent.path,
 				time: Datetime::default()
 			})
 			.await
 			.unwrap();
-		dbg!(e);
 	} else {
-		let e: Recent = datastore.create(("recents", project_path))
+		let _: Recent = datastore.create(("recents", project_path))
 			.content(Recent {
 				path: project_path.into(),
 				time: Datetime::default()
 			})
 			.await
 			.unwrap();
-		dbg!(e);
 	}
 }
 
