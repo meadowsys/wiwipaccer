@@ -6,11 +6,36 @@
 
 			<div class="flex-grow" data-tauri-drag-region />
 
-			<wiwi-button disabled>New Project (Soon&trade;)</wiwi-button>
-			<wiwi-button @click="invoke_open_project">Open Project</wiwi-button>
-			<wiwi-button @click="invoke_open_docs">Documentation</wiwi-button>
-			<wiwi-button disabled>Changelog</wiwi-button>
-			<wiwi-button @click="invoke_open_about">About</wiwi-button>
+			<button
+				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
+				disabled
+			>
+				New Project (Soon&trade;)
+			</button>
+			<button
+				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
+				@click="invoke_open_project()"
+			>
+				Open Project
+			</button>
+			<button
+				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
+				@click="invoke_open_docs"
+			>
+				Documentation
+			</button>
+			<button
+				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
+				disabled
+			>
+				Changelog
+			</button>
+			<button
+				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
+				@click="invoke_open_about"
+			>
+				About
+			</button>
 		</div>
 
 		<!-- <div class="my-10 border border-base-200" /> -->
