@@ -2,15 +2,15 @@
 	<div class="h-full flex-grow py-10 px-6" data-tauri-drag-region>
 		<div class="overflow-scroll h-full flex flex-col">
 			<div v-if="p.recents.length > 0">
-				<div class="flex flex-row pb-6">
+				<div class="flex flex-row pb-4">
+					<span class="font-permanent-marker text-2xl">Recents</span>
 					<div class="flex-grow" data-tauri-drag-region />
 					<button
-						class="btn btn-outline btn-sm"
+						class="btn btn-outline btn-sm normal-case"
 						@click="invoke_clear_recent_projects"
 					>
 						Clear recents
 					</button>
-					<div class="flex-grow" data-tauri-drag-region />
 				</div>
 				<div :class="joiner" class="border border-base-300 rounded-lg">
 					<div
@@ -30,13 +30,13 @@
 							Path: <code>{{ recent.path }}</code>
 							<div class="h-2" />
 							<button
-								class="btn btn-outline btn-sm rounded-lg mr-4"
+								class="btn btn-outline btn-sm rounded-lg mr-4 normal-case"
 								@click="invoke_open_project(recent.path)"
 							>
 								Open
 							</button>
 							<button
-								class="btn btn-outline btn-sm rounded-lg mr-4"
+								class="btn btn-outline btn-sm rounded-lg mr-4 normal-case"
 								@click="current_checked = -1, invoke_remove_recent_project(recent.path)"
 							>
 								Remove from recents
