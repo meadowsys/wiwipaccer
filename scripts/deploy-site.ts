@@ -3,7 +3,16 @@ import {
 	copyFileSync as copy_file,
 } from "fs";
 import { resolve as resolve_path } from "path";
-import { spawnSync as spawn } from "child_process";
+import { spawnSync as _spawn } from "child_process";
+
+const spawn = (a: string, b: Array<string>, args?: object) => {
+	let spawned = _spawn(a, b, {
+		...args,
+		stdio: "inherit"
+	});
+
+	return spawned;
+}
 
 if (!process.env.CI) {
 	console.log("deploy-site script intended for use in CI only");
@@ -23,8 +32,6 @@ if (!process.env.CI) {
 	const commit_message = `automated deploy from commit ${
 		spawn("git", ["rev-parse", "HEAD"]).stdout.toString()
 	}`;
-	console.log("commit_message");
-	console.log(commit_message);
 
 	let site_path = resolve_path("./gh-pages");
 	let site_spawn = (cmd: string, args: Array<string>) => spawn(cmd, args, {
@@ -41,6 +48,4 @@ if (!process.env.CI) {
 	site_spawn("git", ["add", "-A"]);
 	site_spawn("git", ["commit", "-m", commit_message]);
 	site_spawn("git", ["push"]);
-
-	console.log("hhhhhhh confused");
 })();
