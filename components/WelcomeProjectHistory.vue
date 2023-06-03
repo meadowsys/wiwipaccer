@@ -3,7 +3,7 @@
 		<div class="overflow-scroll h-full flex flex-col">
 			<div v-if="p.recents.length > 0">
 				<div class="flex flex-row pb-4">
-					<span class="font-permanent-marker text-2xl">Recents</span>
+					<span class="font-permanent-marker text-2xl select-none cursor-default" data-tauri-drag-region>Recents</span>
 					<div class="flex-grow" data-tauri-drag-region />
 					<button
 						class="btn btn-outline btn-sm normal-case"
