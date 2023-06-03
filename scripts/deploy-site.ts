@@ -3,16 +3,7 @@ import {
 	copyFileSync as copy_file,
 } from "fs";
 import { resolve as resolve_path } from "path";
-import { spawnSync as _spawn } from "child_process";
-
-const spawn = (a: string, b: Array<string>, args?: object) => {
-	let spawned = _spawn(a, b, {
-		...args,
-		stdio: "inherit"
-	});
-
-	return spawned;
-}
+import { spawnSync as spawn, execSync as spawn_shell } from "child_process";
 
 if (!process.env.CI) {
 	console.log("deploy-site script intended for use in CI only");
@@ -20,13 +11,13 @@ if (!process.env.CI) {
 }
 
 (async () => {
-	spawn("rm", ["-rf", "gh-pages/*"]);
-	spawn("mv", ["gh-pages/.git", "gh-pages/git"]);
-	spawn("rm", ["-rf", "gh-pages/.*"]);
-	spawn("mv", ["gh-pages/git", "gh-pages/.git"]);
+	spawn_shell("rm -rf gh-pages/*");
+	spawn_shell("mv gh-pages/.git gh-pages/git");
+	spawn_shell("rm -rf gh-pages/.*");
+	spawn_shell("mv gh-pages/git gh-pages/.git");
 
-	spawn("cp", ["-R", "site/.output/public/*", "gh-pages"]);
-	spawn("cp", ["-R", "site/.output/public/.*", "gh-pages"]);
+	spawn_shell("cp -R site/.output/public/* gh-pages");
+	spawn_shell("cp -R site/.output/public/.* gh-pages");
 	copy_file(resolve_path(".gitignore"), resolve_path("gh-pages/.gitignore"));
 
 	const commit_message = `automated deploy from commit ${
