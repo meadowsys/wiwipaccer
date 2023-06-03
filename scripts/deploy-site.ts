@@ -1,14 +1,9 @@
 import {
-	readFileSync as read_file,
 	writeFileSync as write_file,
-	appendFileSync as append_file,
 	copyFileSync as copy_file,
-	openSync as open
 } from "fs";
 import { resolve as resolve_path } from "path";
-import { z } from "zod";
-import { createHash } from "crypto";
-import cp, { spawnSync as spawn } from "child_process";
+import { spawnSync as spawn } from "child_process";
 
 if (!process.env.CI) {
 	console.log("deploy-site script intended for use in CI only");
