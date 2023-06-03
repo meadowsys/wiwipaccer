@@ -190,7 +190,7 @@ let is_ci = !!process.env.CI;
 		.toString("hex");
 
 	if (is_ci && github_output && original_hash !== new_hash) {
-		console.log("::group::committing / creating pull request from new changes");
+		console.log("::group::committing new changes");
 
 		spawn("git", ["config", "--global", "user.name", process.env.GENVERSIONS_AUTOCOMMITTER_NAME!]);
 		spawn("git", ["config", "--global", "user.email", process.env.GENVERSIONS_AUTOCOMMITTER_EMAIL!]);
