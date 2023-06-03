@@ -70,7 +70,7 @@ jobs:
         cd gh-pages
 
         git config --global user.name "${{ secrets.GENVERSIONS_AUTOCOMMITTER_NAME }}"
-        git config --global user.enail "${{ secrets.GENVERSIONS_AUTOCOMMITTER_EMAIL }}"
+        git config --global user.email "${{ secrets.GENVERSIONS_AUTOCOMMITTER_EMAIL }}"
         echo https://meadowsys:${{ secrets.GHPAT }}@github.com > .git/credentials
         git config --global credential.helper "store --file=.git/credentials"
         git config --unset-all http.https://github.com/.extraheader # https://stackoverflow.com/a/69979203
