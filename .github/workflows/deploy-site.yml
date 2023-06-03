@@ -47,7 +47,7 @@ jobs:
         path: gh-pages
         ref: gh-pages
 
-    - name: install fish shell (i give up)
+    - name: install fish shell
       run: |
         sudo add-apt-repository -yn ppa:fish-shell/release-3
         sudo apt-get update
