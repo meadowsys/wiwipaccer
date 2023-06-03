@@ -17,7 +17,11 @@
 		<div class="flex flex-row">
 			<div class="flex-grow" data-tauri-drag-region />
 
-			<nuxt-link class="btn btn-outline btn-square" to="https://github.com/meadowsys/wiwipaccer" target="_blank">
+			<nuxt-link class="btn btn-outline btn-square" to="https://wiwipaccer.kiwin.gay" target="_blank" title="wiwipaccer website">
+				<span class="i-octicon-globe-16 text-2xl" />
+			</nuxt-link>
+			<div class="w-2" />
+			<nuxt-link class="btn btn-outline btn-square" to="https://github.com/meadowsys/wiwipaccer" target="_blank" title="wiwipaccer github repository">
 				<span class="i-octicon-mark-github-16 text-2xl" />
 			</nuxt-link>
 
