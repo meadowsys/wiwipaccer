@@ -27,7 +27,7 @@
 						<div class="collapse-title font-bold select-none">{{ recent.name }}</div>
 						<div class="collapse-content select-none overflow-scroll whitespace-nowrap">
 							<div class="px-16 pt-4 border-t border-t-base-300" />
-							Path: <code>{{ recent.path }}</code>
+							<span class="select-text">Path: <code>{{ recent.path }}</code></span>
 							<div class="h-2" />
 							<button
 								class="btn btn-outline btn-sm rounded-lg mr-4 normal-case btn-primary"
