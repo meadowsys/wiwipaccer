@@ -47,9 +47,34 @@ jobs:
         path: gh-pages
         ref: gh-pages
 
+    - name: install fish shell (i give up)
+      run: |
+        sudo add-apt-repository -yn ppa:fish-shell/release-3
+        sudo apt-get update
+        sudo apt-get install fish
+
     - name: deploy
-      run: node -r @swc-node/register scripts/deploy-site.ts
-      env:
-        GITHUB_TOKEN: ${{ secrets.GHPAT }}
-        GENVERSIONS_AUTOCOMMITTER_NAME: ${{ secrets.GENVERSIONS_AUTOCOMMITTER_NAME }}
-        GENVERSIONS_AUTOCOMMITTER_EMAIL: ${{ secrets.GENVERSIONS_AUTOCOMMITTER_EMAIL }}
+      shell: fish {0}
+      run: |
+        rm -rf gh-pages/*
+        mv gh-pages/.git gh-pages/git
+        rm -rf gh-pages/.*
+        mv gh-pages/git gh-pages/.git
+
+        cp -R site/.output/public/* gh-pages
+        cp -R site/.output/public/.* gh-pages
+        cp .gitignore gh-pages/.gitignore
+
+        set COMMIT_MESSAGE "automated deploy from commit "(git rev-parse HEAD)
+
+        cd gh-pages
+
+        git config --global user.name "${{ secrets.GENVERSIONS_AUTOCOMMITTER_NAME }}"
+        git config --global user.enail "${{ secrets.GENVERSIONS_AUTOCOMMITTER_EMAIL }}"
+        echo https://meadowsys:${{ secrets.GHPAT }}@github.com > .git/credentials
+        git config --global credential.helper "store --file=.git/credentials"
+        git config --unset-all http.https://github.com/.extraheader # https://stackoverflow.com/a/69979203
+
+        git add -A
+        git commit -m "$COMMIT_MESSAGE"
+        git push
