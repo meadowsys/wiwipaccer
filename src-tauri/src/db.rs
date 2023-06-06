@@ -35,11 +35,12 @@ pub fn drop_db() {
 }
 
 pub async fn get_recent_projects() -> Vec<String> {
-	let mut res = DATASTORE.read()
-		.await
-		.as_ref()
-		.unwrap()
-		.query("select * from recents order by time desc")
+	let datastore = DATASTORE.read()
+		.await;
+	let datastore = datastore.as_ref()
+		.unwrap();
+
+	let mut res = datastore.query("select * from recents order by time desc")
 		.await
 		.unwrap();
 
@@ -60,23 +61,23 @@ pub async fn add_recent_project(project_path: &str) {
 		.await
 		.unwrap();
 
-	if let Some(recent) = recent {
-		let _: Recent = datastore.update((RECENTS, project_path))
+	let _: Recent = if let Some(recent) = recent {
+		datastore.update((RECENTS, project_path))
 			.content(Recent {
 				path: recent.path,
 				time: Datetime::default()
 			})
 			.await
-			.unwrap();
+			.unwrap()
 	} else {
-		let _: Recent = datastore.create((RECENTS, project_path))
+		datastore.create((RECENTS, project_path))
 			.content(Recent {
 				path: project_path.into(),
 				time: Datetime::default()
 			})
 			.await
-			.unwrap();
-	}
+			.unwrap()
+	};
 }
 
 pub async fn remove_recent_project(project_path: &str) {
