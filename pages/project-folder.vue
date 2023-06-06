@@ -1,18 +1,26 @@
 <template>
 	<title-bar-container :title="title">
-		<template v-if="things.state === 'loading'">
-			Loading...
-		</template>
-		<template v-else-if="things.state === 'success'">
-			wheeeeeeeeeeeee path: {{ path }}
-		</template>
-		<template v-else-if="things.state === 'error'">
-			Error loading project: {{ things.e }}
-		</template>
+		<!-- <template v-if="state.state === 'loading'">
+			weofijjoiefwoijiojfweiojfweiojiojefw loading h
+		</template> -->
 	</title-bar-container>
 </template>
 
 <script setup lang="ts">
+	import { appWindow } from "@tauri-apps/api/window";
+	let path = await invoke_decode_hex_string(appWindow.label);
+
+	type Loading = {
+		state: "loading";
+	};
+
+	type State = Loading;
+
+	let title = ref("Loading...");
+	let state = ref<State>({ state: "loading" });
+</script>
+
+<!-- <script setup lang="ts">
 	import { appWindow } from "@tauri-apps/api/window";
 	let path = await invoke_decode_hex_string(appWindow.label);
 
@@ -51,4 +59,4 @@
 		.catch(e => {
 			things.value = { state: "error", e };
 		});
-</script>
+</script> -->
