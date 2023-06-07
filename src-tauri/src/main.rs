@@ -17,6 +17,8 @@ use {
 
 mod cmds;
 mod db;
+mod theme;
+mod window_builder;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
@@ -89,27 +91,17 @@ fn main() {
 
 	tauri::Builder::default()
 		.setup(|app| {
-			let builder = WindowBuilder::new(app, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
-				.accept_first_mouse(false)
-				.enable_clipboard_access()
+			let apphandle = app.handle();
+			let builder = window_builder::get_window_builder(&apphandle, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
 				.inner_size(850., 500.)
-				.min_inner_size(850., 500.)
-				// .transparent(true)
-				.title("");
+				.min_inner_size(850., 500.);
 
 			#[cfg(target_os = "macos")]
 			let builder = builder.title_bar_style(TitleBarStyle::Overlay);
 
-			#[allow(unused)]
-			let welcome_window = builder.build()?;
+			let welcome_window = window_builder::build_and_etc(apphandle.clone(), builder);
 
-			// #[cfg(target_os = "macos")]
-			// apply_vibrancy(
-			// 	&welcome_window,
-			// 	NSVisualEffectMaterial::HudWindow,
-			// 	None,
-			// 	None
-			// ).expect("apply_vibrancy is mac only lol");
+			async_runtime::spawn(theme::set_system_theme(app.handle(), welcome_window.theme().unwrap()));
 
 			Ok(())
 		})
@@ -122,6 +114,7 @@ fn main() {
 			cmds::get_project_meta,
 			cmds::get_project_supported_versions,
 			cmds::get_recent_projects,
+			cmds::get_theme,
 			cmds::open_about,
 			cmds::open_docs,
 			cmds::open_project,

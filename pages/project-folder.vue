@@ -18,6 +18,8 @@
 
 	let title = ref("Loading...");
 	let state = ref<State>({ state: "loading" });
+
+	invoke_add_recent_project(path);
 </script>
 
 <!-- <script setup lang="ts">

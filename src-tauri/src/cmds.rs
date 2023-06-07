@@ -1,9 +1,10 @@
 use camino::Utf8PathBuf;
 use crate::db;
+use crate::theme;
+use crate::window_builder::*;
 use lib::meta::pack_version_specifier::PackVersion;
 use lib::runtime_meta::workspace::Workspace;
 use tauri::api::dialog::FileDialogBuilder;
-// use tauri::api::ipc::
 use tauri::{ AppHandle, Manager, Runtime, Window, WindowBuilder, WindowUrl };
 
 #[cfg(target_os = "macos")]
@@ -91,6 +92,13 @@ pub async fn get_recent_projects() -> Vec<(String, String)> {
 }
 
 #[tauri::command]
+pub async fn get_theme() -> theme::Theme {
+	let setting = db::get_theme_setting().await;
+	let theme = theme::get_system_theme().await;
+	theme::get_theme_from_setting(setting, theme)
+}
+
+#[tauri::command]
 pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 	lazy_static::lazy_static! {
 		static ref ABOUT_WINDOW_LABEL: String = format!("about-{}", hex::encode(super::ACTUAL_APP_VERSION));
@@ -99,13 +107,12 @@ pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
 		window.set_focus()
 			.expect("couldn't focus the window");
 	} else {
-		let _window = get_window_builder(&app, &ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
+		let builder = get_window_builder(&app, &ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
 			// .transparent(false)
 			.inner_size(550., 350.)
-			.resizable(false)
+			.resizable(false);
 			// .min_inner_size(750., 350.)
-			.build()
-			.unwrap();
+		let _window = build_and_etc(app.clone(), builder);
 	}
 }
 
@@ -116,12 +123,11 @@ pub async fn open_docs<R: Runtime>(app: AppHandle<R>) {
 		window.set_focus()
 			.expect("couldn't focus the window");
 	} else {
-		let _window = get_window_builder(&app, DOCS_WINDOW_LABEL, WindowUrl::App("docs".into()))
+		let builder = get_window_builder(&app, DOCS_WINDOW_LABEL, WindowUrl::App("docs".into()))
 			// .transparent(false)
 			.inner_size(800., 500.)
-			.min_inner_size(800., 500.)
-			.build()
-			.unwrap();
+			.min_inner_size(800., 500.);
+		let _window = build_and_etc(app.clone(), builder);
 	}
 }
 
@@ -136,12 +142,11 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 		} else {
 			// TODO maybe send a signal back to main or something if this is Err
 			// so that user gets an alert that opening it failed
-			let _window = get_window_builder(app, &label, WindowUrl::App("project-folder".into()))
+			let builder = get_window_builder(app, &label, WindowUrl::App("project-folder".into()))
 				// .transparent(false)
 				.inner_size(800., 500.)
-				.min_inner_size(800., 500.)
-				.build()
-				.unwrap();
+				.min_inner_size(800., 500.);
+			let _window = build_and_etc(app.clone(), builder);
 		}
 	}
 
@@ -173,29 +178,3 @@ fn emit_refresh_recents_to_welcome<R: Runtime>(app: &AppHandle<R>) {
 			.expect("failed to emit refresh-recents to welcome window");
 	}
 }
-
-fn get_window_builder<'h, R: Runtime>(app: &'h AppHandle<R>, label: &'h str, url: WindowUrl) -> WindowBuilder<'h, R> {
-	let builder = WindowBuilder::new(app, label, url)
-		.accept_first_mouse(false)
-		.enable_clipboard_access()
-		// .transparent(true)
-		.title("");
-
-	#[cfg(target_os = "macos")]
-	let builder = builder.title_bar_style(TitleBarStyle::Overlay);
-
-	builder
-}
-
-// #[allow(unused)]
-// fn apply_relevant_window_effects<R: Runtime>(app: &AppHandle<R>, window: Window<R>) {
-// 	#[cfg(target_os = "macos")]
-// 	app.run_on_main_thread(move || {
-// 		apply_vibrancy(
-// 			&window,
-// 			NSVisualEffectMaterial::HudWindow,
-// 			None,
-// 			None
-// 		).expect("apply_vibrancy is mac only lol");
-// 	}).unwrap();
-// }

@@ -1,4 +1,5 @@
 import { colord } from "colord";
+import { invoke } from "@tauri-apps/api";
 
 export type Theme = Partial<{
 	/** Primary colour */
@@ -111,4 +112,8 @@ const theme = computed(() => {
 
 export function use_theme() {
 	return theme;
+}
+
+export async function use_theme_temp() {
+	return await invoke("get_theme") as any;
 }
