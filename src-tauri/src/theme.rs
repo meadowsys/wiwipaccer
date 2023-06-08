@@ -19,7 +19,6 @@ pub async fn set_system_theme<R: Runtime>(apphandle: AppHandle<R>, theme: tauri:
 	*SYSTEM_THEME.lock().await = theme;
 }
 
-/// hacky but, if theme is Err then we skip checking for matching (aka this is init calling this)
 pub async fn emit_update_theme<R: Runtime>(apphandle: AppHandle<R>, theme: tauri::Theme) {
 	let mut current_theme_mutex = SYSTEM_THEME.lock().await;
 
