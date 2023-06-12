@@ -4,6 +4,7 @@
 use super::pack_version_specifier::{ MCVersionType, PackFormat, PackVersion };
 
 pub const PACK_FORMATS: &[PackVersion] = &[
+	PackVersion { name: "1.20.1", release_type: MCVersionType::Release, format: PackFormat::Maybe(13) },
 	PackVersion { name: "1.20.1-rc1", release_type: MCVersionType::Snapshot, format: PackFormat::Maybe(13) },
 	PackVersion { name: "1.20", release_type: MCVersionType::Release, format: PackFormat::Maybe(13) },
 	PackVersion { name: "1.20-rc1", release_type: MCVersionType::Snapshot, format: PackFormat::Maybe(13) },
