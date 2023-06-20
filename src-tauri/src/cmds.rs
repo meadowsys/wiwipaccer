@@ -41,7 +41,7 @@ pub async fn get_license() -> String {
 }
 
 #[tauri::command]
-pub async fn get_platform() -> String {
+pub async fn get_platform() -> &'static str {
 	#[cfg(target_os = "macos")]
 	let platform = "macos";
 
@@ -51,7 +51,7 @@ pub async fn get_platform() -> String {
 	#[cfg(target_os = "windows")]
 	let platform = "windows";
 
-	platform.into()
+	platform
 }
 
 #[tauri::command]

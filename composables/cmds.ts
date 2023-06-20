@@ -9,7 +9,7 @@ export async function invoke_get_license() {
 }
 
 export async function invoke_get_platform() {
-	return await invoke("get_platform") as string;
+	return await invoke("get_platform") as "macos" | "linux" | "windows";
 }
 
 export async function invoke_open_about() {
