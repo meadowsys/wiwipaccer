@@ -3,6 +3,19 @@
 		<!-- <template v-if="state.state === 'loading'">
 			weofijjoiefwoijiojfweiojfweiojiojefw loading h
 		</template> -->
+		<template #right>
+			<div class="flex flex-row w-full h-full" data-tauri-drag-region>
+				<div class="flex-grow" data-tauri-drag-region />
+				<div class="flex flex-col">
+					<div class="flex-grow" data-tauri-drag-region />
+					<select class="select select-bordered select-xs mr-2 focus:outline-none hover:border-primary cursor-default">
+						<option selected>Build</option>
+						<option>Develop</option>
+					</select>
+					<div class="flex-grow" data-tauri-drag-region />
+				</div>
+			</div>
+		</template>
 	</title-bar-container>
 </template>
 
