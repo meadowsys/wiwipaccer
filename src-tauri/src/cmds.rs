@@ -60,16 +60,16 @@ pub async fn get_project_meta(path: String) -> lib::error::Result<Workspace> {
 }
 
 #[derive(serde::Serialize)]
-pub struct ProjectSupportedVersions {
+pub struct ProjectBasicMeta {
 	names: Vec<String>,
 	versions: Vec<PackVersion>
 }
 
 #[tauri::command]
-pub async fn get_project_supported_versions(path: String) -> lib::error::Result<ProjectSupportedVersions> {
+pub async fn get_project_basic_meta(path: String) -> lib::error::Result<ProjectBasicMeta> {
 	let workspace = Workspace::single_dir(&path).await?;
 
-	Ok(ProjectSupportedVersions {
+	Ok(ProjectBasicMeta {
 		names: workspace.get_names().iter().map(|s| (*s).into()).collect(),
 		versions: workspace.get_supported_mc_versions()?
 	})

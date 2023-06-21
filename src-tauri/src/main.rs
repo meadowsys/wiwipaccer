@@ -112,7 +112,7 @@ fn main() {
 			cmds::get_license,
 			cmds::get_platform,
 			cmds::get_project_meta,
-			cmds::get_project_supported_versions,
+			cmds::get_project_basic_meta,
 			cmds::get_recent_projects,
 			cmds::get_theme,
 			cmds::open_about,

@@ -13,7 +13,8 @@ export async function invoke_get_project_meta(path: string) {
 	return await invoke("get_project_meta", { path });
 }
 
-const project_supported_versions_validator = z.object({
+export type ProjectSupportedVersions = z.infer<typeof project_basic_meta_validator>;
+const project_basic_meta_validator = z.object({
 	names: z.string().array(),
 	versions: z.object({
 		name: z.string(),
@@ -39,7 +40,7 @@ const project_supported_versions_validator = z.object({
 	}).strict().array()
 });
 
-export async function invoke_get_project_supported_versions(path: string) {
-	let versions = await invoke("get_project_supported_versions", { path });
-	return project_supported_versions_validator.parse(versions);
+export async function invoke_get_project_basic_meta(path: string) {
+	let versions = await invoke("get_project_basic_meta", { path });
+	return project_basic_meta_validator.parse(versions);
 }
