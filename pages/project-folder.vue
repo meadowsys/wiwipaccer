@@ -8,16 +8,23 @@
 				<div class="flex-grow" data-tauri-drag-region />
 				<div v-if="state.state === 'success'" class="flex flex-col">
 					<div class="flex-grow" data-tauri-drag-region />
-					<select class="select select-bordered select-xs mr-2 focus:outline-none hover:border-primary cursor-default">
-						<option v-for="version in state.project.versions">{{ version.name }}</option>
+					<select
+						ref="version_selector"
+						@change="update_mode_and_version"
+						class="select select-bordered select-xs mr-2 focus:outline-none hover:border-primary cursor-default"
+					>
+						<option v-for="version in state.project.versions" :key="version.name">{{ version.name }}</option>
 					</select>
 					<div class="flex-grow" data-tauri-drag-region />
 				</div>
 				<div class="flex flex-col">
 					<div class="flex-grow" data-tauri-drag-region />
-					<select class="select select-bordered select-xs mr-2 focus:outline-none hover:border-primary cursor-default">
-						<option selected>Build</option>
-						<option>Develop</option>
+					<select
+						ref="mode_selector"
+						@change="update_mode_and_version"
+						class="select select-bordered select-xs mr-2 focus:outline-none hover:border-primary cursor-default"
+					>
+						<option v-for="opt in mode_options">{{ opt }}</option>
 					</select>
 					<div class="flex-grow" data-tauri-drag-region />
 				</div>
@@ -27,6 +34,12 @@
 			loading...
 		</template>
 		<template v-else-if="state.state === 'success'">
+			<template v-if="selected_version !== ''">
+				you have selected version: {{ selected_version }}<br>mode: {{ selected_mode }}
+			</template>
+			<template v-else>
+				please select a version
+			</template>
 		</template>
 		<template v-else-if="state.state === 'error'">
 			error: {{ state.e }}
@@ -69,6 +82,27 @@
 		if (state.value.state === "error") return "Error in loading workspace";
 		return `if you see this title please report it: ${state.value}`;
 	});
+
+	const mode_options = ["Build", "Develop"] as const;
+	let selected_mode = ref<typeof mode_options[number]>("Build");
+	let mode_selector = ref<HTMLSelectElement>();
+	let selected_version = ref("");
+	let version_selector = ref<HTMLSelectElement>();
+	function update_mode_and_version() {
+		if (state.value.state !== "success" || mode_selector.value === undefined || version_selector.value === undefined) {
+			selected_version.value = "";
+			return;
+		} else {
+			let i = version_selector.value.selectedIndex;
+			let name = version_selector.value.children[i].innerHTML;
+			selected_version.value = name;
+
+			i = mode_selector.value.selectedIndex;
+			let mode = mode_selector.value.children[i].innerHTML;
+			selected_mode.value = mode as typeof mode_options[number];
+		}
+	}
+	watch([state, mode_selector, version_selector], update_mode_and_version);
 
 	invoke_get_project_basic_meta(path)
 		.then(project => {
