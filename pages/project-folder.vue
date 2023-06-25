@@ -67,7 +67,7 @@
 		}
 
 		if (state.value.state === "error") return "Error in loading workspace";
-		throw "this should never happen lol";
+		return `if you see this title please report it: ${state.value}`;
 	});
 
 	invoke_get_project_basic_meta(path)
