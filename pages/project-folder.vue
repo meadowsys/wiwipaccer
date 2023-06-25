@@ -35,7 +35,17 @@
 		</template>
 		<template v-else-if="state.state === 'success'">
 			<template v-if="selected_version !== ''">
-				you have selected version: {{ selected_version }}<br>mode: {{ selected_mode }}
+				<workspace-build
+					v-if="selected_mode === 'Build'"
+					:selected-version="selected_version"
+				/>
+				<workspace-dev
+					v-else-if="selected_mode === 'Develop'"
+					:selected-version="selected_version"
+				/>
+				<template v-else>
+					what
+				</template>
 			</template>
 			<template v-else>
 				please select a version
