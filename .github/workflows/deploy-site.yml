@@ -2,7 +2,9 @@ name: deploy site
 on:
   push:
     branches:
-    - "**"
+    - "wiwi"
+    paths:
+    - "site/**"
 
 concurrency:
   group: deploy-site
