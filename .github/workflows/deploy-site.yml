@@ -65,7 +65,7 @@ jobs:
         cp -R site/.output/public/.* gh-pages
         cp .gitignore gh-pages/.gitignore
 
-        set COMMIT_MESSAGE "automated deploy from commit "(git rev-parse HEAD)
+        set COMMIT_MESSAGE "(automated) deploy from commit "(git rev-parse HEAD)
 
         cd gh-pages
 
