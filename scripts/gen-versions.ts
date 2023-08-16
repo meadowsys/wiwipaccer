@@ -29,6 +29,8 @@ let is_ci = !!process.env.CI;
 
 	let formats_meta: Record<string, PackMeta | undefined> = {};
 
+	let duplicate_versions_specified = false;
+
 	is_ci && console.log("::group::parsed pack formats from src file");
 	read_file(resolve_path(src), "utf8")
 		.trim()
@@ -76,10 +78,22 @@ let is_ci = !!process.env.CI;
 			return [];
 		})
 		.forEach(packmeta => {
-			console.log(JSON.stringify(packmeta));
+			if (formats_meta[packmeta.mc_version]) {
+				console.log(`there is a duplicate for minecraft ${packmeta.mc_version} on line ${packmeta.lineno}!`);
+				duplicate_versions_specified = true;
+			}
 			formats_meta[packmeta.mc_version] = packmeta;
+			// console.log(JSON.stringify(packmeta));
+
+			let should_print_specifier = packmeta.specifier_type === "Verified" || packmeta.specifier_type === "Unverified" || packmeta.specifier_type === "Maybe";
+			console.log(`L${packmeta.lineno}, mc ${packmeta.mc_version}, ${packmeta.specifier_type} ${should_print_specifier ? packmeta.specifier : ""}`);
 		});
 	is_ci && console.log("::endgroup::");
+
+	if (duplicate_versions_specified) {
+		console.log("one or more duplicates were found, refusing to continue");
+		process.exit(1);
+	}
 
 	let mojang_versions_validator = z.object({
 		latest: z.object({
