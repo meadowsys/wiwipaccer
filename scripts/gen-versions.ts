@@ -9,8 +9,8 @@ import { z } from "zod";
 import { createHash } from "crypto";
 import { spawnSync as spawn } from "child_process";
 
-const src = "./lib/src/meta/pack_formats_src";
-const dest = "./lib/src/meta/pack_formats.rs";
+const src = "lib/src/meta/pack_formats_src";
+const dest = "lib/src/meta/pack_formats.rs";
 
 let is_ci = !!process.env.CI;
 
@@ -136,14 +136,18 @@ let is_ci = !!process.env.CI;
 		);
 	});
 
+	// The purpose of this mechanism is to assign a better value than `Unknown`
+	// for newly released versions of MC that we haven't specified yet.
+	// Otherwise, `Unknown` would be used instead, which isn't great
 	let new_versions_specifier = first_specified_version
 		? `Maybe(${format_meta!.specifier})`
 		: "Unknown"
 	let still_in_new_versions = true;
 
-	// The purpose of this mechanism is to assign a better value than `Unknown`
-	// for newly released versions of MC that we haven't specified yet.
-	// Otherwise, `Unknown` would be used instead, which isn't great
+	// entries here are deleted as they are used by the entry generation
+	// so we can warn about unused entries at the end
+	let formats_meta_for_use_tracking = { ...formats_meta };
+
 	let final = versions_from_mojang.versions
 		.map(version => {
 			if (still_in_new_versions && formats_meta[version.id]) still_in_new_versions = false;
@@ -158,8 +162,11 @@ let is_ci = !!process.env.CI;
 				// template literal (of course except imports and the async IIFE)
 				? `${formats_meta[version.id].specifier_type}${formats_meta[version.id].specifier_type === "Unknown" || formats_meta[version.id].specifier_type === "None" ? "" : `(${formats_meta[version.id].specifier})`}`
 				: (still_in_new_versions ? new_versions_specifier : "Unknown");
+			let version_entry = `PackVersion { name: "${version.id}", release_type: MCVersionType::${release_type}, format: PackFormat::${format} }`;
 
-			return `PackVersion { name: "${version.id}", release_type: MCVersionType::${release_type}, format: PackFormat::${format} }`;
+			delete formats_meta_for_use_tracking[version.id];
+
+			return version_entry;
 		});
 
 	let final_final = final.join(",\n\t");
@@ -169,7 +176,18 @@ let is_ci = !!process.env.CI;
 
 	write_file(resolve_path(dest), final_final_4);
 
-	console.log("done!\n");
+	console.log();
+	let unused_versions = Object.values(formats_meta_for_use_tracking);
+	unused_versions.forEach(version => {
+		let warn_msg = `version \`${version.mc_version}\` not returned by mojang (invalid version?)`;
+		if (is_ci) {
+			console.log(`::warning file={${src}},line={${version.lineno}}::${warn_msg}`);
+		} else {
+			console.log(warn_msg);
+		}
+	});
+
+	console.log("\ndone!\n");
 
 	let formats_meta_array = Object.entries(formats_meta);
 	let s_verified = formats_meta_array.filter(v => v[1].specifier_type === "Verified");
@@ -189,12 +207,13 @@ let is_ci = !!process.env.CI;
 	console.log(`      ${s_snapshot.length} snapshots`);
 	console.log(`      ${s_old_beta.length} old betas`);
 	console.log(`      ${s_old_alpha.length} old alphas`);
-	console.log(`   ${formats_meta_array.length} versions specified with meta in source file`);
+	console.log(`   ${formats_meta_array.length} versions specified with meta in source file${unused_versions.length > 0 ? " (including unused)" : ""}`);
 	console.log(`      ${s_verified.length} verified`);
 	console.log(`      ${s_unverified.length} unverified`);
 	console.log(`      ${s_maybe.length} maybe`);
 	console.log(`      ${s_unknown.length} unknown`);
 	console.log(`      ${s_none.length} none`);
+	unused_versions.length > 0 && console.log(`      ${unused_versions.length} unused`);
 	is_ci && console.log("::endgroup::");
 
 	const github_output = process.env.GITHUB_OUTPUT;
