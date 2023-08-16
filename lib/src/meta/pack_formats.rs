@@ -91,7 +91,7 @@ pub const PACK_FORMATS: &[PackVersion] = &[
 	PackVersion { name: "22w06a", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
 	PackVersion { name: "22w05a", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
 	PackVersion { name: "22w03a", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
-	PackVersion { name: "1.18.1", release_type: MCVersionType::Release, format: PackFormat::Unknown },
+	PackVersion { name: "1.18.1", release_type: MCVersionType::Release, format: PackFormat::Verified(8) },
 	PackVersion { name: "1.18.1-rc3", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
 	PackVersion { name: "1.18.1-rc2", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
 	PackVersion { name: "1.18.1-rc1", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
