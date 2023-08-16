@@ -27,7 +27,7 @@ let is_ci = !!process.env.CI;
 		.digest()
 		.toString("hex");
 
-	let formats_meta: Record<string, PackMeta | undefined> = {};
+	let formats_meta: Record<string, PackMeta> = {};
 
 	let duplicate_versions_specified = false;
 
@@ -156,7 +156,7 @@ let is_ci = !!process.env.CI;
 				// todo refactor this, i got impatient wanting to make it work lol ~vapor
 				// hmmmmm, thinking about it i probably could have wrote this whole thing inside a
 				// template literal (of course except imports and the async IIFE)
-				? `${formats_meta[version.id]!.specifier_type}${formats_meta[version.id]!.specifier_type === "Unknown" || formats_meta[version.id]!.specifier_type === "None" ? "" : `(${formats_meta[version.id]!.specifier})`}`
+				? `${formats_meta[version.id].specifier_type}${formats_meta[version.id].specifier_type === "Unknown" || formats_meta[version.id].specifier_type === "None" ? "" : `(${formats_meta[version.id].specifier})`}`
 				: (still_in_new_versions ? new_versions_specifier : "Unknown");
 
 			return `PackVersion { name: "${version.id}", release_type: MCVersionType::${release_type}, format: PackFormat::${format} }`;
@@ -172,11 +172,11 @@ let is_ci = !!process.env.CI;
 	console.log("done!\n");
 
 	let formats_meta_array = Object.entries(formats_meta);
-	let s_verified = formats_meta_array.filter(v => v[1]?.specifier_type === "Verified");
-	let s_unverified = formats_meta_array.filter(v => v[1]?.specifier_type === "Unverified");
-	let s_maybe = formats_meta_array.filter(v => v[1]?.specifier_type === "Maybe");
-	let s_unknown = formats_meta_array.filter(v => v[1]?.specifier_type === "Unknown");
-	let s_none = formats_meta_array.filter(v => v[1]?.specifier_type === "None");
+	let s_verified = formats_meta_array.filter(v => v[1].specifier_type === "Verified");
+	let s_unverified = formats_meta_array.filter(v => v[1].specifier_type === "Unverified");
+	let s_maybe = formats_meta_array.filter(v => v[1].specifier_type === "Maybe");
+	let s_unknown = formats_meta_array.filter(v => v[1].specifier_type === "Unknown");
+	let s_none = formats_meta_array.filter(v => v[1].specifier_type === "None");
 	let s_release = versions_from_mojang.versions.filter(v => v.type === "release");
 	let s_snapshot = versions_from_mojang.versions.filter(v => v.type === "snapshot");
 	let s_old_beta = versions_from_mojang.versions.filter(v => v.type === "old_beta");
