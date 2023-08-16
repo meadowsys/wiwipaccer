@@ -203,7 +203,9 @@ let is_ci = !!process.env.CI;
 		.digest()
 		.toString("hex");
 
-	if (is_ci && github_output && original_hash !== new_hash) {
+	if (!is_ci) {
+		// running outside of CI, noop
+	} else if (original_hash !== new_hash) {
 		console.log("::group::committing new changes");
 
 		spawn("git", ["config", "--global", "user.name", process.env.GENVERSIONS_AUTOCOMMITTER_NAME!]);
