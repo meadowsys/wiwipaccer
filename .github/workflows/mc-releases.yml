@@ -6,6 +6,7 @@ on:
   push:
     paths:
     - "lib/src/meta/pack_formats_src"
+    - "scripts/gen-versions.ts"
 
 concurrency:
   group: mc-releases
