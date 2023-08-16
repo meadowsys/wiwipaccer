@@ -181,7 +181,7 @@ let is_ci = !!process.env.CI;
 	unused_versions.forEach(version => {
 		let warn_msg = `version \`${version.mc_version}\` not returned by mojang (invalid version?)`;
 		if (is_ci) {
-			console.log(`::warning file={${src}},line={${version.lineno}}::${warn_msg}`);
+			console.log(`::warning file=${src},line=${version.lineno}::${warn_msg}`);
 		} else {
 			console.log(warn_msg);
 		}
