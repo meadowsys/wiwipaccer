@@ -5,6 +5,7 @@
 use super::pack_version_specifier::{ MCVersionType, PackFormat, PackVersion };
 
 pub const PACK_FORMATS: &[PackVersion] = &[
+	PackVersion { name: "23w33a", release_type: MCVersionType::Snapshot, format: PackFormat::Maybe(17) },
 	PackVersion { name: "23w32a", release_type: MCVersionType::Snapshot, format: PackFormat::Verified(17) },
 	PackVersion { name: "23w31a", release_type: MCVersionType::Snapshot, format: PackFormat::Verified(16) },
 	PackVersion { name: "1.20.1", release_type: MCVersionType::Release, format: PackFormat::Verified(15) },
@@ -626,8 +627,8 @@ pub const PACK_FORMATS: &[PackVersion] = &[
 	PackVersion { name: "1.5.1", release_type: MCVersionType::Release, format: PackFormat::Unknown },
 	PackVersion { name: "1.5", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
 	PackVersion { name: "1.4.7", release_type: MCVersionType::Release, format: PackFormat::Unknown },
-	PackVersion { name: "1.4.5", release_type: MCVersionType::Release, format: PackFormat::Unknown },
 	PackVersion { name: "1.4.6", release_type: MCVersionType::Release, format: PackFormat::Unknown },
+	PackVersion { name: "1.4.5", release_type: MCVersionType::Release, format: PackFormat::Unknown },
 	PackVersion { name: "1.4.4", release_type: MCVersionType::Release, format: PackFormat::Unknown },
 	PackVersion { name: "1.4.3", release_type: MCVersionType::Snapshot, format: PackFormat::Unknown },
 	PackVersion { name: "1.4.2", release_type: MCVersionType::Release, format: PackFormat::Unknown },
