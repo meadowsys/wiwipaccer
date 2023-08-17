@@ -176,8 +176,8 @@ import * as cp from "child_process";
 	array_of_unused_pack_meta.forEach(version => {
 		let warn_msg = `version \`${version.mc_version}\` not returned by mojang (invalid version?)`;
 		run_if_CI(
-			() => `::warning file=${src},line=${version.line_number}::${warn_msg}`,
-			() => `warning: ${warn_msg}`
+			() => console.log(`::warning file=${src},line=${version.line_number}::${warn_msg}`),
+			() => console.log(`warning: ${warn_msg}`)
 		);
 	});
 
