@@ -320,7 +320,7 @@ import * as cp from "child_process";
 
 	function run_if_CI(f: () => void, not_ci?: () => void) {
 		if (!!process.env.CI) f();
-		else if (not_ci) not_ci();
+		else not_ci?.();
 	}
 
 	function create_hash_of_dest(): string {
