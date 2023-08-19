@@ -1,7 +1,7 @@
 {
 	"build": {
-		"beforeDevCommand": "pnpm run dev",
 		"beforeBuildCommand": "pnpm run generate",
+		"beforeDevCommand": "pnpm run dev",
 		"devPath": "http://localhost:3000",
 		"distDir": "../.output/public",
 		"withGlobalTauri": false
@@ -11,17 +11,6 @@
 		"version": "0.0.0"
 	},
 	"tauri": {
-		"allowlist": {
-			"all": false,
-			"shell": {
-				"all": false,
-				"open": true
-			},
-			"window": {
-				"all": false,
-				"startDragging": true
-			}
-		},
 		"bundle": {
 			"active": true,
 			"category": "DeveloperTool",
@@ -50,6 +39,10 @@
 			"resources": [],
 			"shortDescription": "",
 			"targets": "all",
+			"updater": {
+				"active": true,
+				"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDIxQkMzOEZCREU0MkI3QkIKUldTN3QwTGUremk4SVpSN2RyVitTbVRGWTZhY1ErYjQ2YWV3cUdXK0kxWG80U1ZPUHNZaHpPVEwK"
+			},
 			"windows": {
 				"certificateThumbprint": null,
 				"digestAlgorithm": "sha256",
@@ -59,17 +52,19 @@
 		"security": {
 			"csp": null
 		},
-		"systemTray": {
+		"trayIcon": {
 			"iconPath": "icons/systemtray.png",
 			"iconAsTemplate": true,
 			"menuOnLeftClick": true
 		},
-		"updater": {
-			"active": true,
-			"dialog": false,
-			"endpoints": [],
-			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDIxQkMzOEZCREU0MkI3QkIKUldTN3QwTGUremk4SVpSN2RyVitTbVRGWTZhY1ErYjQ2YWV3cUdXK0kxWG80U1ZPUHNZaHpPVEwK"
-		},
 		"macOSPrivateApi": true
+	},
+	"plugins": {
+		"shell": {
+			"open": true
+		},
+		"updater": {
+			"endpoints": []
+		}
 	}
 }
