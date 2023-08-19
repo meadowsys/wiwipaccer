@@ -17,8 +17,9 @@ use {
 
 mod cmds;
 mod db;
+mod menu;
 mod theme;
-mod window_builder;
+mod window_manager;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
@@ -92,14 +93,15 @@ fn main() {
 	tauri::Builder::default()
 		.setup(|app| {
 			let apphandle = app.handle();
-			let builder = window_builder::get_window_builder(&apphandle, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
+			let builder = window_manager::get_window_builder(&apphandle, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
 				.inner_size(850., 500.)
-				.min_inner_size(850., 500.);
+				.min_inner_size(850., 500.)
+				.menu(menu::welcome_menu_bar());
 
 			#[cfg(target_os = "macos")]
 			let builder = builder.title_bar_style(TitleBarStyle::Overlay);
 
-			let welcome_window = window_builder::build_and_etc(apphandle.clone(), builder);
+			let welcome_window = window_manager::build_and_etc(apphandle.clone(), builder);
 
 			async_runtime::spawn(theme::set_system_theme(app.handle(), welcome_window.theme().unwrap()));
 
@@ -134,14 +136,3 @@ fn main() {
 			}
 		});
 }
-
-// let system_tray_menu = {
-// 	let e = tauri::CustomMenuItem::new("e", "e");
-// 	tauri::SystemTrayMenu::new()
-// 		.add_item(e)
-// };
-
-// tauri::SystemTray::new()
-// 	.with_menu(system_tray_menu)
-// 	.build(apphandle)
-// 	.unwrap();

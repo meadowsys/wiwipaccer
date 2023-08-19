@@ -1,4 +1,4 @@
-use tauri::{ AppHandle, Runtime, Window, WindowBuilder, WindowEvent, WindowUrl, async_runtime };
+use tauri::{ AppHandle, Runtime, Window, WindowBuilder, WindowEvent, WindowUrl, async_runtime, Manager };
 
 #[cfg(target_os = "macos")]
 use {
@@ -45,3 +45,21 @@ pub fn build_and_etc<R: Runtime>(apphandle: AppHandle<R>, builder: WindowBuilder
 // 		).expect("apply_vibrancy is mac only lol");
 // 	}).unwrap();
 // }
+
+pub fn open_about_window<R: Runtime>(app: AppHandle<R>) {
+	lazy_static::lazy_static! {
+		static ref ABOUT_WINDOW_LABEL: String = format!("about-{}", hex::encode(super::ACTUAL_APP_VERSION));
+	}
+
+	if let Some(window) = app.get_window(&ABOUT_WINDOW_LABEL) {
+		window.set_focus()
+			.expect("couldn't focus the window");
+	} else {
+		let builder = get_window_builder(&app, &ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
+			// .transparent(false)
+			.inner_size(550., 350.)
+			.resizable(false);
+			// .min_inner_size(750., 350.)
+		let _window = build_and_etc(app.clone(), builder);
+	}
+}

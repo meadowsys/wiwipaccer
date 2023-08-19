@@ -1,7 +1,7 @@
 use camino::Utf8PathBuf;
 use crate::db;
 use crate::theme;
-use crate::window_builder::*;
+use crate::window_manager::*;
 use lib::meta::pack_version_specifier::PackVersion;
 use lib::runtime_meta::workspace::Workspace;
 use tauri::api::dialog::FileDialogBuilder;
@@ -100,20 +100,7 @@ pub async fn get_theme() -> theme::Theme {
 
 #[tauri::command]
 pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
-	lazy_static::lazy_static! {
-		static ref ABOUT_WINDOW_LABEL: String = format!("about-{}", hex::encode(super::ACTUAL_APP_VERSION));
-	}
-	if let Some(window) = app.get_window(&ABOUT_WINDOW_LABEL) {
-		window.set_focus()
-			.expect("couldn't focus the window");
-	} else {
-		let builder = get_window_builder(&app, &ABOUT_WINDOW_LABEL, WindowUrl::App("about".into()))
-			// .transparent(false)
-			.inner_size(550., 350.)
-			.resizable(false);
-			// .min_inner_size(750., 350.)
-		let _window = build_and_etc(app.clone(), builder);
-	}
+	crate::window_manager::open_about_window(app);
 }
 
 #[tauri::command]
