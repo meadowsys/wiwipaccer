@@ -5,7 +5,7 @@
 )]
 
 use mimalloc::MiMalloc;
-use tauri::{ WindowBuilder, WindowUrl };
+use tauri::{ Manager as _, WindowBuilder, WindowUrl };
 use tauri::async_runtime;
 use std::fs;
 
@@ -43,57 +43,58 @@ fn main() {
 		.unwrap();
 	async_runtime::set(rt.handle().clone());
 
-	#[cfg(not(debug_assertions))]
-	let mut appdata_rootdir = tauri::api::path::home_dir()
-		.expect("cannot get home directory")
-		.to_str()
-		.expect("path is not valid UTF-8, only valid UTF-8 pathnames are supported")
-		.to_string();
-	#[cfg(debug_assertions)]
-	let mut appdata_rootdir = {
-		let mut appdata_rootdir = std::env::current_dir()
-			.expect("couldn't get current dir")
-			.to_str()
-			.expect("path is not valid UTF-8, only valid UTF-8 pathnames are supported")
-			.to_string();
-
-		appdata_rootdir.push_str("/dev-datadir");
-
-		if fs::metadata(&appdata_rootdir).is_err() {
-			fs::create_dir(&appdata_rootdir)
-				.unwrap_or_else(|_| panic!("couldn't create appdata_rootdir for dev: {appdata_rootdir}"));
-		}
-
-		appdata_rootdir
-	};
-
-	appdata_rootdir.reserve(APPDATA_ROOTDIR.len() + DATASTORE_PATH.len() + 2);
-	appdata_rootdir.push('/');
-	appdata_rootdir.push_str(APPDATA_ROOTDIR);
-
-	match fs::metadata(&appdata_rootdir) {
-		Ok(meta) => match meta.is_dir() {
-			true => { /* assuming its ours */ }
-			false => { panic!("path is already taken, isn't dir: {appdata_rootdir}") }
-		}
-		Err(_) => {
-			// probably doesn't exist?
-			fs::create_dir(&appdata_rootdir)
-				.unwrap_or_else(|_| panic!("couldn't create root appdata dir {appdata_rootdir}"));
-		}
-	}
-
-	let mut datastore_path = appdata_rootdir;
-	datastore_path.push('/');
-	datastore_path.push_str(DATASTORE_PATH);
-
-	db::init_db(&datastore_path);
-
 	tauri::Builder::default()
 		.plugin(tauri_plugin_dialog::init())
 		.plugin(tauri_plugin_window::init())
 		.setup(|app| {
 			let app = app.handle();
+
+			#[cfg(not(debug_assertions))]
+			let mut appdata_rootdir = app.path().home_dir()
+				.expect("cannot get home directory")
+				.to_str()
+				.expect("path is not valid UTF-8, only valid UTF-8 pathnames are supported")
+				.to_string();
+			#[cfg(debug_assertions)]
+			let mut appdata_rootdir = {
+				let mut appdata_rootdir = std::env::current_dir()
+					.expect("couldn't get current dir")
+					.to_str()
+					.expect("path is not valid UTF-8, only valid UTF-8 pathnames are supported")
+					.to_string();
+
+				appdata_rootdir.push_str("/dev-datadir");
+
+				if fs::metadata(&appdata_rootdir).is_err() {
+					fs::create_dir(&appdata_rootdir)
+						.unwrap_or_else(|_| panic!("couldn't create appdata_rootdir for dev: {appdata_rootdir}"));
+				}
+
+				appdata_rootdir
+			};
+
+			appdata_rootdir.reserve(APPDATA_ROOTDIR.len() + DATASTORE_PATH.len() + 2);
+			appdata_rootdir.push('/');
+			appdata_rootdir.push_str(APPDATA_ROOTDIR);
+
+			match fs::metadata(&appdata_rootdir) {
+				Ok(meta) => match meta.is_dir() {
+					true => { /* assuming its ours */ }
+					false => { panic!("path is already taken, isn't dir: {appdata_rootdir}") }
+				}
+				Err(_) => {
+					// probably doesn't exist?
+					fs::create_dir(&appdata_rootdir)
+						.unwrap_or_else(|_| panic!("couldn't create root appdata dir {appdata_rootdir}"));
+				}
+			}
+
+			let mut datastore_path = appdata_rootdir;
+			datastore_path.push('/');
+			datastore_path.push_str(DATASTORE_PATH);
+
+			db::init_db(&datastore_path);
+
 			window_manager::open_welcome_window(app);
 			Ok(())
 		})
