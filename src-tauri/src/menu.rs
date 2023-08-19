@@ -7,7 +7,8 @@ pub fn welcome_menu_bar<R: Runtime>(app: &AppHandle<R>) -> Menu<R> {
 		.build()
 		.expect("unable to build welcome menu");
 
-	menu.append(&menu_wiwipaccer(app));
+	menu.append(&menu_wiwipaccer(app))
+		.expect("unable to append wiwipaccer menu");
 	// let menu = Menu::new(app)
 	// 	.add_submenu(menu_wiwipaccer())
 	menu

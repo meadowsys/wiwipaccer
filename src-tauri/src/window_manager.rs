@@ -14,13 +14,25 @@ const DOCS_WINDOW_LABEL: &str = "docs";
 pub fn open_welcome_window<R: Runtime>(app: &AppHandle<R>) {
 	let builder = get_window_builder(app, WELCOME_WINDOW_LABEL, WindowUrl::App("welcome".into()))
 		.inner_size(850., 500.)
-		.min_inner_size(850., 500.)
-		.menu(menu::welcome_menu_bar(app));
+		.min_inner_size(850., 500.);
 
 	#[cfg(target_os = "macos")]
 	let builder = builder.title_bar_style(TitleBarStyle::Overlay);
 
 	let window = build_and_etc(app, builder);
+
+	{
+		let app = app.clone();
+		window.on_window_event(move |event| {
+			match event {
+				WindowEvent::Focused(focused) if *focused => {
+					// app.set_menu(menu::welcome_menu_bar(&app))
+					// 	.expect("unable to set app menu");
+				}
+				_ => {}
+			}
+		});
+	}
 
 	async_runtime::spawn(theme::set_system_theme(app.clone(), window.theme().unwrap()));
 }
