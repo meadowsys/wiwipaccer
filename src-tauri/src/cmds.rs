@@ -2,8 +2,8 @@ use camino::Utf8PathBuf;
 use crate::*;
 use lib::meta::pack_version_specifier::PackVersion;
 use lib::runtime_meta::workspace::Workspace;
-use tauri::api::dialog::FileDialogBuilder;
 use tauri::{ AppHandle, Manager, Runtime, Window, WindowBuilder, WindowUrl };
+use tauri_plugin_dialog::{ DialogExt as _, FileDialogBuilder };
 
 #[cfg(target_os = "macos")]
 use {
@@ -111,7 +111,7 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 	if let Some(path) = path {
 		window_manager::open_project_window(&app, &path);
 	} else {
-		FileDialogBuilder::new().pick_folder(move |folder| {
+		app.dialog().file().pick_folder(move |folder| {
 			if let Some(path) = folder {
 				let path: Utf8PathBuf = path.try_into()
 					.expect("only utf-8 paths are supported, could not open project");

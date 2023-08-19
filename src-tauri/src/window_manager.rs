@@ -15,7 +15,7 @@ pub fn open_welcome_window<R: Runtime>(app: &AppHandle<R>) {
 	let builder = get_window_builder(app, WELCOME_WINDOW_LABEL, WindowUrl::App("welcome".into()))
 		.inner_size(850., 500.)
 		.min_inner_size(850., 500.)
-		.menu(menu::welcome_menu_bar());
+		.menu(menu::welcome_menu_bar(app));
 
 	#[cfg(target_os = "macos")]
 	let builder = builder.title_bar_style(TitleBarStyle::Overlay);

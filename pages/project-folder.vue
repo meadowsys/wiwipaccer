@@ -58,8 +58,10 @@
 </template>
 
 <script setup lang="ts">
-	import { appWindow } from "@tauri-apps/api/window";
+	import { getCurrent } from "@tauri-apps/plugin-window";
 	import type { ProjectSupportedVersions } from "~/composables/project-meta"
+
+	const appWindow = getCurrent();
 
 	let path = await invoke_decode_hex_string(appWindow.label);
 

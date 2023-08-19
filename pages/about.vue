@@ -33,7 +33,10 @@
 </template>
 
 <script setup lang="ts">
-	import { appWindow } from "@tauri-apps/api/window";
+	import { getCurrent } from "@tauri-apps/plugin-window";
+
+	const appWindow = getCurrent();
+
 	let version = appWindow.label.replace(/^about-(.*)$/, "$1");
 	version = await invoke_decode_hex_string(version);
 </script>

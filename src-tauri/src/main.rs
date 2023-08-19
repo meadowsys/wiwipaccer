@@ -90,9 +90,11 @@ fn main() {
 	db::init_db(&datastore_path);
 
 	tauri::Builder::default()
+		.plugin(tauri_plugin_dialog::init())
+		.plugin(tauri_plugin_window::init())
 		.setup(|app| {
 			let app = app.handle();
-			window_manager::open_welcome_window(&app);
+			window_manager::open_welcome_window(app);
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![

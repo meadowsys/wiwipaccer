@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-	import { appWindow } from "@tauri-apps/api/window";
+	import { getCurrent } from "@tauri-apps/plugin-window";``
 	let recents = ref<Array<{ name: string, path: string }>>([]);
 
 	function update_recents() {
@@ -57,6 +57,7 @@
 			});
 	}
 
+	const appWindow = getCurrent();
 	const unlisten = await appWindow.listen("refresh-recents", update_recents);
 
 	onMounted(() => {
