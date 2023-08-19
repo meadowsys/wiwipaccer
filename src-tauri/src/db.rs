@@ -250,9 +250,11 @@ async fn convert_db_theme_to_theme(theme: Theme) -> theme::Theme {
 			let datastore = datastore.as_ref()
 				.unwrap();
 
-			datastore.select(id)
+			let theme = datastore.select(id)
 				.await
-				.unwrap()
+				.unwrap();
+
+			theme::Theme::Custom(Box::new(theme))
 		}
 	}
 }

@@ -28,7 +28,6 @@ pub async fn emit_update_theme<R: Runtime>(apphandle: AppHandle<R>, theme: tauri
 	let setting = crate::db::get_theme_setting().await;
 	let theme = get_theme_from_setting(setting, theme);
 
-	println!("emitting");
 	apphandle.emit_all(THEME_UPDATE, theme).unwrap();
 }
 

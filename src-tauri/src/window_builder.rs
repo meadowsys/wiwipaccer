@@ -25,8 +25,7 @@ pub fn build_and_etc<R: Runtime>(apphandle: AppHandle<R>, builder: WindowBuilder
 	#[allow(clippy::single_match)]
 	window.on_window_event(move |event| match event {
 		WindowEvent::ThemeChanged(theme) => {
-			println!("got ThemeChanged event");
-			async_runtime::block_on(crate::theme::emit_update_theme(apphandle.clone(), *theme));
+			async_runtime::spawn(crate::theme::emit_update_theme(apphandle.clone(), *theme));
 		}
 		_ => {}
 	});
