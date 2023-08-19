@@ -26,7 +26,6 @@ static GLOBAL: MiMalloc = MiMalloc;
 
 const APPDATA_ROOTDIR: &str = ".wiwipaccer";
 const DATASTORE_PATH: &str = "data";
-const WELCOME_WINDOW_NAME: &str = "welcome_window";
 
 // WINDOWS WIX DOESN'T SUPPORT PROPER SEMVER AAAAAAAAAAAAAAAAAAAA
 const ACTUAL_APP_VERSION: &str = include_str!("../meta/version");
@@ -92,19 +91,8 @@ fn main() {
 
 	tauri::Builder::default()
 		.setup(|app| {
-			let apphandle = app.handle();
-			let builder = window_manager::get_window_builder(&apphandle, WELCOME_WINDOW_NAME, WindowUrl::App("welcome".into()))
-				.inner_size(850., 500.)
-				.min_inner_size(850., 500.)
-				.menu(menu::welcome_menu_bar());
-
-			#[cfg(target_os = "macos")]
-			let builder = builder.title_bar_style(TitleBarStyle::Overlay);
-
-			let welcome_window = window_manager::build_and_etc(apphandle.clone(), builder);
-
-			async_runtime::spawn(theme::set_system_theme(app.handle(), welcome_window.theme().unwrap()));
-
+			let app = app.handle();
+			window_manager::open_welcome_window(&app);
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
@@ -124,7 +112,7 @@ fn main() {
 		])
 		.build(tauri::generate_context!())
 		.expect("error while running application")
-		.run(|_apphandle, event| {
+		.run(|_app, event| {
 			use tauri::RunEvent;
 
 			#[allow(clippy::single_match)]

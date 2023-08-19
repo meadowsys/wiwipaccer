@@ -1,6 +1,6 @@
 #![allow(non_upper_case_globals)]
 
-use crate::theme;
+use crate::*;
 use serde::{ Deserialize, Serialize };
 use surrealdb::engine::local::RocksDb;
 use surrealdb::engine::local::Db;

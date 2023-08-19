@@ -1,7 +1,5 @@
 use camino::Utf8PathBuf;
-use crate::db;
-use crate::theme;
-use crate::window_manager::*;
+use crate::*;
 use lib::meta::pack_version_specifier::PackVersion;
 use lib::runtime_meta::workspace::Workspace;
 use tauri::api::dialog::FileDialogBuilder;
@@ -100,52 +98,25 @@ pub async fn get_theme() -> theme::Theme {
 
 #[tauri::command]
 pub async fn open_about<R: Runtime>(app: AppHandle<R>) {
-	crate::window_manager::open_about_window(app);
+	window_manager::open_about_window(&app);
 }
 
 #[tauri::command]
 pub async fn open_docs<R: Runtime>(app: AppHandle<R>) {
-	const DOCS_WINDOW_LABEL: &str = "docs";
-	if let Some(window) = app.get_window(DOCS_WINDOW_LABEL) {
-		window.set_focus()
-			.expect("couldn't focus the window");
-	} else {
-		let builder = get_window_builder(&app, DOCS_WINDOW_LABEL, WindowUrl::App("docs".into()))
-			// .transparent(false)
-			.inner_size(800., 500.)
-			.min_inner_size(800., 500.);
-		let _window = build_and_etc(app.clone(), builder);
-	}
+	window_manager::open_docs_window(&app);
 }
 
 #[tauri::command]
 pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
-	fn open_project_window<R: Runtime>(app: &AppHandle<R>, path: &str) {
-		let label = hex::encode(path);
-		let existing = app.get_window(&label);
-		if let Some(window) = existing {
-			window.set_focus()
-				.expect("couldn't focus window");
-		} else {
-			// TODO maybe send a signal back to main or something if this is Err
-			// so that user gets an alert that opening it failed
-			let builder = get_window_builder(app, &label, WindowUrl::App("project-folder".into()))
-				// .transparent(false)
-				.inner_size(800., 500.)
-				.min_inner_size(800., 500.);
-			let _window = build_and_etc(app.clone(), builder);
-		}
-	}
-
 	if let Some(path) = path {
-		open_project_window(&app, &path);
+		window_manager::open_project_window(&app, &path);
 	} else {
 		FileDialogBuilder::new().pick_folder(move |folder| {
 			if let Some(path) = folder {
 				let path: Utf8PathBuf = path.try_into()
 					.expect("only utf-8 paths are supported, could not open project");
 
-				open_project_window(&app, path.as_str());
+				window_manager::open_project_window(&app, path.as_str());
 			}
 		});
 	}
@@ -160,7 +131,7 @@ pub async fn remove_recent_project<R: Runtime>(app: AppHandle<R>, path: String) 
 // internal helper functions and stuff below here
 
 fn emit_refresh_recents_to_welcome<R: Runtime>(app: &AppHandle<R>) {
-	if let Some(window) = app.get_window(crate::WELCOME_WINDOW_NAME) {
+	if let Some(window) = window_manager::get_welcome_window(app) {
 		window.emit("refresh-recents", "nothin")
 			.expect("failed to emit refresh-recents to welcome window");
 	}

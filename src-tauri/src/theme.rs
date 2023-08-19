@@ -1,3 +1,4 @@
+use crate::*;
 use serde::{ Deserialize, Serialize };
 use tauri::Manager;
 use tauri::AppHandle;
@@ -15,20 +16,20 @@ pub async fn get_system_theme() -> tauri::Theme {
 	*SYSTEM_THEME.lock().await
 }
 
-pub async fn set_system_theme<R: Runtime>(apphandle: AppHandle<R>, theme: tauri::Theme) {
+pub async fn set_system_theme<R: Runtime>(app: AppHandle<R>, theme: tauri::Theme) {
 	*SYSTEM_THEME.lock().await = theme;
 }
 
-pub async fn emit_update_theme<R: Runtime>(apphandle: AppHandle<R>, theme: tauri::Theme) {
+pub async fn emit_update_theme<R: Runtime>(app: AppHandle<R>, theme: tauri::Theme) {
 	let mut current_theme_mutex = SYSTEM_THEME.lock().await;
 
 	if theme == *current_theme_mutex { return }
 	*current_theme_mutex = theme;
 
-	let setting = crate::db::get_theme_setting().await;
+	let setting = db::get_theme_setting().await;
 	let theme = get_theme_from_setting(setting, theme);
 
-	apphandle.emit_all(THEME_UPDATE, theme).unwrap();
+	app.emit_all(THEME_UPDATE, theme).unwrap();
 }
 
 pub fn get_theme_from_setting(setting: ThemeSetting, theme: tauri::Theme) -> Theme {

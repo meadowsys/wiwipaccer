@@ -1,3 +1,4 @@
+use crate::*;
 use tauri::{ AppHandle, CustomMenuItem, Menu, MenuEvent, MenuItem, Runtime, Submenu, Manager };
 
 pub fn welcome_menu_bar() -> Menu {
@@ -7,10 +8,10 @@ pub fn welcome_menu_bar() -> Menu {
 
 pub fn workspace_menu_bar() {}
 
-pub fn menu_event_handler<R: Runtime>(event: MenuEvent, app: AppHandle<R>) {
+pub fn menu_event_handler<R: Runtime>(app: &AppHandle<R>, event: MenuEvent) {
 	match event.menu_item_id() {
 		"about" => {
-			crate::window_manager::open_about_window(app);
+			window_manager::open_about_window(&app);
 		}
 		"settings" => {}
 		_ => {}
@@ -39,5 +40,5 @@ fn menu_wiwipaccer() -> Submenu {
 
 // tauri::SystemTray::new()
 // 	.with_menu(system_tray_menu)
-// 	.build(apphandle)
+// 	.build(app)
 // 	.unwrap();
