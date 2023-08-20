@@ -19,3 +19,7 @@ export async function invoke_open_about() {
 export async function invoke_open_docs() {
 	await invoke("open_docs");
 }
+
+export async function invoke_open_settings() {
+	await invoke("open_settings");
+}

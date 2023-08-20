@@ -32,6 +32,12 @@
 			</button>
 			<button
 				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
+				@click="invoke_open_settings"
+			>
+				Settings
+			</button>
+			<button
+				class="btn block btn-sm normal-case btn-outline mt-1 text-left"
 				@click="invoke_open_about"
 			>
 				About

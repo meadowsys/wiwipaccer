@@ -10,6 +10,7 @@ use {
 
 const WELCOME_WINDOW_LABEL: &str = "welcome_window";
 const DOCS_WINDOW_LABEL: &str = "docs";
+const SETTINGS_WINDOW_LABEL: &str = "settings";
 
 pub fn open_welcome_window<R: Runtime>(app: &AppHandle<R>) {
 	let builder = get_window_builder(app, WELCOME_WINDOW_LABEL, WindowUrl::App("welcome".into()))
@@ -41,36 +42,6 @@ pub fn get_welcome_window<R: Runtime>(app: &AppHandle<R>) -> Option<Window<R>> {
 	app.get_window(WELCOME_WINDOW_LABEL)
 }
 
-pub fn open_project_window<R: Runtime>(app: &AppHandle<R>, path: &str) {
-	let label = hex::encode(path);
-	let existing = app.get_window(&label);
-	if let Some(window) = existing {
-		window.set_focus()
-			.expect("couldn't focus window");
-	} else {
-		// TODO maybe send a signal back to main or something if this is Err
-		// so that user gets an alert that opening it failed
-		let builder = get_window_builder(app, &label, WindowUrl::App("project-folder".into()))
-			// .transparent(false)
-			.inner_size(800., 500.)
-			.min_inner_size(800., 500.);
-		let _window = build_and_etc(app, builder);
-	}
-}
-
-pub fn open_docs_window<R: Runtime>(app: &AppHandle<R>) {
-	if let Some(window) = app.get_window(DOCS_WINDOW_LABEL) {
-		window.set_focus()
-			.expect("couldn't focus the window");
-	} else {
-		let builder = get_window_builder(app, DOCS_WINDOW_LABEL, WindowUrl::App("docs".into()))
-			// .transparent(false)
-			.inner_size(800., 500.)
-			.min_inner_size(800., 500.);
-		let _window = build_and_etc(app, builder);
-	}
-}
-
 pub fn open_about_window<R: Runtime>(app: &AppHandle<R>) {
 	lazy_static::lazy_static! {
 		static ref ABOUT_WINDOW_LABEL: String = format!("about-{}", hex::encode(super::ACTUAL_APP_VERSION));
@@ -85,6 +56,48 @@ pub fn open_about_window<R: Runtime>(app: &AppHandle<R>) {
 			.inner_size(550., 350.)
 			.resizable(false);
 			// .min_inner_size(750., 350.)
+		let _window = build_and_etc(app, builder);
+	}
+}
+
+pub fn open_docs_window<R: Runtime>(app: &AppHandle<R>) {
+	if let Some(window) = app.get_window(DOCS_WINDOW_LABEL) {
+		window.set_focus()
+			.expect("couldn't focus docs window");
+	} else {
+		let builder = get_window_builder(app, DOCS_WINDOW_LABEL, WindowUrl::App("docs".into()))
+			// .transparent(false)
+			.inner_size(800., 500.)
+			.min_inner_size(800., 500.);
+		let _window = build_and_etc(app, builder);
+	}
+}
+
+pub fn open_project_window<R: Runtime>(app: &AppHandle<R>, path: &str) {
+	let label = hex::encode(path);
+	let existing = app.get_window(&label);
+	if let Some(window) = existing {
+		window.set_focus()
+			.expect("couldn't focus project window");
+	} else {
+		// TODO maybe send a signal back to main or something if this is Err
+		// so that user gets an alert that opening it failed
+		let builder = get_window_builder(app, &label, WindowUrl::App("project-folder".into()))
+			// .transparent(false)
+			.inner_size(800., 500.)
+			.min_inner_size(800., 500.);
+		let _window = build_and_etc(app, builder);
+	}
+}
+
+pub fn open_settings_window<R: Runtime>(app: &AppHandle<R>) {
+	if let Some(window) = app.get_window(SETTINGS_WINDOW_LABEL) {
+		window.set_focus()
+			.expect("couldn't focus settings window");
+	} else {
+		let builder = get_window_builder(app, SETTINGS_WINDOW_LABEL, WindowUrl::App("settings".into()))
+			.inner_size(1000., 600.)
+			.min_inner_size(700., 500.);
 		let _window = build_and_etc(app, builder);
 	}
 }

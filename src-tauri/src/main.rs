@@ -110,6 +110,7 @@ fn main() {
 			cmds::get_theme,
 			cmds::open_about,
 			cmds::open_docs,
+			cmds::open_settings,
 			cmds::open_project,
 			cmds::remove_recent_project
 		])

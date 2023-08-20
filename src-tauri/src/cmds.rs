@@ -123,6 +123,11 @@ pub async fn open_project<R: Runtime>(app: AppHandle<R>, path: Option<String>) {
 }
 
 #[tauri::command]
+pub async fn open_settings<R: Runtime>(app: AppHandle<R>) {
+	window_manager::open_settings_window(&app);
+}
+
+#[tauri::command]
 pub async fn remove_recent_project<R: Runtime>(app: AppHandle<R>, path: String) {
 	db::remove_recent_project(&path).await;
 	emit_refresh_recents_to_welcome(&app);
