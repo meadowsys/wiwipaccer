@@ -1,8 +1,8 @@
-const plugin = require("tailwindcss/plugin");
-
-const daisyui = require("daisyui");
-const tailwind_typography = require("@tailwindcss/typography");
-const { getIconCollections, iconsPlugin } = require("@egoist/tailwindcss-icons");
+import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
+import daisyui from "daisyui";
+import tailwind_typography from "@tailwindcss/typography";
+import { getIconCollections, iconsPlugin } from "@egoist/tailwindcss-icons";
 
 const var_prefix = "kiwin-";
 const weight_var = `--${var_prefix}font-wght`;
@@ -12,8 +12,7 @@ const weight_var = `--${var_prefix}font-wght`;
 // const slant_var = `--${var_prefix}font-slnt`;
 // const cursive_var = `--${var_prefix}font-crsv`;
 
-/** @type {(rel: string) => import('tailwindcss').Config} */
-const gen_config = (rel) => ({
+export const gen_config = (rel: string) => ({
 	content: [
 		"./app.vue",
 		"./{assets,components,composables,layouts,pages}/**/*.{vue,ts,js,tsx,jsx}"
@@ -70,7 +69,7 @@ const gen_config = (rel) => ({
 			});
 
 			matchUtilities(
-				{ "font-wght": weight => ({ [weight_var]: weight }) },
+				{ "font-wght": weight => ({ [weight_var]: weight } as any) },
 				{
 					values: {
 						.../** @type {any} */(theme("fontWeight")),
@@ -222,7 +221,6 @@ const gen_config = (rel) => ({
 			});
 		})
 	]
-});
+}) satisfies Config;
 
-module.exports = gen_config(".");
-module.exports.gen_config = gen_config;
+export default gen_config(".");
