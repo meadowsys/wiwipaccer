@@ -1,5 +1,5 @@
 <template>
-	<div class="w-fit text-xs" :data-part-of-selectcomponent="id">
+	<div class="w-fit text-xs z-50" :data-part-of-selectcomponent="id">
 		<div :data-part-of-selectcomponent="id">
 			<input
 				type="text"
@@ -12,13 +12,13 @@
 				:data-part-of-selectcomponent="id"
 			>
 			<ul
-				class="p-1 border-b border-x border-b-base-300 border-x-base-300 rounded-b-md overflow-scroll max-h-48"
+				class="p-1 border-b border-x border-b-base-300 border-x-base-300 rounded-b-md overflow-scroll max-h-48 bg-base-100"
 				:class="options_classes"
 				:data-part-of-selectcomponent="id"
 			>
 				<li
 					v-for="option in opts_with_stuff"
-					class="hover:bg-base-200 active:bg-base-300 rounded-sm select-none cursor-pointer px-2 py-1 "
+					class="hover:bg-base-200 active:bg-base-300 rounded-sm select-none cursor-pointer px-2 py-1 bg-base-100"
 					:class="option[1]"
 					tabindex="-1"
 					@click="set_option(option[0])"
@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 	const p = defineProps<{
-		options: Array<string>;
+		options: ReadonlyArray<string>;
 		default?: string;
 		width: string;
 	}>();
@@ -45,6 +45,13 @@
 	const option_set = ref(false);
 	const override_option_hiding = ref(false);
 
+	const last_good_value = ref(p.default || "");
+	watch([option_set, input_text], () => {
+		if (option_set.value) {
+			last_good_value.value = input_text.value;
+		}
+	});
+
 	const opts_with_stuff = computed(() => p.options.map(option => [
 		option,
 		search(option, input_text.value) || override_option_hiding.value ? "" : "hidden"
@@ -54,7 +61,7 @@
 	const options_classes = computed(() => is_options_shown.value ? "" : "hidden");
 	watch(input_text, v => {
 		override_option_hiding.value = false;
-		option_set.value = p.options.includes(v)
+		option_set.value = p.options.includes(v);
 		if (!option_set.value) options_shown.value = true;
 	});
 
@@ -96,15 +103,7 @@
 		document.removeEventListener("mousedown", global_mousedown);
 	});
 
-	type Option =
-		| { set: false; }
-		| { set: true; option: string; };
-	const option = computed<Option>(() => {
-		if (!option_set.value) return { set: false };
-		return { set: true, option: input_text.value };
-	});
-
-	defineExpose({ option });
+	defineExpose({ option: last_good_value });
 
 	function search(option: string, input_text: string) {
 		let input_text_tokens = input_text.split(" ")

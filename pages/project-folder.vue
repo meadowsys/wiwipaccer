@@ -1,31 +1,16 @@
 <template>
 	<title-bar-container :title="title">
-		<!-- <template v-if="state.state === 'loading'">
-			weofijjoiefwoijiojfweiojfweiojiojefw loading h
-		</template> -->
 		<template #right>
 			<div class="flex flex-row w-full h-full" data-tauri-drag-region>
 				<div class="flex-grow" data-tauri-drag-region />
-				<div v-if="state.state === 'success'" class="flex flex-col">
-					<div class="flex-grow" data-tauri-drag-region />
-					<select
-						ref="version_selector"
-						@change="update_mode_and_version"
-						class="select select-bordered select-xs mr-2 focus:outline-none hover:border-primary cursor-default"
-					>
-						<option v-for="version in state.project.versions" :key="version.name">{{ version.name }}</option>
-					</select>
+				<div v-if="state.state === 'success'" class="flex flex-col mr-[2px]">
+					<div class="h-[2px] flex-shrink-0" data-tauri-drag-region />
+					<select-component-thing ref="version_selector" :options="state.project.versions.map(v => v.name)" width="100px" :default="state.project.versions[0].name" />
 					<div class="flex-grow" data-tauri-drag-region />
 				</div>
-				<div class="flex flex-col">
-					<div class="flex-grow" data-tauri-drag-region />
-					<select
-						ref="mode_selector"
-						@change="update_mode_and_version"
-						class="select select-bordered select-xs mr-2 focus:outline-none hover:border-primary cursor-default"
-					>
-						<option v-for="opt in mode_options">{{ opt }}</option>
-					</select>
+				<div class="flex flex-col mr-[2px]">
+					<div class="h-[2px] flex-shrink-0" data-tauri-drag-region />
+					<select-component-thing ref="mode_selector" :options="mode_options" width="100px" :default="mode_options[0]" />
 					<div class="flex-grow" data-tauri-drag-region />
 				</div>
 			</div>
@@ -34,13 +19,13 @@
 			loading...
 		</template>
 		<template v-else-if="state.state === 'success'">
-			<template v-if="selected_version !== ''">
+			<template v-if="selected_version !== '' && selected_mode !== ''">
 				<workspace-build
-					v-if="selected_mode === 'Build'"
+					v-if="selected_mode === 'build'"
 					:selected-version="selected_version"
 				/>
 				<workspace-dev
-					v-else-if="selected_mode === 'Develop'"
+					v-else-if="selected_mode === 'develop'"
 					:selected-version="selected_version"
 				/>
 				<template v-else>
@@ -48,7 +33,7 @@
 				</template>
 			</template>
 			<template v-else>
-				please select a version
+				please select a version / mode
 			</template>
 		</template>
 		<template v-else-if="state.state === 'error'">
@@ -59,7 +44,8 @@
 
 <script setup lang="ts">
 	import { getCurrent } from "@tauri-apps/plugin-window";
-	import type { ProjectSupportedVersions } from "~/composables/project-meta"
+	import type { ProjectSupportedVersions } from "~/composables/project-meta";
+	import type SelectComponentThing from "~/components/SelectComponentThing.vue";
 
 	const appWindow = getCurrent();
 
@@ -95,26 +81,13 @@
 		return `if you see this title please report it: ${state.value}`;
 	});
 
-	const mode_options = ["Build", "Develop"] as const;
-	let selected_mode = ref<typeof mode_options[number]>("Build");
-	let mode_selector = ref<HTMLSelectElement>();
-	let selected_version = ref("");
-	let version_selector = ref<HTMLSelectElement>();
-	function update_mode_and_version() {
-		if (state.value.state !== "success" || mode_selector.value === undefined || version_selector.value === undefined) {
-			selected_version.value = "";
-			return;
-		} else {
-			let i = version_selector.value.selectedIndex;
-			let name = version_selector.value.children[i].innerHTML;
-			selected_version.value = name;
+	const mode_options = ["build", "develop"] as const;
 
-			i = mode_selector.value.selectedIndex;
-			let mode = mode_selector.value.children[i].innerHTML;
-			selected_mode.value = mode as typeof mode_options[number];
-		}
-	}
-	watch([state, mode_selector, version_selector], update_mode_and_version);
+	let version_selector = ref<InstanceType<typeof SelectComponentThing>>();
+	let mode_selector = ref<InstanceType<typeof SelectComponentThing>>();
+
+	let selected_version = computed(() => version_selector.value?.option || "");
+	let selected_mode = computed(() => mode_selector.value?.option || "");
 
 	invoke_get_project_basic_meta(path)
 		.then(project => {
