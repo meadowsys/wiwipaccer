@@ -1,15 +1,16 @@
 <template>
-	<div class="border border-base-300 rounded-md w-fit" :data-part-of-selectcomponent="id">
+	<div class="w-fit" :data-part-of-selectcomponent="id">
 		<div :data-part-of-selectcomponent="id">
 			<input
 				type="text"
 				v-model="input_text"
-				class="border-none outline-none mx-3 my-1"
+				class="outline-none border rounded-md border-base-300 px-3 py-1 hover:border-primary focus:border-primary cursor-default focus:cursor-text"
+				:class="input_classes"
 				@mousedown="options_shown = !options_shown"
 				:data-part-of-selectcomponent="id"
 			>
 			<ul
-				class="p-2 border-t border-t-base-300"
+				class="p-2 border-b border-x border-b-base-300 border-x-base-300 rounded-b-md overflow-scroll max-h-48"
 				:class="options_classes"
 				:data-part-of-selectcomponent="id"
 			>
@@ -42,14 +43,15 @@
 
 	const opts_with_stuff = computed(() => p.options.map(option => [
 		option,
-		option.includes(input_text.value) ? "" : "hidden"
+		search(option, input_text.value) ? "" : "hidden"
 	] as const));
-	const options_classes = computed(() =>
-		options_shown.value && !opts_with_stuff.value.every(o => o[1] === "hidden")
-			? ""
-			: "hidden"
-	);
-	watch(input_text, v => option_set.value = p.options.includes(v));
+	const is_options_shown = computed(() => options_shown.value && !opts_with_stuff.value.every(o => o[1] === "hidden"));
+	const input_classes = computed(() => is_options_shown.value ? "rounded-b-none" : "");
+	const options_classes = computed(() => is_options_shown.value ? "" : "hidden");
+	watch(input_text, v => {
+		option_set.value = p.options.includes(v)
+		if (!option_set.value) options_shown.value = true;
+	});
 
 	function set_option(option: string) {
 		input_text.value = option;
@@ -88,4 +90,15 @@
 	});
 
 	defineExpose({ option });
+
+	function search(option: string, input_text: string) {
+		let input_text_tokens = input_text.split(" ")
+			.map(s => s.trim())
+			.filter(s => s.length > 0);
+		let option_tokens = option.split(" ")
+			.map(s => s.trim())
+			.filter(s => s.length > 0);
+
+		return input_text_tokens.every(t => !option_tokens.every(o => !o.includes(t)));
+	}
 </script>
