@@ -218,6 +218,7 @@ jobs:
            curl \
            file \
            git \
+           javascriptcoregtk-4.1-dev \
            libayatana-appindicator3-dev \
            libclang-dev \
            libglib2.0-dev \
