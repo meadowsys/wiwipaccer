@@ -1,5 +1,3 @@
 let id = 0;
 
-export function use_id() {
-	return `__globaluniversalidthing-${++id}`;
-}
+export const use_id = () => `__globaluniversalidthing-${++id}`;
