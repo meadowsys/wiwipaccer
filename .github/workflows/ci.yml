@@ -226,7 +226,7 @@ jobs:
            librsvg2-dev \
            libsoup-3.0-dev \
            libssl-dev \
-           libwebkit2gtk-4.0-dev \
+           libwebkit2gtk-4.1-dev \
            wget
 
     - name: checkout code
