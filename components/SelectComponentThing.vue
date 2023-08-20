@@ -1,22 +1,24 @@
 <template>
-	<div class="w-fit" :data-part-of-selectcomponent="id">
+	<div class="w-fit text-xs" :data-part-of-selectcomponent="id">
 		<div :data-part-of-selectcomponent="id">
 			<input
 				type="text"
 				v-model="input_text"
-				class="outline-none border rounded-md border-base-300 px-3 py-1 hover:border-primary focus:border-primary cursor-default focus:cursor-text"
+				class="outline-none border rounded-md border-base-300 px-3 hover:border-primary focus:border-primary cursor-default focus:cursor-text text-xs"
+				style="box-sizing: border-box; font-weight: bold;"
+				:style="{ width }"
 				:class="input_classes"
-				@mousedown="options_shown = !options_shown"
+				@mousedown="input_mousedown"
 				:data-part-of-selectcomponent="id"
 			>
 			<ul
-				class="p-2 border-b border-x border-b-base-300 border-x-base-300 rounded-b-md overflow-scroll max-h-48"
+				class="p-1 border-b border-x border-b-base-300 border-x-base-300 rounded-b-md overflow-scroll max-h-48"
 				:class="options_classes"
 				:data-part-of-selectcomponent="id"
 			>
 				<li
 					v-for="option in opts_with_stuff"
-					class="hover:bg-base-200 active:bg-base-300 rounded-sm select-none cursor-pointer px-1"
+					class="hover:bg-base-200 active:bg-base-300 rounded-sm select-none cursor-pointer px-2 py-1 "
 					:class="option[1]"
 					tabindex="-1"
 					@click="set_option(option[0])"
@@ -33,6 +35,7 @@
 	const p = defineProps<{
 		options: Array<string>;
 		default?: string;
+		width: string;
 	}>();
 
 	const id = use_id();
@@ -40,15 +43,17 @@
 
 	const options_shown = ref(false);
 	const option_set = ref(false);
+	const override_option_hiding = ref(false);
 
 	const opts_with_stuff = computed(() => p.options.map(option => [
 		option,
-		search(option, input_text.value) ? "" : "hidden"
+		search(option, input_text.value) || override_option_hiding.value ? "" : "hidden"
 	] as const));
 	const is_options_shown = computed(() => options_shown.value && !opts_with_stuff.value.every(o => o[1] === "hidden"));
 	const input_classes = computed(() => is_options_shown.value ? "rounded-b-none" : "");
 	const options_classes = computed(() => is_options_shown.value ? "" : "hidden");
 	watch(input_text, v => {
+		override_option_hiding.value = false;
 		option_set.value = p.options.includes(v)
 		if (!option_set.value) options_shown.value = true;
 	});
@@ -61,6 +66,16 @@
 	function check_option() {
 		if (p.options.includes(input_text.value)) {
 			option_set.value = true;
+		}
+	}
+
+	function input_mousedown() {
+		if (options_shown.value && opts_with_stuff.value.every(o => o[1] === "hidden")) {
+			// if its shown but effectively hidden because there's no results
+			override_option_hiding.value = true;
+		} else {
+			options_shown.value = !options_shown.value;
+			override_option_hiding.value = true;
 		}
 	}
 
