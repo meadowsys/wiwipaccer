@@ -1,4 +1,4 @@
-import { extend_base } from "../base.nuxt.config";
+import { extend_base } from "../nuxt.config.base";
 
 const cfg = defineNuxtConfig({
 
