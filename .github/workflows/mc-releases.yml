@@ -36,7 +36,7 @@ jobs:
         path: ${{ steps.store-path.outputs.STORE_PATH }}
         key: pnpm-store-mcreleases-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
-          pnpm-store-${{ runner.os }}
+          pnpm-store-mcreleases-${{ runner.os }}
 
     - name: install node deps
       run: pnpm i
