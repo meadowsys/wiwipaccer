@@ -5,12 +5,12 @@
 				<div class="flex-grow" data-tauri-drag-region />
 				<div v-if="state.state === 'success'" class="flex flex-col mr-[2px]">
 					<div class="h-[2px] flex-shrink-0" data-tauri-drag-region />
-					<select-component-thing ref="version_selector" :options="state.project.versions.map(v => v.name)" width="100px" :default="state.project.versions[0].name" />
+					<select-component-thing v-model="selected_version" :options="state.project.versions.map(v => v.name)" width="100px" :default="state.project.versions[0].name" />
 					<div class="flex-grow" data-tauri-drag-region />
 				</div>
 				<div class="flex flex-col mr-[2px]">
 					<div class="h-[2px] flex-shrink-0" data-tauri-drag-region />
-					<select-component-thing ref="mode_selector" :options="mode_options" width="100px" :default="mode_options[0]" />
+					<select-component-thing v-model="selected_mode" :options="mode_options" width="100px" :default="mode_options[0]" />
 					<div class="flex-grow" data-tauri-drag-region />
 				</div>
 			</div>
@@ -83,11 +83,8 @@
 
 	const mode_options = ["build", "develop"] as const;
 
-	let version_selector = ref<InstanceType<typeof SelectComponentThing>>();
-	let mode_selector = ref<InstanceType<typeof SelectComponentThing>>();
-
-	let selected_version = computed(() => version_selector.value?.option || "");
-	let selected_mode = computed(() => mode_selector.value?.option || "");
+	let selected_version = ref("");
+	let selected_mode = ref("");
 
 	invoke_get_project_basic_meta(path)
 		.then(project => {
