@@ -68,7 +68,7 @@ import * as cp from "child_process";
 			}, ${
 				pack_meta.specifier
 			}${
-				has_specifier(pack_meta) ? `(${pack_meta.specifier})` : ""
+				has_specifier(pack_meta) ? `(${pack_meta.specifier_version})` : ""
 			}`);
 		});
 	run_if_CI(() => console.log("::endgroup::"));
