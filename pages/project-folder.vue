@@ -10,7 +10,7 @@
 				</div>
 				<div class="flex flex-col mr-[2px]">
 					<div class="h-[2px] flex-shrink-0" data-tauri-drag-region />
-					<select-component-thing v-model="selected_mode" :options="mode_options" width="120px" :default="mode_options[0]" />
+					<select-component-thing v-model="selected_mode" :options="mode_options" width="90px" :default="mode_options[0]" />
 					<div class="flex-grow" data-tauri-drag-region />
 				</div>
 			</div>
