@@ -62,18 +62,27 @@
 	});
 	watch(last_good_value, val => emit("update:modelValue", val));
 
-	const opts_with_stuff = computed(() => p.options.map(option => [
-		option,
-		search(option, input_text.value) || override_option_hiding.value ? "" : "hidden"
-	] as const));
+	const opts_with_stuff = computed<Array<readonly [option: string, hidden: "" | "hidden"]>>(
+		() => p.options.map(option => [
+			option,
+			search(option, input_text.value) || override_option_hiding.value ? "" : "hidden"
+		] as const)
+	);
 	const is_options_shown = computed(() => options_shown.value && !opts_with_stuff.value.every(o => o[1] === "hidden"));
 	const input_classes = computed(() => is_options_shown.value ? ["rounded-b-none", "border-primary", ""] : ["border-base-300"]);
 	const options_classes = computed(() => is_options_shown.value ? [] : ["hidden"]);
-	const shadow = computed(() => is_options_shown.value ? ["shadow-lg"] : [])
-	watch(input_text, v => {
+	const shadow = computed(() => is_options_shown.value ? ["shadow-lg"] : []);
+
+	watch([input_text, p], ([v]) => {
 		override_option_hiding.value = false;
 		option_set.value = p.options.includes(v);
 		if (!option_set.value) options_shown.value = true;
+	});
+
+	watch(p, v => {
+		if (!v.options.includes(input_text.value) && v.default) {
+			input_text.value = v.default;
+		}
 	});
 
 	function set_option(option: string) {
@@ -82,9 +91,7 @@
 	}
 
 	function check_option() {
-		if (p.options.includes(input_text.value)) {
-			option_set.value = true;
-		}
+		option_set.value = p.options.includes(input_text.value);
 	}
 
 	function input_mousedown() {
