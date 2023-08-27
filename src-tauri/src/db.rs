@@ -1,5 +1,3 @@
-#![allow(non_upper_case_globals)]
-
 use crate::*;
 use serde::{ Deserialize, Serialize };
 use surrealdb::engine::local::RocksDb;
