@@ -5,7 +5,7 @@
 				type="text"
 				ref="input"
 				v-model="input_text"
-				class="outline-none border rounded-lg border-base-300 px-3 hover:border-primary focus:border-primary cursor-default focus:cursor-text text-xs text-center"
+				class="outline-none border rounded-lg border-base-300 px-3 hover:border-primary focus:border-primary cursor-pointer focus:cursor-text text-xs text-center"
 				style="box-sizing: border-box; font-weight: bold"
 				:style="{ width }"
 				:class="input_classes"
