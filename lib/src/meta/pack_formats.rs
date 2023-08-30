@@ -5,6 +5,7 @@
 use super::pack_version_specifier::{ MCVersionType, PackFormat, PackVersion };
 
 pub const PACK_FORMATS: &[PackVersion] = &[
+	PackVersion { name: "23w35a", release_type: MCVersionType::Snapshot, format: PackFormat::Maybe(17) },
 	PackVersion { name: "23w33a", release_type: MCVersionType::Snapshot, format: PackFormat::Verified(17) },
 	PackVersion { name: "23w32a", release_type: MCVersionType::Snapshot, format: PackFormat::Verified(17) },
 	PackVersion { name: "23w31a", release_type: MCVersionType::Snapshot, format: PackFormat::Verified(16) },
