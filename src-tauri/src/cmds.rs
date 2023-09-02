@@ -1,6 +1,6 @@
 use camino::Utf8PathBuf;
 use crate::*;
-use lib::meta::pack_version_specifier::PackVersion;
+use lib::external_meta::pack_formats::PackVersion;
 use lib::runtime_meta::workspace::Workspace;
 use tauri::{ AppHandle, Manager, Runtime, Window, WindowBuilder, WindowUrl };
 use tauri_plugin_dialog::{ DialogExt as _, FileDialogBuilder };

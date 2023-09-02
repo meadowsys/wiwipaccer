@@ -1,6 +1,6 @@
 use crate::error::{ Error, Result };
-use crate::meta::pack_formats::PACK_FORMATS;
-use crate::meta::pack_version_specifier::PackVersion;
+use crate::external_meta::PACK_FORMATS;
+use crate::external_meta::pack_formats::PackVersion;
 use ron::extensions::Extensions;
 use tokio::fs;
 

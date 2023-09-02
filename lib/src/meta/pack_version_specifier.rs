@@ -1,25 +1,10 @@
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use serde::{ Deserialize, Serialize };
-use super::pack_formats::PACK_FORMATS;
+use crate::external_meta::PACK_FORMATS;
+use crate::external_meta::pack_formats::{ MCVersionType, PackFormat, PackVersion };
 use crate::error::{ Error, Result };
 
 // TODO, try panicking, see how the frontend reacts (to see what the user will see when the expect calls fail)
-
-#[derive(Clone, Debug, Serialize)]
-pub struct PackVersion {
-	pub name: &'static str,
-	pub release_type: MCVersionType,
-	pub format: PackFormat
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub enum PackFormat {
-	Verified(u8),
-	Unverified(u8),
-	Maybe(u8),
-	Unknown,
-	None
-}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum PackVersionSpecifier {
@@ -28,17 +13,6 @@ pub enum PackVersionSpecifier {
 	MCVersionRange(String, String)
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub enum MCVersionType {
-	#[serde(rename = "release")]
-	Release,
-	#[serde(rename = "snapshot")]
-	Snapshot,
-	#[serde(rename = "old_beta")]
-	OldBeta,
-	#[serde(rename = "old_alpha")]
-	OldAlpha
-}
 
 impl PackVersionSpecifier {
 	/// Returns whether specified data version (pulled from a option version) satisfies the current

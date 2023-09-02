@@ -1,9 +1,13 @@
+use serde::{ Deserialize, Serialize };
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PackVersion {
 	pub name: &'static str,
 	pub release_type: MCVersionType,
 	pub format: PackFormat
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum PackFormat {
 	Verified(u8),
 	Unverified(u8),
@@ -12,10 +16,15 @@ pub enum PackFormat {
 	None
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum MCVersionType {
+	#[serde(rename = "release")]
 	Release,
+	#[serde(rename = "snapshot")]
 	Snapshot,
+	#[serde(rename = "old_beta")]
 	OldBeta,
+	#[serde(rename = "old_alpha")]
 	OldAlpha
 }
 

@@ -1,8 +1,8 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
 use crate::meta::datasource::{ Datasource as DatasourceMeta, Version };
-use crate::meta::pack_formats::PACK_FORMATS;
-use crate::meta::pack_version_specifier::PackVersion;
+use crate::external_meta::PACK_FORMATS;
+use crate::external_meta::pack_formats::PackVersion;
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::texture;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
