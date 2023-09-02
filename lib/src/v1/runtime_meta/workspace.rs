@@ -2,7 +2,7 @@ use ahash::{ RandomState, HashMapExt };
 use crate::runtime_meta::datasource::{ self, Datasource };
 use super::super::util::RON;
 use crate::error::{ Error, Result };
-use crate::external_meta::pack_formats::PackVersion;
+use crate::v1::PackVersion;
 use crate::runtime_meta::datasource::BuildType;
 use super::super::util::sort_versions_inefficient;
 use std::collections::HashMap;

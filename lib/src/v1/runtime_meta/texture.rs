@@ -1,6 +1,6 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::error::{ Error, Result };
-use crate::external_meta::pack_formats::PackVersion;
+use crate::v1::PackVersion;
 use crate::meta::texture::Texture;
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::option;

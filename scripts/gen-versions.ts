@@ -5,8 +5,8 @@ import * as crypto from "crypto";
 import * as cp from "child_process";
 
 (async () => {
-	const src = "lib/src/external_meta/pack_formats_src";
-	const dest = "lib/src/external_meta/pack_formats.rs";
+	const src = "lib/src/internal/pack_formats_src";
+	const dest = "lib/src/internal/pack_formats.rs";
 	const mojang_manifest_url = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
 
 	const comment_marker = "//";
