@@ -1,10 +1,10 @@
 use ahash::{ RandomState, HashMapExt };
 use crate::runtime_meta::datasource::{ self, Datasource };
-use crate::util::RON;
+use super::super::util::RON;
 use crate::error::{ Error, Result };
 use crate::external_meta::pack_formats::PackVersion;
 use crate::runtime_meta::datasource::BuildType;
-use crate::util::sort_versions_inefficient;
+use super::super::util::sort_versions_inefficient;
 use std::collections::HashMap;
 use tokio::fs;
 

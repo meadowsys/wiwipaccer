@@ -1,7 +1,7 @@
 use ahash::{ HashMapExt, HashSetExt, RandomState };
 use crate::error::{ Error, Result };
-use crate::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
-use crate::mc_structs::model::Model;
+use super::super::mc_structs::blockstate::{ Blockstate, BlockstateEntry };
+use super::super::mc_structs::model::Model;
 use crate::external_meta::PACK_FORMATS;
 use crate::external_meta::pack_formats::{ PackFormat, PackVersion };
 use crate::meta::pack_version_specifier::PackVersionSpecifier;
@@ -9,8 +9,9 @@ use crate::meta::version::Version;
 use crate::meta::version::OptionType;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
-use crate::util::hash;
-use crate::util::RON;
+use super::super::util::hash;
+use super::super::util::RON;
+use super::super::util::walk_dir;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use super::action::Action;
@@ -174,7 +175,7 @@ impl WithMCVersion {
 			OptionType::CopyPaste => {
 				let mut actions = vec![];
 
-				let assets_contents = crate::util::walk_dir(&assets_path).await?;
+				let assets_contents = walk_dir(&assets_path).await?;
 				for file in assets_contents {
 					let mut relative_path = &file[path.len()..];
 					if relative_path.starts_with('/') {
@@ -214,7 +215,7 @@ impl WithMCVersion {
 
 				let hash = hash(&format!("{block_ns}{block_id}{mirror:?}{y:?}"));
 
-				let assets_contents = crate::util::walk_dir(&assets_path).await?;
+				let assets_contents = walk_dir(&assets_path).await?;
 
 				let mut model_and_blockstate = vec![];
 

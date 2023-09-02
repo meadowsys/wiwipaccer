@@ -5,7 +5,7 @@ use crate::meta::texture::Texture;
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use crate::runtime_meta::option;
 use crate::runtime_meta::{ Message, MessageSeverity, read_meta_file };
-use crate::util::RON;
+use super::super::util::RON;
 use std::collections::HashMap;
 use super::META_NAME;
 use tokio::fs;

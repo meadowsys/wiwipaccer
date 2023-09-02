@@ -7,7 +7,7 @@ pub mod version;
 pub mod workspace;
 
 use crate::error::{ Error, Result };
-use crate::util::RON;
+use super::util::RON;
 use serde::de::DeserializeOwned;
 use tokio::fs;
 
