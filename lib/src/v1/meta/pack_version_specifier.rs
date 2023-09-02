@@ -1,7 +1,6 @@
 use crate::runtime_meta::pack_version_specifier::PackVersionSpecifierRuntimeMeta;
 use serde::{ Deserialize, Serialize };
-use crate::external_meta::PACK_FORMATS;
-use crate::external_meta::pack_formats::{ MCVersionType, PackFormat, PackVersion };
+use crate::v1::{ MCVersionType, PackFormat, PackVersion, PACK_FORMATS };
 use crate::error::{ Error, Result };
 
 // TODO, try panicking, see how the frontend reacts (to see what the user will see when the expect calls fail)
