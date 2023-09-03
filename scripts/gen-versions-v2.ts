@@ -197,7 +197,7 @@ function gen_mapped_versions(versions: ReturnType<typeof combine_versions>) {
 	return versions.map(v => {
 		let name = [
 			"V_",
-			v.name.replaceAll(/ /g, "").replaceAll(/[^a-zA-Z0-9_]/g, "_")
+			v.name.replaceAll(/[^a-zA-Z0-9_]/g, "_")
 		].join("");
 
 		return [name, v] as const;
