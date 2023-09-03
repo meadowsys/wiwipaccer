@@ -13,7 +13,12 @@ const dest = "lib/src/internal/pack_formats.rs";
 	const versions_mojang = await fetch_mojang_versions();
 	const combined = combine_versions(versions, versions_mojang);
 
-	const pack_formats_const = gen_pack_formats_const(combined);
+	const mapped_versions = gen_mapped_versions(combined);
+	const list_of_pack_versions = gen_list_of_pack_versions(mapped_versions);
+	const consts = gen_consts(list_of_pack_versions);
+
+	const pack_formats_const = gen_pack_formats_const(list_of_pack_versions);
+	const enum_and_etc = gen_enum_and_etc_from_enum(list_of_pack_versions);
 
 	const lines = get_src_lines(src);
 	const [pre, post] = get_pre_post_generated(lines);
@@ -21,7 +26,11 @@ const dest = "lib/src/internal/pack_formats.rs";
 	const file: Array<string> = [
 		...pre,
 
+		...consts,
+		"",
 		pack_formats_const,
+		"",
+		...enum_and_etc,
 
 		...post
 	];
@@ -167,23 +176,6 @@ function combine_versions(
 	return combined;
 }
 
-function gen_pack_formats_const(versions: ReturnType<typeof combine_versions>) {
-	let lines = versions.map(v => {
-		let name = `name: ${JSON.stringify(v.name)}`;
-		let release_type = `release_type: MCVersionType::${v.release_type}`;
-		let specifier = v.specifier_version
-			? `${v.specifier}(${v.specifier_version})`
-			: `${v.specifier}`;
-		let format = `format: PackFormat::${specifier}`;
-
-		return `PackVersion { ${name}, ${release_type}, ${format} }`;
-	});
-
-	let content = lines.join(",\n\t");
-	let constant = `pub const PACK_FORMATS: &[PackVersion] = &[\n\t${content}\n];`;
-	return constant;
-}
-
 function get_src_lines(src: string) {
 	return fs.readFileSync(path.resolve(dest), "utf8").split("\n");
 }
@@ -199,4 +191,75 @@ function get_pre_post_generated(lines: Array<string>) {
 		lines.slice(0, start_i + 1),
 		lines.slice(end_i)
 	] as const;
+}
+
+function gen_mapped_versions(versions: ReturnType<typeof combine_versions>) {
+	return versions.map(v => {
+		let name = [
+			"V_",
+			v.name.replaceAll(/ /g, "").replaceAll(/[^a-zA-Z0-9_]/g, "_")
+		].join("");
+
+		return [name, v] as const;
+	});
+}
+
+function gen_list_of_pack_versions(mapped_versions: ReturnType<typeof gen_mapped_versions>) {
+	return mapped_versions.map(([name, v]) => {
+		return [name, v, `${gen_one_pack_format(v)}`] as const;
+	});
+}
+
+function gen_consts(list: ReturnType<typeof gen_list_of_pack_versions>) {
+	return list.map(([name, v, pack_version]) => {
+		return `const ${name}: PackVersion = ${pack_version};`
+	});
+}
+
+function gen_pack_formats_const(mapped_versions: ReturnType<typeof gen_list_of_pack_versions>) {
+	let lines = mapped_versions.map(([n]) => n)
+
+	let content = lines.join(",\n\t");
+	let constant = `pub const PACK_FORMATS: &[PackVersion] = &[\n\t${content}\n];`;
+	return constant;
+}
+
+function gen_one_pack_format(v: ReturnType<typeof combine_versions>[number]) {
+	let name = `name: ${JSON.stringify(v.name)}`;
+	let release_type = `release_type: MCVersionType::${v.release_type}`;
+	let specifier = v.specifier_version
+		? `${v.specifier}(${v.specifier_version})`
+		: `${v.specifier}`;
+	let format = `format: PackFormat::${specifier}`;
+
+	return `PackVersion { ${name}, ${release_type}, ${format} }`;
+}
+
+function gen_enum_and_etc_from_enum(mapped_versions: ReturnType<typeof gen_list_of_pack_versions>) {
+
+	let enumstr = `pub enum PackFormats {\n\t${
+		mapped_versions.map(([n]) => n).join(",\n\t")
+	}\n}`;
+
+	const fn_get_pack_format = [
+		"\tpub fn get_pack_format(&self) -> PackVersion {",
+		"\t\tmatch *self {",
+		...mapped_versions.map(([name]) =>
+			`\t\t\tPackFormats::${name} => { ${name} }`
+		),
+		"\t\t}",
+		"\t}"
+	];
+
+	// let impl_enum = `impl PackFormats {\n${fn_get_pack_format}\n}`;
+	let impl_enum = [
+		"impl PackFormats {",
+		...fn_get_pack_format,
+		"}"
+	];
+
+	return [
+		enumstr,
+		...impl_enum
+	];
 }
