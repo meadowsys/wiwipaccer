@@ -7,6 +7,7 @@ on:
     paths:
     - "lib/src/internal/pack_formats_src"
     - "scripts/gen-versions.ts"
+    - "scripts/gen-versions-v2.ts"
 
 concurrency:
   group: mc-releases
