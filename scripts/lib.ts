@@ -1,5 +1,4 @@
 import { Octokit } from "@octokit/rest";
-import { execSync as exec } from "child_process";
 
 export const owner = "meadowsys";
 export const repo = "wiwipaccer";
@@ -56,4 +55,9 @@ export async function get_new_tag_name(
 	let i = latest.lastIndexOf(".");
 	let n = Number.parseInt(latest.substring(i + 1), 10);
 	return [latest, template(n + 1)] as const;
+}
+
+export function run_if_ci(f: () => void, not_ci?: () => void) {
+	if (!!process.env.CI) f();
+	else not_ci?.();
 }

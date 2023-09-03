@@ -13,11 +13,10 @@
 //    omit for unknown, none
 // descriptor is one of verified, unverified, maybe, unknown, none
 //    verified: manually checked
-//    unverified: data yoinked from wiki
-//    maybe: educated guesses based on other factors (versions of versions released before/after),
-//       and like data that the wiki doesn't provide
+//    unverified: not manually checked (yet)
 //    unknown: version exists but is not known (default)
-//    none: versioning does not exist for this mc version
+//    none: versioning does not exist for this mc version,
+//       no version available for this version
 
 // Ordering in this file does not matter, just use the find function on your text editor lol
 
