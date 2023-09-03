@@ -8,7 +8,7 @@ import { run_if_ci } from "./lib";
 
 (async () => {
 	const original_hash = create_hash_of_dest();
-	await import("./gen-versions-v2");
+	cp.execSync("node -r @swc-node/register scripts/gen-versions-v2.ts");
 	const new_hash = create_hash_of_dest();
 
 	console.log();
