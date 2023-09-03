@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-    - "lib/src/external_meta/pack_formats_src"
+    - "lib/src/internal/pack_formats_src"
     - "scripts/gen-versions.ts"
 
 concurrency:
