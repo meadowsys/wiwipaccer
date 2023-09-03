@@ -1,5 +1,3 @@
-#![allow(non_camel_case_types, non_upper_case_globals)]
-
 use serde::{ Deserialize, Serialize };
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

@@ -15,10 +15,10 @@ const dest = "lib/src/internal/pack_formats.rs";
 
 	const mapped_versions = gen_mapped_versions(combined);
 	const list_of_pack_versions = gen_list_of_pack_versions(mapped_versions);
-	const consts = gen_consts(list_of_pack_versions);
+	// const consts = gen_consts(list_of_pack_versions);
 
 	const pack_formats_const = gen_pack_formats_const(list_of_pack_versions);
-	const enum_and_etc = gen_enum_and_etc_from_enum(list_of_pack_versions);
+	// const enum_and_etc = gen_enum_and_etc_from_enum(list_of_pack_versions);
 
 	const lines = get_src_lines(src);
 	const [pre, post] = get_pre_post_generated(lines);
@@ -26,11 +26,11 @@ const dest = "lib/src/internal/pack_formats.rs";
 	const file: Array<string> = [
 		...pre,
 
-		...consts,
-		"",
+		// ...consts,
+		// "",
 		pack_formats_const,
-		"",
-		...enum_and_etc,
+		// "",
+		// ...enum_and_etc,
 
 		...post
 	];
@@ -217,7 +217,8 @@ function gen_consts(list: ReturnType<typeof gen_list_of_pack_versions>) {
 }
 
 function gen_pack_formats_const(mapped_versions: ReturnType<typeof gen_list_of_pack_versions>) {
-	let lines = mapped_versions.map(([n]) => n)
+	// let lines = mapped_versions.map(([n]) => n);
+	let lines = mapped_versions.map(v => v[2]);
 
 	let content = lines.join(",\n\t");
 	let constant = `pub const PACK_FORMATS: &[PackVersion] = &[\n\t${content}\n];`;
