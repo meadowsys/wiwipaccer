@@ -17,6 +17,7 @@ const dest = "lib/src/internal/pack_formats.rs";
 	const list_of_pack_versions = gen_list_of_pack_versions(mapped_versions);
 	// const consts = gen_consts(list_of_pack_versions);
 
+	const max_version = gen_max_version(mapped_versions);
 	const pack_formats_const = gen_pack_formats_const(list_of_pack_versions);
 	// const enum_and_etc = gen_enum_and_etc_from_enum(list_of_pack_versions);
 
@@ -28,6 +29,7 @@ const dest = "lib/src/internal/pack_formats.rs";
 
 		// ...consts,
 		// "",
+		max_version,
 		pack_formats_const,
 		// "",
 		// ...enum_and_etc,
@@ -263,4 +265,16 @@ function gen_enum_and_etc_from_enum(mapped_versions: ReturnType<typeof gen_list_
 		enumstr,
 		...impl_enum
 	];
+}
+
+function gen_max_version(mapped_versions: ReturnType<typeof gen_mapped_versions>) {
+	let max_version = 0;
+	mapped_versions.forEach(([_name, { specifier_version }]) =>
+		max_version =
+			specifier_version && specifier_version > max_version
+				? specifier_version
+				: max_version
+	);
+
+	return `pub const MAX_VERSION: u8 = ${max_version};`;
 }
