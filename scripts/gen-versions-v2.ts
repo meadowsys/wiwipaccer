@@ -5,8 +5,8 @@ import * as crypto from "crypto";
 import * as cp from "child_process";
 import { run_if_ci } from "./lib";
 
-const src = "lib/src/internal/pack_formats_src";
-const dest = "lib/src/internal/pack_formats.rs";
+const src = "lib/src/pack_formats_src.txt";
+const dest = "lib/src/pack_formats.rs";
 
 (async () => {
 	const versions = parse_pack_formats(src);

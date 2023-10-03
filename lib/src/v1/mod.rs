@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
 
 pub mod error;
-use crate::internal::pack_formats::{ MCVersionType, PackFormat, PackVersion, PACK_FORMATS };
+use crate::pack_formats::{ MCVersionType, PackFormat, PackVersion, PACK_FORMATS };
 mod mc_structs;
 pub mod meta;
 pub mod runtime_meta;

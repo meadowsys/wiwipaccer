@@ -1,8 +1,8 @@
-mod internal;
+pub mod pack_formats;
 pub mod v1;
 pub mod v2;
 
-pub use internal::pack_formats::{
+pub use pack_formats::{
 	MCVersionType,
 	PACK_FORMATS,
 	PackFormat,

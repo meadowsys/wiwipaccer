@@ -3,7 +3,7 @@ import * as path from "path";
 import { z } from "zod";
 import * as crypto from "crypto";
 import * as cp from "child_process";
-const dest = "lib/src/internal/pack_formats.rs";
+const dest = "lib/src/pack_formats.rs";
 import { run_if_ci } from "./lib";
 
 (async () => {
