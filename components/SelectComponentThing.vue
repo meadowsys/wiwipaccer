@@ -14,7 +14,7 @@
 				:data-part-of-selectcomponent="id"
 			>
 			<ul
-				class="p-1 border-b border-x border-b-primary border-primary rounded-b-lg overflow-scroll max-h-48 bg-base-100"
+				class="p-1 border-b border-x border-b-primary border-primary rounded-b-lg overflow-scroll max-h-64 bg-base-100"
 				:class="options_classes"
 				:data-part-of-selectcomponent="id"
 			>
