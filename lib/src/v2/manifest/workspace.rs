@@ -1,7 +1,6 @@
 // FIXME: this isn't finalised, need to think about it more
 
-use camino::Utf8PathBuf;
-use serde::{ Deserialize, Serialize };
+use super::*;
 
 #[derive(Deserialize, Serialize)]
 pub enum Workspace {

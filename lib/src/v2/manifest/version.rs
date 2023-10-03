@@ -1,5 +1,4 @@
-use crate::v2::Map;
-use serde::{ Deserialize, Serialize };
+use super::*;
 
 #[derive(Deserialize, Serialize)]
 enum Version {
