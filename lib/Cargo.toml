@@ -11,7 +11,6 @@ publish = false
 ahash = "0.8.3"
 async-recursion = "1.0.4"
 blake3 = "1.3.3"
-camino = "1.1.4"
 futures = "0.3.28"
 lazy_static = "1.4.0"
 ron = "0.8.0"
@@ -19,3 +18,7 @@ serde = { version = "1.0.162", features = ["serde_derive", "derive"] }
 serde_json = "1.0.96"
 thiserror = "1.0.40"
 tokio = { version = "1.28.0", features = ["full"] }
+
+# dependencies used by v2 down here
+camino = { version = "1.1.6", features = ["serde1"] }
+hashbrown = { version = "0.14.0", features = ["serde"] }
