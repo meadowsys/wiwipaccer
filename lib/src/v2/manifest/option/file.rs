@@ -8,7 +8,7 @@ pub enum TextureOption {
 #[derive(Deserialize, Serialize)]
 pub struct V1 {
 	/// name of option
-	name: Option<String>,
+	pub name: Option<String>,
 	/// description of option
-	description: Option<String>
+	pub description: Option<String>
 }

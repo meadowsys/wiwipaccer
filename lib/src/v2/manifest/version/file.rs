@@ -1,18 +1,18 @@
 use super::*;
 
 #[derive(Deserialize, Serialize)]
-enum Version {
+pub enum Version {
 	V1(V1)
 }
 
 #[derive(Deserialize, Serialize)]
-struct V1 {
-	versions: Vec<VersionSpecifier>,
-	other_versions: Map<String, Vec<OtherVersionSpecifier>>
+pub struct V1 {
+	pub versions: Vec<VersionSpecifier>,
+	pub other_versions: Map<String, Vec<OtherVersionSpecifier>>
 }
 
 #[derive(Deserialize, Serialize)]
-enum VersionSpecifier {
+pub enum VersionSpecifier {
 	/// specifies a specific pack version
 	PackVersion(u8),
 	/// specifies a specific minecraft version
@@ -43,6 +43,6 @@ enum VersionSpecifier {
 }
 
 #[derive(Deserialize, Serialize)]
-enum OtherVersionSpecifier {
+pub enum OtherVersionSpecifier {
 	Version(String)
 }

@@ -7,9 +7,9 @@ pub enum Datasource {
 
 #[derive(Deserialize, Serialize)]
 pub struct V1 {
-	name: Option<String>,
-	version: Option<DatasourceVersion>,
-	description: Option<String>
+	pub name: Option<String>,
+	pub version: Option<DatasourceVersion>,
+	pub description: Option<String>
 }
 
 #[derive(Deserialize, Serialize)]

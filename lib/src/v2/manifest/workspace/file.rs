@@ -9,6 +9,6 @@ pub enum Workspace {
 
 #[derive(Deserialize, Serialize)]
 pub struct V1 {
-	name: String,
-	paths: Vec<Utf8PathBuf>
+	pub name: String,
+	pub paths: Vec<Utf8PathBuf>
 }
