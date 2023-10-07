@@ -91,7 +91,7 @@ impl WithoutMCVersion {
 					PackVersionSpecifier::PackVersion(mv) => {
 						PACK_FORMATS.iter()
 							.any(|rv| match rv.format {
-								PackFormat::Verified(rv) | PackFormat::Unverified(rv) | PackFormat::Maybe(rv) => { rv == *mv }
+								PackFormat::Verified(rv) | PackFormat::Unverified(rv) => { rv == *mv }
 								PackFormat::Unknown | PackFormat::None => { false }
 							})
 					}

@@ -31,9 +31,6 @@ const project_basic_meta_validator = z.object({
 			z.object({
 				Unverified: z.number()
 			}),
-			z.object({
-				Maybe: z.number()
-			}),
 			z.literal("Unknown"),
 			z.literal("None"),
 		])

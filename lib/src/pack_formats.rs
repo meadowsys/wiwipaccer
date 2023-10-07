@@ -11,7 +11,6 @@ pub struct PackVersion {
 pub enum PackFormat {
 	Verified(u8),
 	Unverified(u8),
-	Maybe(u8),
 	Unknown,
 	None
 }
@@ -37,7 +36,7 @@ pub enum MCVersionType {
 // 			let mut the = vec![vec![]; MAX_VERSION as usize + 1];
 // 			PACK_FORMATS.iter().for_each(|pack_version| {
 // 				let version_num = match pack_version.format {
-// 					PackFormat::Verified(v) | PackFormat::Unverified(v) | PackFormat::Maybe(v) => { v }
+// 					PackFormat::Verified(v) | PackFormat::Unverified(v) => { v }
 // 					PackFormat::None | PackFormat::Unknown => { 0 }
 // 				};
 //
@@ -53,7 +52,7 @@ impl PackFormat {
 	pub fn get_num(&self) -> Option<u8> {
 		use PackFormat::*;
 		match self {
-			Verified(v) | Unverified(v) | Maybe(v) => { Some(*v) }
+			Verified(v) | Unverified(v) => { Some(*v) }
 			Unknown | None => { Option::None }
 		}
 	}

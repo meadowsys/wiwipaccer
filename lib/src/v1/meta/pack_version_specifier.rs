@@ -29,7 +29,7 @@ impl PackVersionSpecifier {
 				PackVersion(user_specified_version) => {
 					let bool_res = PACK_FORMATS.iter().filter(|v| match v.format {
 						PackFormat::None | PackFormat::Unknown => { false }
-						PackFormat::Maybe(v) | PackFormat::Unverified(v) | PackFormat::Verified(v) => { &v == user_specified_version }
+						PackFormat::Unverified(v) | PackFormat::Verified(v) => { &v == user_specified_version }
 					}).collect::<Vec<_>>().len() == 1;
 
 					Ok(bool_res)
@@ -64,7 +64,7 @@ impl PackVersionSpecifier {
 
 					let versions_with_format = PACK_FORMATS.iter().filter(|v| match v.format {
 						PackFormat::None | PackFormat::Unknown => { false }
-						PackFormat::Maybe(v) | PackFormat::Unverified(v) | PackFormat::Verified(v) => { &v == user_specified_version }
+						PackFormat::Unverified(v) | PackFormat::Verified(v) => { &v == user_specified_version }
 					}).collect::<Vec<_>>();
 					let (index_upper, index_lower) = if index_upper > index_lower {
 						(index_upper, index_lower)
@@ -92,7 +92,7 @@ impl PackVersionSpecifier {
 
 					match format {
 						PackFormat::None | PackFormat::Unknown => { Ok(false) }
-						PackFormat::Maybe(v) | PackFormat::Unverified(v) | PackFormat::Verified(v) => { Ok(v == data_version) }
+						PackFormat::Unverified(v) | PackFormat::Verified(v) => { Ok(v == data_version) }
 					}
 				}
 				// easy
@@ -109,11 +109,11 @@ impl PackVersionSpecifier {
 			PackVersion(version) => {
 				let mc_versions = PACK_FORMATS.iter()
 					.filter(|pack_format| match pack_format.format {
-						Verified(v) | Unverified(v) | Maybe(v) => { v == *version }
+						Verified(v) | Unverified(v) => { v == *version }
 						Unknown | None => { false }
 					})
 					.map(|pack_format| match pack_format.format {
-						Verified(_) | Unverified(_) | Maybe(_) => { pack_format.name.into() }
+						Verified(_) | Unverified(_) => { pack_format.name.into() }
 						Unknown | None => { unreachable!() }
 					})
 					.collect();

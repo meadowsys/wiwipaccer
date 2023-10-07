@@ -2,16 +2,13 @@
 
 // lines starting with two slashes will have the _entire line_ treated as a comment
 
-// Script will take the latest version with data, propogate it to later versions with maybe, so
-// that there is at least _some_ data before it gets verified
-
 // format: <mc version string> <pack version number> <descriptor>
 // mc version string: version, as returned by mojang's API, spaces and all, no quotes
 //    mojang api: https://launchermeta.mojang.com/mc/game/version_manifest.json
 // pack version number: integer, the pack format
-//    use for verified, unverified, or maybe
+//    use for verified, unverified
 //    omit for unknown, none
-// descriptor is one of verified, unverified, maybe, unknown, none
+// descriptor is one of verified, unverified, unknown, none
 //    verified: manually checked
 //    unverified: not manually checked (yet)
 //    unknown: version exists but is not known (default)
