@@ -46,3 +46,144 @@ pub enum VersionSpecifier {
 pub enum OtherVersionSpecifier {
 	Version(String)
 }
+
+impl VersionSpecifier {
+	pub fn contains_mc_version(&self, mc_version: &PackVersion) -> bool {
+		use VersionSpecifier::*;
+		match self {
+			// if mc_version is equal to self
+			PackVersion(version) => {
+				mc_version.format
+					.get_num()
+					.map(|v| v == *version)
+					.unwrap_or_else(|| false)
+			}
+			MCVersion(version) => {
+				mc_version.name == version
+			}
+
+			// if mc_version is in the range of self
+			PackVersionRange(min, max) => {
+				mc_version.format
+					.get_num()
+					.map(|v| (*min..*max).contains(&v))
+					.unwrap_or_else(|| false)
+			}
+			MCVersionRange(min, max) => {
+				// FIXME: this can be optimised
+				// add a lazily initialised static map mapping version names to their PackVersion
+				// references
+				// *maybe* add a field to PackVersion that contains statically its index? hmm i dunno
+				let (mut min_i, mut max_i, mut mc_version_i) = (None, None, None);
+
+				// unnecessary optimisation: iterate through once, checking all of them at the same time
+				// instead of .iter().find() which will iterate through up to 3 times
+				for (i, v) in PACK_FORMATS.iter().enumerate() {
+					// match v.name {
+					// 	min => {
+					// 		if min_i.is_some() { panic!() }
+					// 	}
+					// }
+
+					if (v.name == min) {
+						if min_i.is_some() { panic!("potential dupe version with name {min} found") }
+						min_i = Some(i);
+					}
+					if (v.name == max) {
+						if max_i.is_some() { panic!("potential dupe version with name {max} found") }
+						max_i = Some(i);
+					}
+					if (v.name == mc_version.name) {
+						if mc_version_i.is_some() { panic!("potential dupe version with name {} found", mc_version.name) }
+						mc_version_i = Some(i);
+					}
+
+					// in dev, don't exit loop early, because iterating through
+					// the entire thing may help find dupes
+					#[cfg(not(debug_assertions))]
+					if min_i.is_some() && max_i.is_some() && mc_version_i.is_some() { break }
+				}
+
+				if let Some(min_i) = min_i {
+					if let Some(max_i) = max_i {
+						if let Some(mc_version_i) = mc_version_i {
+							return min_i <= mc_version_i && mc_version_i <= max_i
+						}
+					}
+				}
+
+				false
+			}
+
+			// self is the min, so if mc_version is greater than self
+			PackVersionMin(min) => {
+				mc_version.format
+					.get_num()
+					.map(|v| min < &v)
+					.unwrap_or_else(|| false)
+			}
+			MCVersionMin(min) => {
+				let (mut min_i, mut mc_version_i) = (None, None);
+
+				for (i, v) in PACK_FORMATS.iter().enumerate() {
+					if v.name == min {
+						if min_i.is_some() { panic!("potential dupe version with name {min} found") }
+						min_i = Some(i);
+					}
+					if v.name == mc_version.name {
+						if mc_version_i.is_some() { panic!("potential dupe version with name {} found", mc_version.name) }
+						mc_version_i = Some(i);
+					}
+
+					// in dev, don't exit loop early, because iterating through
+					// the entire thing may help find dupes
+					#[cfg(not(debug_assertions))]
+					if min_i.is_some() && mc_version_i.is_some() { break }
+				}
+
+				if let Some(min_i) = min_i {
+					if let Some(mc_version_i) = mc_version_i {
+						return min_i <= mc_version_i
+					}
+				}
+
+				false
+			}
+
+			// self is the max, so if mc_version is less than self
+			PackVersionMax(max) => {
+				mc_version.format
+					.get_num()
+					.map(|v| max > &v)
+					.unwrap_or_else(|| false)
+			}
+			MCVersionMax(max) => {
+				let (mut mc_version_i, mut max_i) = (None, None);
+
+				for (i, v) in PACK_FORMATS.iter().enumerate() {
+					if v.name == max {
+						if max_i.is_some() { panic!("potential dupe version with name {max} found") }
+						max_i = Some(i);
+					}
+					if v.name == mc_version.name {
+						if mc_version_i.is_some() { panic!("potential dupe version with name {} found", mc_version.name) }
+						mc_version_i = Some(i);
+					}
+
+					// in dev, don't exit loop early, because iterating through
+					// the entire thing may help find dupes
+					#[cfg(not(debug_assertions))]
+					if max_i.is_some() && mc_version_i.is_some() { break }
+				}
+
+				if let Some(mc_version_i) = mc_version_i {
+					if let Some(max_i) = max_i {
+						return mc_version_i <= max_i
+					}
+				}
+
+				false
+			}
+		}
+	}
+}

@@ -5,7 +5,7 @@ mod option;
 mod version;
 
 use camino::{ Utf8Path, Utf8PathBuf };
-use crate::pack_formats::PackVersion;
+use crate::pack_formats::{ PACK_FORMATS, PackVersion};
 use serde::{ Deserialize, Serialize };
 use serde::de::DeserializeOwned;
 use std::rc::Rc;
