@@ -49,6 +49,7 @@ pub enum MCVersionType {
 // }
 
 impl PackFormat {
+	#[inline]
 	pub fn get_num(&self) -> Option<u8> {
 		use PackFormat::*;
 		match self {
