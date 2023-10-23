@@ -2,7 +2,8 @@ name: ci
 on:
   push:
     branches:
-    - "**"
+    # - "**"
+    - "disabled"
 
 concurrency:
   group: ci-${{ github.ref }}-${{ github.ref == 'refs/heads/wiwi' && contains(github.event.head_commit.message, '[release rolling]') }}
@@ -29,77 +30,77 @@ jobs:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
-    - name: setup rust
-      run: rustup target add ${{ matrix.target.triple }}
+    # - name: setup rust
+    #   run: rustup target add ${{ matrix.target.triple }}
 
-    - name: setup pnpm
-      uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+    # - name: setup pnpm
+    #   uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
 
-    - name: setup node
-      run: pnpm node -v
+    # - name: setup node
+    #   run: pnpm node -v
 
-    - name: print store path
-      id: store-path
-      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    # - name: print store path
+    #   id: store-path
+    #   run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-    - name: cache pnpm store
-      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: ${{ steps.store-path.outputs.STORE_PATH }}
-        key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: pnpm-store-build-${{ runner.os }}
+    # - name: cache pnpm store
+    #   uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: ${{ steps.store-path.outputs.STORE_PATH }}
+    #     key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+    #     restore-keys: pnpm-store-build-${{ runner.os }}
 
-    - name: install node deps
-      run: pnpm i
+    # - name: install node deps
+    #   run: pnpm i
 
-    - name: install sccache
-      run: |
-        mkdir sccache
-        cd sccache
-        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-apple-darwin.tar.gz
-        tar --strip-components 1 -xvf sccache.tar.gz
-        rm sccache.tar.gz
-        cd ..
+    # - name: install sccache
+    #   run: |
+    #     mkdir sccache
+    #     cd sccache
+    #     curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-apple-darwin.tar.gz
+    #     tar --strip-components 1 -xvf sccache.tar.gz
+    #     rm sccache.tar.gz
+    #     cd ..
 
-        echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
-        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+    #     echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
+    #     echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
-    - name: prepare to build
-      run: |
-        echo updating tauri app version...
-        DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    # - name: prepare to build
+    #   run: |
+    #     echo updating tauri app version...
+    #     DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
-        echo enabling updater if supported...
-        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+    #     echo enabling updater if supported...
+    #     echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
 
-        echo putting nice platform name...
-        echo -n macos-${{ matrix.target.name }} > src-tauri/meta/updater-nice-platform-name
-      env:
-        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
+    #     echo putting nice platform name...
+    #     echo -n macos-${{ matrix.target.name }} > src-tauri/meta/updater-nice-platform-name
+    #   env:
+    #     github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
-    - name: build app
-      # run: pnpm tauri build --target ${{ matrix.target.triple }}
-      run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
-      env:
-        APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-        APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-        APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-        APPLE_ID: ${{ secrets.APPLE_ID }}
-        APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-        TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-        TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+    # - name: build app
+    #   # run: pnpm tauri build --target ${{ matrix.target.triple }}
+    #   run: pnpm tauri build --target ${{ matrix.target.triple }} -- -Z build-std
+    #   env:
+    #     APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+    #     APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+    #     APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+    #     APPLE_ID: ${{ secrets.APPLE_ID }}
+    #     APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+    #     TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+    #     TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-    - name: upload app artifact
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: macos-${{ matrix.target.name }}
-        path: target/${{ matrix.target.triple }}/release/bundle/dmg/*.dmg
+    # - name: upload app artifact
+    #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+    #   with:
+    #     name: macos-${{ matrix.target.name }}
+    #     path: target/${{ matrix.target.triple }}/release/bundle/dmg/*.dmg
 
-    - name: save sccache dir
-      uses: actions/cache/save@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: sccache
-        key: sccache-build-${{ runner.os }}-${{ matrix.target.name }}-${{ github.sha }}
+    # - name: save sccache dir
+    #   uses: actions/cache/save@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: sccache
+    #     key: sccache-build-${{ runner.os }}-${{ matrix.target.name }}-${{ github.sha }}
 
 
   build-macos-universal:
@@ -111,98 +112,98 @@ jobs:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
-    - name: setup rust
-      run: |
-        rustup target add aarch64-apple-darwin
-        rustup target add x86_64-apple-darwin
+    # - name: setup rust
+    #   run: |
+    #     rustup target add aarch64-apple-darwin
+    #     rustup target add x86_64-apple-darwin
 
-    - name: setup pnpm
-      uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+    # - name: setup pnpm
+    #   uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
 
-    - name: setup node
-      run: pnpm node -v
+    # - name: setup node
+    #   run: pnpm node -v
 
-    - name: print store path
-      id: store-path
-      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    # - name: print store path
+    #   id: store-path
+    #   run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-    - name: cache pnpm store
-      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: ${{ steps.store-path.outputs.STORE_PATH }}
-        key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: pnpm-store-build-${{ runner.os }}
+    # - name: cache pnpm store
+    #   uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: ${{ steps.store-path.outputs.STORE_PATH }}
+    #     key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+    #     restore-keys: pnpm-store-build-${{ runner.os }}
 
-    - name: restore sccache dir (aarch64)
-      uses: actions/cache/restore@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: sccache
-        key: sccache-build-${{ runner.os }}-aarch64-${{ github.sha }}
-        fail-on-cache-miss: true
-    - name: restore sccache dir (x64)
-      uses: actions/cache/restore@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: sccache
-        key: sccache-build-${{ runner.os }}-x64-${{ github.sha }}
-        fail-on-cache-miss: true
+    # - name: restore sccache dir (aarch64)
+    #   uses: actions/cache/restore@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: sccache
+    #     key: sccache-build-${{ runner.os }}-aarch64-${{ github.sha }}
+    #     fail-on-cache-miss: true
+    # - name: restore sccache dir (x64)
+    #   uses: actions/cache/restore@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: sccache
+    #     key: sccache-build-${{ runner.os }}-x64-${{ github.sha }}
+    #     fail-on-cache-miss: true
 
-    - name: install sccache
-      run: |
-        cd sccache
-        rm sccache LICENSE README.md
-        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-apple-darwin.tar.gz
-        tar --strip-components 1 -xvf sccache.tar.gz
-        rm sccache.tar.gz
-        cd ..
+    # - name: install sccache
+    #   run: |
+    #     cd sccache
+    #     rm sccache LICENSE README.md
+    #     curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-apple-darwin.tar.gz
+    #     tar --strip-components 1 -xvf sccache.tar.gz
+    #     rm sccache.tar.gz
+    #     cd ..
 
-        echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
-        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+    #     echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
+    #     echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
-    - name: install node deps
-      run: pnpm i
+    # - name: install node deps
+    #   run: pnpm i
 
-    - name: prepare to build
-      run: |
-        echo updating tauri app version...
-        DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    # - name: prepare to build
+    #   run: |
+    #     echo updating tauri app version...
+    #     DATE=$(TZ=UTC date -j -f "%Y-%m-%d %H:%M:%S %z" "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
-        echo enabling updater if supported...
-        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+    #     echo enabling updater if supported...
+    #     echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
 
-        echo putting nice platform name...
-        echo -n macos-universal > src-tauri/meta/updater-nice-platform-name
-      env:
-        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
+    #     echo putting nice platform name...
+    #     echo -n macos-universal > src-tauri/meta/updater-nice-platform-name
+    #   env:
+    #     github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
-    - name: build app
-      # run: pnpm tauri build --target universal-apple-darwin
-      run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
-      env:
-        APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-        APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-        APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-        APPLE_ID: ${{ secrets.APPLE_ID }}
-        APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-        TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-        TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+    # - name: build app
+    #   # run: pnpm tauri build --target universal-apple-darwin
+    #   run: pnpm tauri build --target universal-apple-darwin -- -Z build-std
+    #   env:
+    #     APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+    #     APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+    #     APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+    #     APPLE_ID: ${{ secrets.APPLE_ID }}
+    #     APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+    #     TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+    #     TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-    - name: upload universal app
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: macos-universal
-        path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
+    # - name: upload universal app
+    #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+    #   with:
+    #     name: macos-universal
+    #     path: target/universal-apple-darwin/release/bundle/dmg/*.dmg
 
-    - name: delete sccache caches from github cache
-      uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
-      with:
-        script: |
-          let { owner, repo } = context.repo;
-          await github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_aarch64 });
-          await github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_x64 });
-        github-token: ${{ secrets.GHPAT }}
-      env:
-        key_aarch64: sccache-build-${{ runner.os }}-aarch64-${{ github.sha }}
-        key_x64: sccache-build-${{ runner.os }}-x64-${{ github.sha }}
+    # - name: delete sccache caches from github cache
+    #   uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
+    #   with:
+    #     script: |
+    #       let { owner, repo } = context.repo;
+    #       await github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_aarch64 });
+    #       await github.rest.actions.deleteActionsCacheByKey({ owner, repo, key: process.env.key_x64 });
+    #     github-token: ${{ secrets.GHPAT }}
+    #   env:
+    #     key_aarch64: sccache-build-${{ runner.os }}-aarch64-${{ github.sha }}
+    #     key_x64: sccache-build-${{ runner.os }}-x64-${{ github.sha }}
 
 
   build-linux:
@@ -210,97 +211,97 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: install system dependencies
-      run: |
-        sudo add-apt-repository -y ppa:git-core/ppa
-        sudo apt-get install -y \
-           build-essential \
-           curl \
-           file \
-           git \
-           javascriptcoregtk-4.1-dev \
-           libayatana-appindicator3-dev \
-           libclang-dev \
-           libglib2.0-dev \
-           libgtk-3-dev \
-           librsvg2-dev \
-           libsoup-3.0-dev \
-           libssl-dev \
-           libwebkit2gtk-4.1-dev \
-           wget
+    # - name: install system dependencies
+    #   run: |
+    #     sudo add-apt-repository -y ppa:git-core/ppa
+    #     sudo apt-get install -y \
+    #        build-essential \
+    #        curl \
+    #        file \
+    #        git \
+    #        javascriptcoregtk-4.1-dev \
+    #        libayatana-appindicator3-dev \
+    #        libclang-dev \
+    #        libglib2.0-dev \
+    #        libgtk-3-dev \
+    #        librsvg2-dev \
+    #        libsoup-3.0-dev \
+    #        libssl-dev \
+    #        libwebkit2gtk-4.1-dev \
+    #        wget
 
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
-    - name: setup rust
-      run: rustc --version
+    # - name: setup rust
+    #   run: rustc --version
 
-    - name: setup pnpm
-      uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+    # - name: setup pnpm
+    #   uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
 
-    - name: setup node
-      run: pnpm node -v
+    # - name: setup node
+    #   run: pnpm node -v
 
-    - name: print store path
-      id: store-path
-      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    # - name: print store path
+    #   id: store-path
+    #   run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-    - name: cache pnpm store
-      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: ${{ steps.store-path.outputs.STORE_PATH }}
-        key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: pnpm-store-build-${{ runner.os }}
+    # - name: cache pnpm store
+    #   uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: ${{ steps.store-path.outputs.STORE_PATH }}
+    #     key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+    #     restore-keys: pnpm-store-build-${{ runner.os }}
 
-    - name: install node deps
-      run: pnpm i
+    # - name: install node deps
+    #   run: pnpm i
 
-    - name: install sccache
-      run: |
-        mkdir sccache
-        cd sccache
-        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-unknown-linux-musl.tar.gz
-        tar --strip-components 1 -xvf sccache.tar.gz
-        rm sccache.tar.gz
-        cd ..
+    # - name: install sccache
+    #   run: |
+    #     mkdir sccache
+    #     cd sccache
+    #     curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-unknown-linux-musl.tar.gz
+    #     tar --strip-components 1 -xvf sccache.tar.gz
+    #     rm sccache.tar.gz
+    #     cd ..
 
-        echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
-        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+    #     echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
+    #     echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
-    - name: prepare to build
-      run: |
-        echo updating tauri app version...
-        DATE=$(TZ=UTC date -d "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    # - name: prepare to build
+    #   run: |
+    #     echo updating tauri app version...
+    #     DATE=$(TZ=UTC date -d "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
 
-        echo enabling updater if supported...
-        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+    #     echo enabling updater if supported...
+    #     echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
 
-        echo putting nice platform name...
-        echo -n linux > src-tauri/meta/updater-nice-platform-name
-      env:
-        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
+    #     echo putting nice platform name...
+    #     echo -n linux > src-tauri/meta/updater-nice-platform-name
+    #   env:
+    #     github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
-    - name: build app
-      # run: pnpm tauri build --target x86_64-unknown-linux-gnu
-      run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
-      env:
-        TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-        TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+    # - name: build app
+    #   # run: pnpm tauri build --target x86_64-unknown-linux-gnu
+    #   run: pnpm tauri build --target x86_64-unknown-linux-gnu -- -Z build-std
+    #   env:
+    #     TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+    #     TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-    - name: upload app artifact (deb)
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: linux-deb
-        path: target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
+    # - name: upload app artifact (deb)
+    #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+    #   with:
+    #     name: linux-deb
+    #     path: target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
 
-    - name: upload app artifact (appimage)
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: linux-appimage
-        path: target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
+    # - name: upload app artifact (appimage)
+    #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+    #   with:
+    #     name: linux-appimage
+    #     path: target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
 
-    - name: print glibc version
-      run: ldd --version
+    # - name: print glibc version
+    #   run: ldd --version
 
 
   build-windows:
@@ -311,76 +312,76 @@ jobs:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
-    - name: setup rust
-      shell: bash
-      run: |
-        rustup target add x86_64-pc-windows-msvc
-        rustc --version
+    # - name: setup rust
+    #   shell: bash
+    #   run: |
+    #     rustup target add x86_64-pc-windows-msvc
+    #     rustc --version
 
-    - name: setup pnpm
-      uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+    # - name: setup pnpm
+    #   uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
 
-    - name: setup node
-      shell: bash
-      run: pnpm node -v
+    # - name: setup node
+    #   shell: bash
+    #   run: pnpm node -v
 
-    - name: print store path
-      shell: bash
-      id: store-path
-      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    # - name: print store path
+    #   shell: bash
+    #   id: store-path
+    #   run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-    - name: cache pnpm store
-      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: ${{ steps.store-path.outputs.STORE_PATH }}
-        key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: pnpm-store-build-${{ runner.os }}
+    # - name: cache pnpm store
+    #   uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: ${{ steps.store-path.outputs.STORE_PATH }}
+    #     key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+    #     restore-keys: pnpm-store-build-${{ runner.os }}
 
-    - name: install node deps
-      shell: bash
-      run: pnpm i
+    # - name: install node deps
+    #   shell: bash
+    #   run: pnpm i
 
-    - name: install sccache
-      shell: bash
-      run: |
-        mkdir sccache
-        cd sccache
-        curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-pc-windows-msvc.tar.gz
-        tar --strip-components 1 -xvf sccache.tar.gz
-        rm sccache.tar.gz
-        cd ..
+    # - name: install sccache
+    #   shell: bash
+    #   run: |
+    #     mkdir sccache
+    #     cd sccache
+    #     curl -L -o sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v0.3.3/sccache-v0.3.3-x86_64-pc-windows-msvc.tar.gz
+    #     tar --strip-components 1 -xvf sccache.tar.gz
+    #     rm sccache.tar.gz
+    #     cd ..
 
-        echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
-        echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
+    #     echo "RUSTC_WRAPPER=$(pwd)/sccache/sccache" >> $GITHUB_ENV
+    #     echo "SCCACHE_DIR=$(pwd)/sccache" >> $GITHUB_ENV
 
-    - name: prepare to build
-      shell: bash
-      run: |
-        echo updating tauri app version...
-        DATE=$(TZ=UTC date -d "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
-        # echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
+    # - name: prepare to build
+    #   shell: bash
+    #   run: |
+    #     echo updating tauri app version...
+    #     DATE=$(TZ=UTC date -d "$(git show -s --format=%ci ${{ github.sha }})" +%Y%m%d%H%M%S) node -r @swc-node/register scripts/update-tauri-app-version-to-next.ts
+    #     # echo skipping updating tauri app version because wix is really stupid and doesnt support semver properly
 
-        echo enabling updater if supported...
-        echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
+    #     echo enabling updater if supported...
+    #     echo -n ${{ env.release }} > src-tauri/meta/updater-enabled
 
-        echo putting nice platform name...
-        echo -n windows > src-tauri/meta/updater-nice-platform-name
-      env:
-        github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
+    #     echo putting nice platform name...
+    #     echo -n windows > src-tauri/meta/updater-nice-platform-name
+    #   env:
+    #     github_public_pat: ${{ secrets.GHPAT_PUBLIC_ONLY }}
 
-    - name: build app
-      shell: bash
-      # run: pnpm tauri build --target x86_64-pc-windows-msvc
-      run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
-      env:
-        TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-        TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+    # - name: build app
+    #   shell: bash
+    #   # run: pnpm tauri build --target x86_64-pc-windows-msvc
+    #   run: pnpm tauri build --target x86_64-pc-windows-msvc -- -Z build-std
+    #   env:
+    #     TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+    #     TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-    - name: upload app artifact
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-      with:
-        name: windows-msi
-        path: target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+    # - name: upload app artifact
+    #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+    #   with:
+    #     name: windows-msi
+    #     path: target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
 
 
   release-rolling:
@@ -397,59 +398,59 @@ jobs:
     - name: checkout code
       uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
-    - name: setup pnpm
-      uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
+    # - name: setup pnpm
+    #   uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # v2.2.4
 
-    - name: setup node
-      run: pnpm node -v
+    # - name: setup node
+    #   run: pnpm node -v
 
-    - name: print store path
-      id: store-path
-      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+    # - name: print store path
+    #   id: store-path
+    #   run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-    - name: cache pnpm store
-      uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
-      with:
-        path: ${{ steps.store-path.outputs.STORE_PATH }}
-        key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: pnpm-store-build-${{ runner.os }}
+    # - name: cache pnpm store
+    #   uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
+    #   with:
+    #     path: ${{ steps.store-path.outputs.STORE_PATH }}
+    #     key: pnpm-store-build-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+    #     restore-keys: pnpm-store-build-${{ runner.os }}
 
-    - name: install node deps
-      run: pnpm i
+    # - name: install node deps
+    #   run: pnpm i
 
-    - name: download artifact macos-aarch64
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: macos-aarch64
-        path: artifacts
-    - name: download artifact macos-x64
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: macos-x64
-        path: artifacts
-    - name: download artifact macos-universal
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: macos-universal
-        path: artifacts
-    - name: download artifact linux-deb
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: linux-deb
-        path: artifacts
-    - name: download artifact linux-appimage
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: linux-appimage
-        path: artifacts
-    - name: download artifact windows-msi
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-      with:
-        name: windows-msi
-        path: artifacts
+    # - name: download artifact macos-aarch64
+    #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+    #   with:
+    #     name: macos-aarch64
+    #     path: artifacts
+    # - name: download artifact macos-x64
+    #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+    #   with:
+    #     name: macos-x64
+    #     path: artifacts
+    # - name: download artifact macos-universal
+    #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+    #   with:
+    #     name: macos-universal
+    #     path: artifacts
+    # - name: download artifact linux-deb
+    #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+    #   with:
+    #     name: linux-deb
+    #     path: artifacts
+    # - name: download artifact linux-appimage
+    #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+    #   with:
+    #     name: linux-appimage
+    #     path: artifacts
+    # - name: download artifact windows-msi
+    #   uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+    #   with:
+    #     name: windows-msi
+    #     path: artifacts
 
-    - name: create release
-      run: node -r @swc-node/register scripts/release.ts
-      env:
-        github_pat: ${{ secrets.GHPAT }}
-        target_commitish: ${{ github.sha }}
+    # - name: create release
+    #   run: node -r @swc-node/register scripts/release.ts
+    #   env:
+    #     github_pat: ${{ secrets.GHPAT }}
+    #     target_commitish: ${{ github.sha }}
