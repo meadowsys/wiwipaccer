@@ -4,11 +4,9 @@
 	"type": "module",
 	"scripts": {
 		"postinstall": "pnpm run frontend:postinstall",
-
 		"build:debug": "tauri build --debug",
 		"build:release": "tauri build",
 		"dev": "tauri dev",
-
 		"frontend:build": "nuxt build",
 		"frontend:dev": "nuxt dev --no-clear",
 		"frontend:generate": "nuxt generate",
@@ -16,6 +14,8 @@
 	},
 	"devDependencies": {
 		"@tauri-apps/cli": "^2.0.0-alpha.16",
-		"nuxt": "^3.8.0"
+		"autoprefixer": "^10.4.16",
+		"nuxt": "^3.8.0",
+		"tailwindcss": "^3.3.4"
 	}
 }
