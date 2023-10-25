@@ -1,0 +1,13 @@
+[package]
+name = "tokio"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tokio-dynamic = { path = "./dynamic", optional = true }
+tokio-static = { path = "./static", optional = true }
+
+[features]
+default = ["dynamic"]
+dynamic = ["dep:tokio-dynamic"]
+static = ["dep:tokio-static"]

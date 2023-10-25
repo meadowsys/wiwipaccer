@@ -1,0 +1,7 @@
+[package]
+name = "tokio-static"
+version.workspace = true
+edition.workspace = true
+
+[dependencies.tokio-dep]
+path = "../dep"
