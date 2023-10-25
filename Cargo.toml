@@ -1,10 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-	"deps/*/dep",
-	"deps/*/dynamic",
-	"deps/*/static",
-	"deps/*",
+	# "deps/*/dep",
+	# "deps/*/dynamic",
+	# "deps/*/static",
+	# "deps/*",
 	"src-tauri"
 ]
 

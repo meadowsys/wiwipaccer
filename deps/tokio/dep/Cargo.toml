@@ -1,8 +1,0 @@
-[package]
-name = "tokio-dep"
-version.workspace = true
-edition.workspace = true
-
-[dependencies.tokio]
-version = "1.33.0"
-features = ["full"]
