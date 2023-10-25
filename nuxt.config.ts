@@ -13,7 +13,14 @@ export default defineNuxtConfig({
 	typescript: {
 		strict: true,
 		shim: false,
-		typeCheck: "build"
+		typeCheck: "build",
+		tsConfig: {
+			compilerOptions: {
+				types: [
+					"histoire"
+				]
+			}
+		}
 	},
 	vite: {
 		build: {

@@ -10,11 +10,17 @@
 		"frontend:build": "nuxt build",
 		"frontend:dev": "nuxt dev --no-clear",
 		"frontend:generate": "nuxt generate",
-		"frontend:postinstall": "nuxt prepare"
+		"frontend:postinstall": "nuxt prepare",
+		"story:dev": "histoire dev",
+		"story:build": "histoire build",
+		"story:preview": "histoire preview"
 	},
 	"devDependencies": {
+		"@histoire/plugin-nuxt": "^0.17.3",
+		"@histoire/plugin-vue": "^0.17.1",
 		"@tauri-apps/cli": "^2.0.0-alpha.16",
 		"autoprefixer": "^10.4.16",
+		"histoire": "^0.17.2",
 		"nuxt": "^3.8.0",
 		"tailwindcss": "^3.3.4"
 	}
