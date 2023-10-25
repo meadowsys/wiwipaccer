@@ -4,7 +4,8 @@ members = [
 	"deps/*/dep",
 	"deps/*/dynamic",
 	"deps/*/static",
-	"deps/*"
+	"deps/*",
+	"src-tauri"
 ]
 
 [workspace.package]
