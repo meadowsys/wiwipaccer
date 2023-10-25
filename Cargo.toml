@@ -1,7 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-	"deps/*/*"
+	"deps/*/dep",
+	"deps/*/dynamic",
+	"deps/*/static",
+	"deps/*"
 ]
 
 [workspace.package]
