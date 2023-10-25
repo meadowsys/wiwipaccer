@@ -3,11 +3,16 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "nuxt build",
-		"dev": "nuxt dev --no-clear",
-		"generate": "nuxt generate",
-		"preview": "nuxt preview",
-		"postinstall": "nuxt prepare"
+		"postinstall": "pnpm run frontend:postinstall",
+
+		"build:debug": "tauri build --debug",
+		"build:release": "tauri build",
+		"dev": "tauri dev",
+
+		"frontend:build": "nuxt build",
+		"frontend:dev": "nuxt dev --no-clear",
+		"frontend:generate": "nuxt generate",
+		"frontend:postinstall": "nuxt prepare"
 	},
 	"devDependencies": {
 		"@tauri-apps/cli": "^2.0.0-alpha.16",
