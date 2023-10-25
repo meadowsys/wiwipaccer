@@ -1,0 +1,7 @@
+[package]
+name = "surrealdb-static"
+version.workspace = true
+edition.workspace = true
+
+[dependencies.surrealdb-dep]
+path = "../dep"

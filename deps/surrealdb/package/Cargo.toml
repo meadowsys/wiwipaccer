@@ -1,0 +1,13 @@
+[package]
+name = "surrealdb"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+surrealdb-dynamic = { path = "../dynamic", optional = true }
+surrealdb-static = { path = "../static", optional = true }
+
+[features]
+default = ["dynamic"]
+dynamic = ["dep:surrealdb-dynamic"]
+static = ["dep:surrealdb-static"]

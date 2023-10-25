@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = [
+	"deps/*/*"
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
