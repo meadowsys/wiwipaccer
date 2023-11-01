@@ -18,8 +18,11 @@ export default defineNuxtConfig({
 			compilerOptions: {
 				types: [
 					"histoire"
-				]
-			}
+				],
+			},
+			exclude: [
+				"../oud/**"
+			]
 		}
 	},
 	vite: {
