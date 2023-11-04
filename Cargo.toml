@@ -1,10 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
+	# these are left over from my attempts at dylibs
 	# "deps/*/dep",
 	# "deps/*/dynamic",
 	# "deps/*/static",
 	# "deps/*",
+	"i18n",
 	"src-tauri"
 ]
 
