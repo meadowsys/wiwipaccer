@@ -1,4 +1,4 @@
-//! root manifest for a datasource (equivalent-ish to pack.mcmeta of a resource pack,
+//! root manifest for pack sources (equivalent-ish to pack.mcmeta of a resource pack,
 //! i suppose)
 
 use camino::{ Utf8Path, Utf8PathBuf };
@@ -34,7 +34,7 @@ pub struct Source {
 impl Source {
 	pub async fn new(dir: Utf8PathBuf) -> Result<Self> {
 		let _ = fs::read_dir(&dir).await
-			.map_err(|source| Error::SourceDirReadError { source, path: dir.clone() })?;
+			.map_err(|source| Error::PackSourcesDirReadError { source, path: dir.clone() })?;
 
 		let mut manifest_path = dir.clone();
 		manifest_path.push(SOURCE_META_FILENAME);
@@ -43,7 +43,7 @@ impl Source {
 			.read(true)
 			.open(&manifest_path)
 			.await
-			.map_err(|source| Error::SourceManifestReadError { source, path: manifest_path.clone() })?;
+			.map_err(|source| Error::PackSourcesManifestReadError { source, path: manifest_path.clone() })?;
 		let manifest_meta = fs::metadata(&manifest_path)
 			.await
 			.map_err(|source| Error::FileIOError { source, path: manifest_path.clone() })?;

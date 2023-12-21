@@ -27,14 +27,14 @@ pub enum Error {
 	#[error("invalid utf-8:\n{0}")]
 	InvalidUTF8(#[from] std::string::FromUtf8Error),
 
-	#[error("error reading datasource manifest file at path \"{path}\":\n{source}")]
-	SourceManifestReadError {
+	#[error("error reading pack sources manifest file at path \"{path}\":\n{source}")]
+	PackSourcesManifestReadError {
 		source: std::io::Error,
 		path: Utf8PathBuf
 	},
 
-	#[error("error reading source directory at path \"{path}\":\n{source}")]
-	SourceDirReadError{
+	#[error("error reading pack sources directory at path \"{path}\":\n{source}")]
+	PackSourcesDirReadError{
 		source: std::io::Error,
 		path: Utf8PathBuf
 	},
