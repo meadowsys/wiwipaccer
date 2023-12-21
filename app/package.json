@@ -1,6 +1,10 @@
 {
 	"private": true,
+	"scripts": {
+		"postinstall": "nuxt prepare"
+	},
 	"dependencies": {
-		"@tauri-apps/cli": "2.0.0-alpha.20"
+		"@tauri-apps/cli": "2.0.0-alpha.20",
+		"nuxt": "^3.8.2"
 	}
 }

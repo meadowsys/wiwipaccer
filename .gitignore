@@ -1,2 +1,9 @@
+/target
 node_modules
-target
+*.log*
+.nuxt
+.nitro
+.cache
+.output
+.env
+dist
