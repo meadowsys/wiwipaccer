@@ -5,3 +5,4 @@
 
 pub mod error;
 pub mod pack_sources;
+pub mod settings;

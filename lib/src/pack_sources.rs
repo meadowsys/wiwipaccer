@@ -3,6 +3,7 @@
 
 use camino::{ Utf8Path, Utf8PathBuf };
 use crate::error::*;
+use crate::settings::Settings;
 use serde::{ Deserialize, Serialize };
 use std::process::Stdio;
 use tokio::fs;
@@ -32,7 +33,7 @@ pub struct Source {
 }
 
 impl Source {
-	pub async fn new(dir: Utf8PathBuf) -> Result<Self> {
+	pub async fn new(dir: Utf8PathBuf, settings: &Settings) -> Result<Self> {
 		let _ = fs::read_dir(&dir).await
 			.map_err(|source| Error::PackSourcesDirReadError { source, path: dir.clone() })?;
 
@@ -68,18 +69,17 @@ impl Source {
 				const GIT_SHORT_HASH: &str = "git-short-hash";
 				const GIT_TAG: &str = "git-tag";
 
-				// TODO: make git executable configurable (from the GUI too)
 				match &*version {
 					GIT_HASH => {
-						git_rev_parse_head(&dir)
+						git_rev_parse_head(&dir, &settings.git_executable)
 							.await?
 					}
 					GIT_SHORT_HASH => {
-						let hash = git_rev_parse_head(&dir).await?;
+						let hash = git_rev_parse_head(&dir, &settings.git_executable).await?;
 						hash[..10].into()
 					}
 					GIT_TAG => {
-						git_tag(&dir).await?
+						git_tag(&dir, &settings.git_executable).await?
 					}
 					_ => { version }
 				}
@@ -90,12 +90,12 @@ impl Source {
 	}
 }
 
-async fn git_rev_parse_head(dir: &Utf8Path) -> Result<String> {
+async fn git_rev_parse_head(dir: &Utf8Path, git: &str) -> Result<String> {
 	const REV_PARSE_HEAD_CMD: &str = "git rev-parse HEAD";
-	const REV_PARSE_HEAD_CMD_ARGS: (&str, &[&str]) = ("git", &["rev-parse", "HEAD"]);
+	const REV_PARSE_HEAD_CMD_ARGS: &[&str] = &["rev-parse", "HEAD"];
 
-	let child = Command::new(REV_PARSE_HEAD_CMD_ARGS.0)
-		.args(REV_PARSE_HEAD_CMD_ARGS.1)
+	let child = Command::new(git)
+		.args(REV_PARSE_HEAD_CMD_ARGS)
 		.stdout(Stdio::piped())
 		.current_dir(dir)
 		.spawn()
@@ -117,12 +117,12 @@ async fn git_rev_parse_head(dir: &Utf8Path) -> Result<String> {
 	Ok(hash)
 }
 
-async fn git_tag(dir: &Utf8Path) -> Result<String> {
+async fn git_tag(dir: &Utf8Path, git: &str) -> Result<String> {
 	const TAG_CMD: &str = "git describe --tags --abbrev=10 --always";
-	const TAG_CMD_ARGS: (&str, &[&str]) = ("git", &["describe", "--tags", "--abbrev=10", "--always"]);
+	const TAG_CMD_ARGS: &[&str] = &["describe", "--tags", "--abbrev=10", "--always"];
 
-	let child = Command::new(TAG_CMD_ARGS.0)
-		.args(TAG_CMD_ARGS.1)
+	let child = Command::new(git)
+		.args(TAG_CMD_ARGS)
 		.stdout(Stdio::piped())
 		.current_dir(dir)
 		.spawn()
