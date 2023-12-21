@@ -6,9 +6,13 @@
 #![allow(unused)]
 #![deny(unused_must_use)]
 
+mod window_manager;
+
 fn main() {
 	tauri::Builder::default()
 		.setup(|app| {
+			let app = app.handle();
+			window_manager::open_welcome_window_temporary(app);
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![])
