@@ -46,28 +46,10 @@ impl Source {
 		let mut manifest_path = dir.clone();
 		manifest_path.push(SOURCE_META_FILENAME);
 
-		if !util::check_is_file(&manifest_path).await? {
-			return Err(Error::PackSourceDirContainsNoManifest)
-		}
-
-		let mut manifest_reader = fs::OpenOptions::new()
-			.read(true)
-			.open(&manifest_path)
-			.await
-			.map_err(error::file_io_error(&manifest_path))?;
-
-		let manifest_meta = fs::metadata(&manifest_path)
-			.await
-			.map_err(error::file_io_error(&manifest_path))?;
-		let mut manifest_file = Vec::with_capacity(manifest_meta.len() as usize);
-
-		manifest_reader.read_to_end(&mut manifest_file)
-			.await
-			.map_err(error::file_io_error(&manifest_path))?;
-
-		let manifest_file = String::from_utf8(manifest_file)?;
-
-		let (name, pack_id, description, version) = match ron::from_str(&manifest_file)? {
+		let manifest = util::check_for_and_read_manifest(&manifest_path)
+			.await?
+			.ok_or_else(|| Error::PackSourceDirContainsNoManifest)?;
+		let (name, pack_id, description, version) = match manifest {
 			MetaFile::Version1 { name, pack_id, description, version } => {
 				(name, pack_id, description, version)
 			}

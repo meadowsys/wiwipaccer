@@ -45,47 +45,25 @@ impl Texture {
 		texture_dir.push(TEXTURES_DIR);
 		texture_dir.push(&texture_id);
 
-		match util::check_is_dir(&texture_dir).await {
-			Ok(true) => { /* noop */ }
-			Ok(false) | Err(_) => {
-				// silently ignore if its not a dir
-				// maybe in the future we can log this as debug information, that it saw this
-				// but skipped it
-				return Ok(None)
-			}
+		if !util::check_is_dir_silent_fail(&texture_dir).await {
+			// silently ignore if its not a dir
+			// maybe in the future we can log this as debug information, that it saw this
+			// but skipped it
+			return Ok(None)
 		}
 
 		let mut manifest_path = texture_dir;
 		manifest_path.push(TEXTURE_META_FILENAME);
 
-		match util::check_is_file(&manifest_path).await {
-			Ok(true) => { /* noop */ }
-			Ok(false) | Err(_) => {
-				// the directory doesn't have a manifest so probaby isn't a texture
-				// silently ignore
-				// see above if statement for note on future logging
-				return Ok(None)
-			}
-		}
+		let manifest = util::check_for_and_read_manifest(&manifest_path)
+			.await?;
 
-		let mut manifest_reader = fs::OpenOptions::new()
-			.read(true)
-			.open(&manifest_path)
-			.await
-			.map_err(error::file_io_error(&manifest_path))?;
+		let manifest = match manifest {
+			Some(manifest) => { manifest }
+			None => { return Ok(None) }
+		};
 
-		let manifest_meta = fs::metadata(&manifest_path)
-			.await
-			.map_err(error::file_io_error(&manifest_path))?;
-		let mut manifest_file = Vec::with_capacity(manifest_meta.len() as usize);
-
-		manifest_reader.read_to_end(&mut manifest_file)
-			.await
-			.map_err(error::file_io_error(&manifest_path))?;
-
-		let manifest_file = String::from_utf8(manifest_file)?;
-
-		let (name, description, default) = match ron::from_str(&manifest_file)? {
+		let (name, description, default) = match manifest {
 			MetaFile::Version1 { name, description, default } => {
 				(name, description, default)
 			}
