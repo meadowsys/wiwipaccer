@@ -171,13 +171,14 @@ async fn read_textures(dir: &Utf8Path) -> Result<Vec<Texture>> {
 			.await
 			.map_err(|source| Error::FileIOError { source, path: textures_dir.clone() })?
 	} {
-		let dir_name: std::path::PathBuf = entry.file_name().into();
-		let dir_name = dir_name.try_into()
-			.map_err(|_| Error::NonUTF8PathsUnsupported)?;
+		let texture_id = entry.file_name()
+			.to_str()
+			.ok_or_else(|| Error::NonUTF8PathsUnsupported)?
+			.into();
 
 		let options = NewTextureOptions {
 			root_dir: dir.into(),
-			dir_name
+			texture_id
 		};
 
 		if let Some(texture) = Texture::new(options).await? {

@@ -34,12 +34,12 @@ pub struct Texture {
 #[derive(Debug)]
 pub struct NewTextureOptions {
 	pub root_dir: Utf8PathBuf,
-	pub dir_name: Utf8PathBuf
+	pub texture_id: Utf8PathBuf
 }
 
 impl Texture {
 	pub async fn new(options: NewTextureOptions) -> Result<Option<Self>> {
-		let NewTextureOptions { root_dir, dir_name: texture_id } = options;
+		let NewTextureOptions { root_dir, texture_id } = options;
 
 		let mut texture_dir = root_dir.clone();
 		texture_dir.push(TEXTURES_DIR);
