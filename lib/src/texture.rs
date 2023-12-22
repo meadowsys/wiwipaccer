@@ -34,7 +34,7 @@ pub struct Texture {
 #[derive(Debug)]
 pub struct NewTextureOptions {
 	pub root_dir: Utf8PathBuf,
-	pub texture_id: Utf8PathBuf
+	pub texture_id: String
 }
 
 impl Texture {
@@ -90,8 +90,6 @@ impl Texture {
 				(name, description, default)
 			}
 		};
-
-		let texture_id = texture_id.to_string();
 
 		Ok(Some(Texture { name, root_dir, texture_id, description, default }))
 	}
