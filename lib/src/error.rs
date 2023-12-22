@@ -27,6 +27,10 @@ pub enum Error {
 	#[error("invalid utf-8:\n{0}")]
 	InvalidUTF8(#[from] std::string::FromUtf8Error),
 
+	/// TODO: this should have a better error message
+	#[error("non UTF-8 paths are not supported")]
+	NonUTF8PathsUnsupported,
+
 	#[error("error reading pack sources manifest file at path \"{path}\":\n{source}")]
 	PackSourcesManifestReadError {
 		source: std::io::Error,

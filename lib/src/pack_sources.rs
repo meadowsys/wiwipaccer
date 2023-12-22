@@ -3,10 +3,12 @@
 
 use camino::{ Utf8Path, Utf8PathBuf };
 use crate::error::*;
+use crate::ron;
 use crate::settings::Settings;
+use crate::texture::{ NewTextureOptions, Texture };
 use serde::{ Deserialize, Serialize };
 use std::process::Stdio;
-use tokio::fs;
+use tokio::fs::{ self, ReadDir };
 use tokio::io::AsyncReadExt;
 use tokio::process::Command;
 
@@ -18,7 +20,7 @@ enum MetaFile {
 	#[serde(rename = "1")]
 	Version1 {
 		name: String,
-		packid: String,
+		pack_id: String,
 		description: Option<String>,
 		version: Option<String>
 	}
@@ -27,14 +29,16 @@ enum MetaFile {
 #[derive(Debug)]
 pub struct Source {
 	name: String,
-	packid: String,
+	dir: Utf8PathBuf,
+	pack_id: String,
 	description: Option<String>,
-	version: String
+	version: String,
+	textures: Vec<Texture>
 }
 
 impl Source {
 	pub async fn new(dir: Utf8PathBuf, settings: &Settings) -> Result<Self> {
-		let _ = fs::read_dir(&dir).await
+		let dir_contents = fs::read_dir(&dir).await
 			.map_err(|source| Error::PackSourcesDirReadError { source, path: dir.clone() })?;
 
 		let mut manifest_path = dir.clone();
@@ -56,9 +60,9 @@ impl Source {
 
 		let manifest_file = String::from_utf8(manifest_file)?;
 
-		let (name, packid, description, version) = match ron::from_str(&manifest_file)? {
-			MetaFile::Version1 { name, packid, description, version } => {
-				(name, packid, description, version)
+		let (name, pack_id, description, version) = match ron::from_str(&manifest_file)? {
+			MetaFile::Version1 { name, pack_id, description, version } => {
+				(name, pack_id, description, version)
 			}
 		};
 
@@ -86,7 +90,10 @@ impl Source {
 			}
 		};
 
-		Ok(Source { name, packid, description, version })
+		let textures = read_textures(dir_contents, &dir)
+			.await?;
+
+		Ok(Source { name, dir, pack_id, description, version, textures })
 	}
 }
 
@@ -142,4 +149,30 @@ async fn git_tag(dir: &Utf8Path, git: &str) -> Result<String> {
 		.into();
 
 	Ok(tag)
+}
+
+async fn read_textures(mut dir_contents: ReadDir, dir: &Utf8Path) -> Result<Vec<Texture>> {
+	let mut textures = vec![];
+
+	while let Some(entry) = {
+		dir_contents
+			.next_entry()
+			.await
+			.map_err(|source| Error::FileIOError { source, path: dir.into() })?
+	} {
+		let dir_name: std::path::PathBuf = entry.file_name().into();
+		let dir_name = dir_name.try_into()
+			.map_err(|_| Error::NonUTF8PathsUnsupported)?;
+
+		let options = NewTextureOptions {
+			root_dir: dir.into(),
+			dir_name
+		};
+
+		if let Some(texture) = Texture::new(options).await? {
+			textures.push(texture);
+		}
+	}
+
+	Ok(textures)
 }
