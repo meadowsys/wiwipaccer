@@ -1,6 +1,6 @@
 #![warn(unused)]
 
-use camino::Utf8PathBuf;
+use camino::{ Utf8PathBuf, Utf8Path };
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -38,14 +38,29 @@ pub enum Error {
 	},
 
 	#[error("error reading pack sources directory at path \"{path}\":\n{source}")]
-	PackSourcesDirReadError{
+	PackSourcesDirReadError {
 		source: std::io::Error,
 		path: Utf8PathBuf
 	},
+
+	#[error("provided pack source path is invalid (not a directory)")]
+	PackSourcePathIsNotDir,
+
+	#[error(
+		"provided pack source path isn't a valid pack source (check that a file named \"{}\" exists in it?)",
+		crate::pack_sources::SOURCE_META_FILENAME
+	)]
+	PackSourceDirContainsNoManifest,
 
 	#[error("error parsing ron:\n{source}")]
 	RonSpannedError {
 		#[from]
 		source: ron::error::SpannedError
 	}
+}
+
+pub fn file_io_error(path: &Utf8Path)
+	-> impl FnOnce(std::io::Error) -> Error + '_
+{
+	|source| Error::FileIOError { source, path: path.into() }
 }

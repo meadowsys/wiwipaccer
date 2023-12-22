@@ -6,6 +6,7 @@
 pub mod error;
 mod ron;
 pub mod settings;
+mod util;
 
 pub mod pack_sources;
 pub mod texture;

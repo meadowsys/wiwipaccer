@@ -2,17 +2,18 @@
 //! i suppose)
 
 use camino::{ Utf8Path, Utf8PathBuf };
-use crate::error::*;
+use crate::error::{ self, Error, Result };
 use crate::ron;
 use crate::settings::Settings;
 use crate::texture::{ NewTextureOptions, Texture };
+use crate::util;
 use serde::{ Deserialize, Serialize };
 use std::process::Stdio;
 use tokio::fs::{ self, ReadDir };
 use tokio::io::AsyncReadExt;
 use tokio::process::Command;
 
-const SOURCE_META_FILENAME: &str = "pack.wiwimeta";
+pub const SOURCE_META_FILENAME: &str = "pack.wiwimeta";
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "meta_version")]
@@ -38,25 +39,33 @@ pub struct Source {
 
 impl Source {
 	pub async fn new(dir: Utf8PathBuf, settings: &Settings) -> Result<Self> {
-		let dir_contents = fs::read_dir(&dir).await
-			.map_err(|source| Error::PackSourcesDirReadError { source, path: dir.clone() })?;
+		if !util::check_is_dir(&dir).await? {
+			return Err(Error::PackSourcePathIsNotDir)
+		}
 
 		let mut manifest_path = dir.clone();
 		manifest_path.push(SOURCE_META_FILENAME);
+
+		if !fs::try_exists(&manifest_path)
+			.await
+			.map_err(error::file_io_error(&manifest_path))?
+		{
+			return Err(Error::PackSourceDirContainsNoManifest)
+		}
 
 		let mut manifest_reader = fs::OpenOptions::new()
 			.read(true)
 			.open(&manifest_path)
 			.await
-			.map_err(|source| Error::PackSourcesManifestReadError { source, path: manifest_path.clone() })?;
+			.map_err(error::file_io_error(&manifest_path))?;
 		let manifest_meta = fs::metadata(&manifest_path)
 			.await
-			.map_err(|source| Error::FileIOError { source, path: manifest_path.clone() })?;
+			.map_err(error::file_io_error(&manifest_path))?;
 
 		let mut manifest_file = Vec::with_capacity(manifest_meta.len() as usize);
 		manifest_reader.read_to_end(&mut manifest_file)
 			.await
-			.map_err(|source| Error::FileIOError { source, path: manifest_path })?;
+			.map_err(error::file_io_error(&manifest_path))?;
 
 		let manifest_file = String::from_utf8(manifest_file)?;
 
@@ -75,8 +84,7 @@ impl Source {
 
 				match &*version {
 					GIT_HASH => {
-						git_rev_parse_head(&dir, &settings.git_executable)
-							.await?
+						git_rev_parse_head(&dir, &settings.git_executable).await?
 					}
 					GIT_SHORT_HASH => {
 						let hash = git_rev_parse_head(&dir, &settings.git_executable).await?;
@@ -90,7 +98,7 @@ impl Source {
 			}
 		};
 
-		let textures = read_textures(dir_contents, &dir)
+		let textures = read_textures(&dir)
 			.await?;
 
 		Ok(Source { name, dir, pack_id, description, version, textures })
@@ -151,7 +159,10 @@ async fn git_tag(dir: &Utf8Path, git: &str) -> Result<String> {
 	Ok(tag)
 }
 
-async fn read_textures(mut dir_contents: ReadDir, dir: &Utf8Path) -> Result<Vec<Texture>> {
+async fn read_textures(dir: &Utf8Path) -> Result<Vec<Texture>> {
+	let mut dir_contents = fs::read_dir(dir)
+		.await
+		.map_err(|source| Error::FileIOError { source, path: dir.into() })?;
 	let mut textures = vec![];
 
 	while let Some(entry) = {
