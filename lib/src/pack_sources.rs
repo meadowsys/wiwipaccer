@@ -5,11 +5,11 @@ use camino::{ Utf8Path, Utf8PathBuf };
 use crate::error::{ self, Error, Result };
 use crate::ron;
 use crate::settings::Settings;
-use crate::texture::{ NewTextureOptions, Texture };
+use crate::texture::{ NewTextureOptions, Texture, TEXTURES_DIR };
 use crate::util;
 use serde::{ Deserialize, Serialize };
 use std::process::Stdio;
-use tokio::fs::{ self, ReadDir };
+use tokio::fs;
 use tokio::io::AsyncReadExt;
 use tokio::process::Command;
 
@@ -46,10 +46,7 @@ impl Source {
 		let mut manifest_path = dir.clone();
 		manifest_path.push(SOURCE_META_FILENAME);
 
-		if !fs::try_exists(&manifest_path)
-			.await
-			.map_err(error::file_io_error(&manifest_path))?
-		{
+		if !util::check_is_file(&manifest_path).await? {
 			return Err(Error::PackSourceDirContainsNoManifest)
 		}
 
@@ -58,11 +55,12 @@ impl Source {
 			.open(&manifest_path)
 			.await
 			.map_err(error::file_io_error(&manifest_path))?;
+
 		let manifest_meta = fs::metadata(&manifest_path)
 			.await
 			.map_err(error::file_io_error(&manifest_path))?;
-
 		let mut manifest_file = Vec::with_capacity(manifest_meta.len() as usize);
+
 		manifest_reader.read_to_end(&mut manifest_file)
 			.await
 			.map_err(error::file_io_error(&manifest_path))?;
@@ -160,16 +158,18 @@ async fn git_tag(dir: &Utf8Path, git: &str) -> Result<String> {
 }
 
 async fn read_textures(dir: &Utf8Path) -> Result<Vec<Texture>> {
-	let mut dir_contents = fs::read_dir(dir)
+	let mut textures_dir = dir.to_owned();
+	textures_dir.push(TEXTURES_DIR);
+	let mut dir_contents = fs::read_dir(&textures_dir)
 		.await
-		.map_err(|source| Error::FileIOError { source, path: dir.into() })?;
+		.map_err(|source| Error::FileIOError { source, path: textures_dir.clone() })?;
 	let mut textures = vec![];
 
 	while let Some(entry) = {
 		dir_contents
 			.next_entry()
 			.await
-			.map_err(|source| Error::FileIOError { source, path: dir.into() })?
+			.map_err(|source| Error::FileIOError { source, path: textures_dir.clone() })?
 	} {
 		let dir_name: std::path::PathBuf = entry.file_name().into();
 		let dir_name = dir_name.try_into()

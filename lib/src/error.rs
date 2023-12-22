@@ -43,11 +43,11 @@ pub enum Error {
 		path: Utf8PathBuf
 	},
 
-	#[error("provided pack source path is invalid (not a directory)")]
+	#[error("provided pack source path is invalid (not a directory or doesn't exist)")]
 	PackSourcePathIsNotDir,
 
 	#[error(
-		"provided pack source path isn't a valid pack source (check that a file named \"{}\" exists in it?)",
+		"provided pack source path is invalid (manifest file (\"{}\") is not a file or doesn't exist?)",
 		crate::pack_sources::SOURCE_META_FILENAME
 	)]
 	PackSourceDirContainsNoManifest,
