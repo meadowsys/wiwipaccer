@@ -4,7 +4,6 @@
 use camino::{ Utf8Path, Utf8PathBuf };
 use crate::error::{ self, Error, Result };
 use crate::ron;
-use crate::settings::Settings;
 use crate::texture::{ NewTextureOptions, Texture, TEXTURES_DIR };
 use crate::util;
 use serde::{ Deserialize, Serialize };
@@ -38,7 +37,7 @@ pub struct Source {
 }
 
 impl Source {
-	pub async fn new(dir: Utf8PathBuf, settings: &Settings) -> Result<Self> {
+	pub async fn new(dir: Utf8PathBuf) -> Result<Self> {
 		if !util::check_is_dir(&dir).await? {
 			return Err(Error::PackSourcePathIsNotDir)
 		}
@@ -55,88 +54,13 @@ impl Source {
 			}
 		};
 
-		let version = match version {
-			None => { "unknown".into() }
-			Some(version) => {
-				const GIT_HASH: &str = "git-hash";
-				const GIT_SHORT_HASH: &str = "git-short-hash";
-				const GIT_TAG: &str = "git-tag";
-
-				match &*version {
-					GIT_HASH => {
-						git_rev_parse_head(&dir, &settings.git_executable).await?
-					}
-					GIT_SHORT_HASH => {
-						let hash = git_rev_parse_head(&dir, &settings.git_executable).await?;
-						hash[..10].into()
-					}
-					GIT_TAG => {
-						git_tag(&dir, &settings.git_executable).await?
-					}
-					_ => { version }
-				}
-			}
-		};
+		let version = version.unwrap_or_else(|| "unknown".into());
 
 		let textures = read_textures(&dir)
 			.await?;
 
 		Ok(Source { name, dir, pack_id, description, version, textures })
 	}
-}
-
-async fn git_rev_parse_head(dir: &Utf8Path, git: &str) -> Result<String> {
-	const REV_PARSE_HEAD_CMD: &str = "git rev-parse HEAD";
-	const REV_PARSE_HEAD_CMD_ARGS: &[&str] = &["rev-parse", "HEAD"];
-
-	let child = Command::new(git)
-		.args(REV_PARSE_HEAD_CMD_ARGS)
-		.stdout(Stdio::piped())
-		.current_dir(dir)
-		.spawn()
-		.map_err(|source| Error::ChildProcessFailedToSpawnForGitVersioning {
-			source,
-			command: REV_PARSE_HEAD_CMD.into()
-		})?;
-	let output = child.wait_with_output()
-		.await
-		.map_err(|source| Error::ChildProcessFailedToSpawnForGitVersioning {
-			source,
-			command: REV_PARSE_HEAD_CMD.into()
-		})?;
-
-	let hash = String::from_utf8(output.stdout)?
-		.trim()
-		.into();
-
-	Ok(hash)
-}
-
-async fn git_tag(dir: &Utf8Path, git: &str) -> Result<String> {
-	const TAG_CMD: &str = "git describe --tags --abbrev=10 --always";
-	const TAG_CMD_ARGS: &[&str] = &["describe", "--tags", "--abbrev=10", "--always"];
-
-	let child = Command::new(git)
-		.args(TAG_CMD_ARGS)
-		.stdout(Stdio::piped())
-		.current_dir(dir)
-		.spawn()
-		.map_err(|source| Error::ChildProcessFailedToSpawnForGitVersioning {
-			source,
-			command: TAG_CMD.into()
-		})?;
-	let output = child.wait_with_output()
-		.await
-		.map_err(|source| Error::ChildProcessFailedToSpawnForGitVersioning {
-			source,
-			command: TAG_CMD.into()
-		})?;
-
-	let tag = String::from_utf8(output.stdout)?
-		.trim()
-		.into();
-
-	Ok(tag)
 }
 
 async fn read_textures(dir: &Utf8Path) -> Result<Vec<Texture>> {
