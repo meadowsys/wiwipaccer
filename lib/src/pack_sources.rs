@@ -6,6 +6,7 @@ use crate::error::{ self, Error, Result };
 use crate::ron;
 use crate::texture::{ NewTextureOptions, Texture, TEXTURES_DIR };
 use crate::util;
+use semver::Version;
 use serde::{ Deserialize, Serialize };
 use std::process::Stdio;
 use tokio::fs;
@@ -32,7 +33,7 @@ pub struct Source {
 	dir: Utf8PathBuf,
 	pack_id: String,
 	description: Option<String>,
-	version: String,
+	version: Version,
 	textures: Vec<Texture>
 }
 
@@ -55,6 +56,7 @@ impl Source {
 		};
 
 		let version = version.unwrap_or_else(|| "unknown".into());
+		let version = Version::parse(&version)?;
 
 		let textures = read_textures(&dir)
 			.await?;

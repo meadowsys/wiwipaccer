@@ -8,7 +8,9 @@ publish = false
 [dependencies]
 ahash = "0.8.6"
 camino = "1.1.6"
+futures = "0.3.29"
 ron = "0.8.1"
+semver = "1.0.20"
 serde = { version = "1.0.193", features = ["derive"] }
 thiserror = "1.0.51"
 tokio.workspace = true

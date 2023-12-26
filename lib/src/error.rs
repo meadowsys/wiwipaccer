@@ -56,6 +56,12 @@ pub enum Error {
 	RonSpannedError {
 		#[from]
 		source: ron::error::SpannedError
+	},
+
+	#[error("error parsing semver:\n{source}")]
+	SemverParseError {
+		#[from]
+		source: semver::Error
 	}
 }
 
