@@ -53,6 +53,12 @@ pub enum Error {
 	PackSourceDirContainsNoManifest,
 
 	#[error("error parsing ron:\n{source}")]
+	RonError {
+		#[from]
+		source: ron::error::Error
+	},
+
+	#[error("error parsing ron:\n{source}")]
 	RonSpannedError {
 		#[from]
 		source: ron::error::SpannedError
