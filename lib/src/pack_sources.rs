@@ -1,6 +1,7 @@
 //! root manifest for pack sources (equivalent-ish to pack.mcmeta of a resource pack,
 //! i suppose)
 
+use async_trait::async_trait;
 use camino::{ Utf8Path, Utf8PathBuf };
 use crate::error::{ self, Error, Result };
 use crate::ron;
@@ -40,13 +41,15 @@ pub struct Source {
 	textures: Vec<Texture>
 }
 
+#[async_trait]
 pub trait DependencyResolver<D>
 where
 	D: Dependency
 {
-	fn depedency<'h>(&mut self, name: &str, req: &VersionReq) -> Result<Option<&'h D>>;
+	async fn depedency<'h>(&mut self, name: &str, req: &VersionReq) -> Result<Option<&'h D>>;
 }
 
+#[async_trait]
 pub trait Dependency {}
 
 impl Source {
@@ -72,13 +75,17 @@ impl Source {
 			}
 		};
 
-		let dependencies = dependencies.into_iter()
-			.map(|(name, req)| {
+		let dependencies = {
+			let mut map = HashMap::with_capacity(dependencies.len());
+
+			for (name, req) in dependencies {
 				let req = VersionReq::parse(&req)?;
-				let dep = dependency_resolver.depedency(&name, &req)?;
-				Ok((name, dep))
-			})
-			.collect::<Result<HashMap<_, _>>>()?;
+				let dep = dependency_resolver.depedency(&name, &req).await?;
+				map.insert(name, dep);
+			}
+
+			map
+		};
 
 		let version = version.unwrap_or_else(|| "unknown".into());
 		let version = Version::parse(&version)?;

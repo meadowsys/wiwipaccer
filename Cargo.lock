@@ -4451,6 +4451,7 @@ dependencies = [
 name = "wiwipaccer"
 version = "0.0.0"
 dependencies = [
+ "async-trait",
  "camino",
  "futures",
  "hashbrown 0.14.3",

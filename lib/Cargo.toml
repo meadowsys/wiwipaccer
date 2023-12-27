@@ -6,6 +6,7 @@ license.workspace = true
 publish = false
 
 [dependencies]
+async-trait = "0.1.75"
 camino = "1.1.6"
 futures = "0.3.29"
 hashbrown.workspace = true
