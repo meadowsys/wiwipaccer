@@ -44,11 +44,12 @@ impl Workspace {
 	}
 
 	pub async fn add_source(&mut self, dir: Utf8PathBuf) -> Result<()> {
-		let source = Source::new(dir).await?;
-		let name = source.name().into();
+		// let source = Source::new(dir).await?;
+		// let name = source.name().into();
 
-		self.sources.insert(name, source);
+		// self.sources.insert(name, source);
 
-		Ok(())
+		// Ok(())
+		todo!()
 	}
 }

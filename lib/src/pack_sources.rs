@@ -6,7 +6,8 @@ use crate::error::{ self, Error, Result };
 use crate::ron;
 use crate::texture::{ NewTextureOptions, Texture, TEXTURES_DIR };
 use crate::util;
-use semver::Version;
+use hashbrown::{ HashMap, HashSet };
+use semver::{ Version, VersionReq };
 use serde::{ Deserialize, Serialize };
 use std::process::Stdio;
 use tokio::fs;
@@ -23,7 +24,8 @@ enum MetaFile {
 		name: String,
 		pack_id: String,
 		description: Option<String>,
-		version: Option<String>
+		version: Option<String>,
+		dependencies: Option<HashMap<String, String>>
 	}
 }
 
@@ -34,11 +36,25 @@ pub struct Source {
 	pack_id: String,
 	description: Option<String>,
 	version: Version,
+	dependencies: HashSet<String>,
 	textures: Vec<Texture>
 }
 
+pub trait DependencyResolver<D>
+where
+	D: Dependency
+{
+	fn depedency<'h>(&mut self, name: &str, req: &VersionReq) -> Result<Option<&'h D>>;
+}
+
+pub trait Dependency {}
+
 impl Source {
-	pub async fn new(dir: Utf8PathBuf) -> Result<Self> {
+	pub async fn new<R, D>(dir: Utf8PathBuf, dependency_resolver: &mut R) -> Result<Self>
+	where
+		R: DependencyResolver<D>,
+		D: Dependency
+	{
 		if !util::check_is_dir(&dir).await? {
 			return Err(Error::PackSourcePathIsNotDir)
 		}
@@ -49,19 +65,31 @@ impl Source {
 		let manifest = util::check_for_and_read_manifest(&manifest_path)
 			.await?
 			.ok_or_else(|| Error::PackSourceDirContainsNoManifest)?;
-		let (name, pack_id, description, version) = match manifest {
-			MetaFile::Version1 { name, pack_id, description, version } => {
-				(name, pack_id, description, version)
+		let (name, pack_id, description, version, dependencies) = match manifest {
+			MetaFile::Version1 { name, pack_id, description, version, dependencies } => {
+				let dependencies = dependencies.unwrap_or_default();
+				(name, pack_id, description, version, dependencies)
 			}
 		};
+
+		let dependencies = dependencies.into_iter()
+			.map(|(name, req)| {
+				let req = VersionReq::parse(&req)?;
+				let dep = dependency_resolver.depedency(&name, &req)?;
+				Ok((name, dep))
+			})
+			.collect::<Result<HashMap<_, _>>>()?;
 
 		let version = version.unwrap_or_else(|| "unknown".into());
 		let version = Version::parse(&version)?;
 
+		// TODO: this will take the dependencies and use it to resolve things
 		let textures = read_textures(&dir)
 			.await?;
 
-		Ok(Source { name, dir, pack_id, description, version, textures })
+		let dependencies = dependencies.into_keys().collect();
+
+		Ok(Source { name, dir, pack_id, description, version, dependencies, textures })
 	}
 
 	#[inline]
