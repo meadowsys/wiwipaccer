@@ -63,6 +63,11 @@ impl Source {
 
 		Ok(Source { name, dir, pack_id, description, version, textures })
 	}
+
+	#[inline]
+	pub fn name(&self) -> &str {
+		&self.name
+	}
 }
 
 async fn read_textures(dir: &Utf8Path) -> Result<Vec<Texture>> {
