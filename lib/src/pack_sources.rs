@@ -42,20 +42,18 @@ pub struct Source {
 }
 
 #[async_trait]
-pub trait DependencyResolver<D>
-where
-	D: Dependency
-{
-	async fn depedency<'h>(&mut self, name: &str, req: &VersionReq) -> Result<Option<&'h D>>;
+pub trait DependencyResolver {
+	type Dependency: Dependency;
+	async fn depedency(&self, name: &str, req: &VersionReq) -> Result<Option<Self::Dependency>>;
 }
 
 #[async_trait]
 pub trait Dependency {}
 
 impl Source {
-	pub async fn new<R, D>(dir: Utf8PathBuf, dependency_resolver: &mut R) -> Result<Self>
+	pub async fn new<R, D>(dir: Utf8PathBuf, dependency_resolver: R) -> Result<Self>
 	where
-		R: DependencyResolver<D>,
+		R: DependencyResolver<Dependency = D>,
 		D: Dependency
 	{
 		if !util::check_is_dir(&dir).await? {
@@ -102,6 +100,11 @@ impl Source {
 	#[inline]
 	pub fn name(&self) -> &str {
 		&self.name
+	}
+
+	#[inline]
+	pub fn version(&self) -> &Version {
+		&self.version
 	}
 }
 

@@ -1,6 +1,7 @@
+use async_trait::async_trait;
 use camino::Utf8PathBuf;
 use crate::error::{ self, Error, Result };
-use crate::pack_sources::Source;
+use crate::pack_sources::{ self, Source };
 use crate::ron;
 use crate::util;
 use hashbrown::HashMap;
@@ -44,12 +45,41 @@ impl Workspace {
 	}
 
 	pub async fn add_source(&mut self, dir: Utf8PathBuf) -> Result<()> {
-		// let source = Source::new(dir).await?;
-		// let name = source.name().into();
+		let sources = &self.sources;
+		let resolver = DependencyResolver { sources };
 
-		// self.sources.insert(name, source);
+		let source = Source::new(dir, resolver).await?;
+		let name = source.name().into();
 
-		// Ok(())
-		todo!()
+		self.sources.insert(name, source);
+
+		Ok(())
 	}
 }
+
+struct DependencyResolver<'h> {
+	sources: &'h HashMap<String, Source>
+}
+
+struct Dependency<'h> {
+	source: &'h Source
+}
+
+#[async_trait]
+impl<'h> pack_sources::DependencyResolver for DependencyResolver<'h> {
+	type Dependency = Dependency<'h>;
+	async fn depedency(&self, name: &str, req: &VersionReq) -> Result<Option<Self::Dependency>> {
+		let source = match self.sources.get(name) {
+			Some(s) => { s }
+			None => { return Ok(None) }
+		};
+
+		if !req.matches(source.version()) { return Ok(None) }
+
+		let dependency = Dependency { source };
+		Ok(Some(dependency))
+	}
+}
+
+#[async_trait]
+impl<'h> pack_sources::Dependency for Dependency<'h> {}
