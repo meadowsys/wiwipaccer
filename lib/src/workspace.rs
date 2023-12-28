@@ -13,30 +13,39 @@ use serde::{ Deserialize, Serialize };
 pub enum WorkspaceConfig {
 	#[serde(rename = "1")]
 	Version1 {
-		projects: Vec<ProjectConfigEntry>
+		name: String,
+		projects: Vec<String>
 	}
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct ProjectConfigEntry {
-	pub name: Option<String>,
-	pub path: String
 }
 
 pub struct Workspace {
-	sources: HashMap<String, Source>
+	name: String,
+	sources: HashMap<String, Source>,
+	source_names: Vec<String>
 }
 
 impl Workspace {
-	pub fn new() -> Workspace {
+	pub fn new(name: String) -> Workspace {
 		let sources = HashMap::new();
+		let source_names = Vec::new();
 
-		Workspace { sources }
+		Workspace { name, sources, source_names }
 	}
 
 	pub async fn from_config(config: WorkspaceConfig) -> Result<Self> {
-		let new = Self::new();
-		todo!()
+		let new = match config {
+			WorkspaceConfig::Version1 { name, projects } => {
+				let mut new = Self::new(name);
+
+				for project in projects {
+					new.add_source(project.into()).await?;
+				}
+
+				new
+			}
+		};
+
+		Ok(new)
 	}
 
 	pub fn to_config(&self) -> WorkspaceConfig {
@@ -49,9 +58,10 @@ impl Workspace {
 		let resolver = DependencyResolver { sources };
 
 		let source = Source::new(dir, resolver).await?;
-		let name = source.name().into();
+		let name = source.name().to_owned();
 
-		self.sources.insert(name, source);
+		self.sources.insert(name.clone(), source);
+		self.source_names.push(name);
 
 		Ok(())
 	}
