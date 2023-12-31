@@ -49,8 +49,12 @@ impl Workspace {
 	}
 
 	pub fn to_config(&self) -> WorkspaceConfig {
-		// WorkspaceConfig::Version1 {}
-		todo!()
+		let name = self.name.clone();
+		let projects = self.source_names.iter()
+			.map(|path| self.sources.get(path).expect("invalid state"))
+			.map(|source| source.name().into())
+			.collect::<Vec<_>>();
+		WorkspaceConfig::Version1 { name, projects }
 	}
 
 	pub async fn add_source(&mut self, dir: String) -> Result<()> {
