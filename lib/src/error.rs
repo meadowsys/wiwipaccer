@@ -1,7 +1,3 @@
-#![warn(unused)]
-
-use camino::{ Utf8PathBuf, Utf8Path };
-
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
@@ -21,7 +17,7 @@ pub enum Error {
 	#[error("error doing IO on file at path \"{path}\":\n{source}")]
 	FileIOError {
 		source: std::io::Error,
-		path: Utf8PathBuf
+		path: String
 	},
 
 	#[error("invalid utf-8:\n{0}")]
@@ -34,13 +30,13 @@ pub enum Error {
 	#[error("error reading pack sources manifest file at path \"{path}\":\n{source}")]
 	PackSourcesManifestReadError {
 		source: std::io::Error,
-		path: Utf8PathBuf
+		path: String
 	},
 
 	#[error("error reading pack sources directory at path \"{path}\":\n{source}")]
 	PackSourcesDirReadError {
 		source: std::io::Error,
-		path: Utf8PathBuf
+		path: String
 	},
 
 	#[error("provided pack source path is invalid (not a directory or doesn't exist)")]
@@ -71,7 +67,7 @@ pub enum Error {
 	}
 }
 
-pub fn file_io_error(path: &Utf8Path)
+pub fn file_io_error(path: &str)
 	-> impl FnOnce(std::io::Error) -> Error + '_
 {
 	|source| Error::FileIOError { source, path: path.into() }

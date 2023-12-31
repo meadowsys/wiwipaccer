@@ -38,7 +38,7 @@ impl Workspace {
 				let mut new = Self::new(name);
 
 				for project in projects {
-					new.add_source(project.into()).await?;
+					new.add_source(project).await?;
 				}
 
 				new
@@ -53,7 +53,7 @@ impl Workspace {
 		todo!()
 	}
 
-	pub async fn add_source(&mut self, dir: Utf8PathBuf) -> Result<()> {
+	pub async fn add_source(&mut self, dir: String) -> Result<()> {
 		let sources = &self.sources;
 		let resolver = DependencyResolver { sources };
 

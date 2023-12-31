@@ -5,27 +5,27 @@ use serde::de::DeserializeOwned;
 use tokio::fs;
 use tokio::io::AsyncReadExt;
 
-pub async fn check_is_dir(path: &Utf8Path) -> Result<bool> {
+pub async fn check_is_dir(path: &str) -> Result<bool> {
 	let meta = fs::metadata(path)
 		.await
 		.map_err(|source| Error::FileIOError { source, path: path.into() })?;
 	Ok(meta.is_dir())
 }
 
-pub async fn check_is_file(path: &Utf8Path) -> Result<bool> {
+pub async fn check_is_file(path: &str) -> Result<bool> {
 	let meta = fs::metadata(path)
 		.await
 		.map_err(|source| Error::FileIOError { source, path: path.into() })?;
 	Ok(meta.is_file())
 }
 
-pub async fn check_is_dir_silent_fail(path: &Utf8Path) -> bool {
+pub async fn check_is_dir_silent_fail(path: &str) -> bool {
 	match check_is_dir(path).await {
 		Ok(true) => { true }
 		Ok(false) | Err(_) => { false }
 	}
 }
-pub async fn check_is_file_silent_fail(path: &Utf8Path) -> bool {
+pub async fn check_is_file_silent_fail(path: &str) -> bool {
 	match check_is_file(path).await {
 		Ok(true) => { true }
 		Ok(false) | Err(_) => { false }
@@ -35,7 +35,7 @@ pub async fn check_is_file_silent_fail(path: &Utf8Path) -> bool {
 /// Ok(Some(manifest)): success (obviously)
 /// Ok(None): manifest doesn't exist
 /// Err(err): other error
-pub async fn check_for_and_read_manifest<T>(path: &Utf8Path) -> Result<Option<T>>
+pub async fn check_for_and_read_manifest<T>(path: &str) -> Result<Option<T>>
 where
 	T: DeserializeOwned
 {

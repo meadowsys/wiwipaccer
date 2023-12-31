@@ -33,7 +33,7 @@ enum MetaFile {
 #[derive(Debug)]
 pub struct Source {
 	name: String,
-	dir: Utf8PathBuf,
+	dir: String,
 	pack_id: String,
 	description: Option<String>,
 	version: Version,
@@ -51,7 +51,7 @@ pub trait DependencyResolver {
 pub trait Dependency {}
 
 impl Source {
-	pub async fn new<R, D>(dir: Utf8PathBuf, dependency_resolver: R) -> Result<Self>
+	pub async fn new<R, D>(dir: String, dependency_resolver: R) -> Result<Self>
 	where
 		R: DependencyResolver<Dependency = D>,
 		D: Dependency
@@ -60,10 +60,10 @@ impl Source {
 			return Err(Error::PackSourcePathIsNotDir)
 		}
 
-		let mut manifest_path = dir.clone();
+		let mut manifest_path = Utf8PathBuf::from(dir.clone());
 		manifest_path.push(SOURCE_META_FILENAME);
 
-		let manifest = util::check_for_and_read_manifest(&manifest_path)
+		let manifest = util::check_for_and_read_manifest(manifest_path.as_str())
 			.await?
 			.ok_or_else(|| Error::PackSourceDirContainsNoManifest)?;
 		let (name, pack_id, description, version, dependencies) = match manifest {
@@ -108,19 +108,20 @@ impl Source {
 	}
 }
 
-async fn read_textures(dir: &Utf8Path) -> Result<Vec<Texture>> {
-	let mut textures_dir = dir.to_owned();
+async fn read_textures(dir: &str) -> Result<Vec<Texture>> {
+	let mut textures_dir = Utf8PathBuf::from(dir.to_owned());
 	textures_dir.push(TEXTURES_DIR);
+
 	let mut dir_contents = fs::read_dir(&textures_dir)
 		.await
-		.map_err(|source| Error::FileIOError { source, path: textures_dir.clone() })?;
+		.map_err(|source| Error::FileIOError { source, path: textures_dir.to_string() })?;
 	let mut textures = vec![];
 
 	while let Some(entry) = {
 		dir_contents
 			.next_entry()
 			.await
-			.map_err(|source| Error::FileIOError { source, path: textures_dir.clone() })?
+			.map_err(|source| Error::FileIOError { source, path: textures_dir.to_string() })?
 	} {
 		let texture_id = entry.file_name()
 			.to_str()

@@ -23,7 +23,7 @@ enum MetaFile {
 #[derive(Debug)]
 pub struct Texture {
 	name: String,
-	root_dir: Utf8PathBuf,
+	root_dir: String,
 	/// also the shortpath (to get absolute path, join
 	/// [`root_dir`](Texture::root_dir) and [`texture_id`](Texture::texture_id))
 	texture_id: String,
@@ -33,7 +33,7 @@ pub struct Texture {
 
 #[derive(Debug)]
 pub struct NewTextureOptions {
-	pub root_dir: Utf8PathBuf,
+	pub root_dir: String,
 	pub texture_id: String
 }
 
@@ -41,11 +41,11 @@ impl Texture {
 	pub async fn new(options: NewTextureOptions) -> Result<Option<Self>> {
 		let NewTextureOptions { root_dir, texture_id } = options;
 
-		let mut texture_dir = root_dir.clone();
+		let mut texture_dir = Utf8PathBuf::from(root_dir.clone());
 		texture_dir.push(TEXTURES_DIR);
 		texture_dir.push(&texture_id);
 
-		if !util::check_is_dir_silent_fail(&texture_dir).await {
+		if !util::check_is_dir_silent_fail(texture_dir.as_str()).await {
 			// silently ignore if its not a dir
 			// maybe in the future we can log this as debug information, that it saw this
 			// but skipped it
@@ -55,7 +55,7 @@ impl Texture {
 		let mut manifest_path = texture_dir;
 		manifest_path.push(TEXTURE_META_FILENAME);
 
-		let manifest = util::check_for_and_read_manifest(&manifest_path)
+		let manifest = util::check_for_and_read_manifest(manifest_path.as_str())
 			.await?;
 
 		let manifest = match manifest {
