@@ -21,15 +21,15 @@ pub enum WorkspaceConfig {
 pub struct Workspace {
 	name: String,
 	sources: HashMap<String, Source>,
-	source_names: Vec<String>
+	source_ids: Vec<String>
 }
 
 impl Workspace {
 	pub fn new(name: String) -> Workspace {
 		let sources = HashMap::new();
-		let source_names = Vec::new();
+		let source_ids = Vec::new();
 
-		Workspace { name, sources, source_names }
+		Workspace { name, sources, source_ids }
 	}
 
 	pub async fn from_config(config: WorkspaceConfig) -> Result<Self> {
@@ -50,9 +50,9 @@ impl Workspace {
 
 	pub fn to_config(&self) -> WorkspaceConfig {
 		let name = self.name.clone();
-		let projects = self.source_names.iter()
+		let projects = self.source_ids.iter()
 			.map(|path| self.sources.get(path).expect("invalid state"))
-			.map(|source| source.name().into())
+			.map(|source| source.pack_id().into())
 			.collect::<Vec<_>>();
 		WorkspaceConfig::Version1 { name, projects }
 	}
@@ -62,10 +62,10 @@ impl Workspace {
 		let resolver = DependencyResolver { sources };
 
 		let source = Source::new(dir, resolver).await?;
-		let name = source.name().to_owned();
+		let name = source.pack_id().to_owned();
 
 		self.sources.insert(name.clone(), source);
-		self.source_names.push(name);
+		self.source_ids.push(name);
 
 		Ok(())
 	}
@@ -82,8 +82,8 @@ struct Dependency<'h> {
 #[async_trait]
 impl<'h> pack_sources::DependencyResolver for DependencyResolver<'h> {
 	type Dependency = Dependency<'h>;
-	async fn depedency(&self, name: &str, req: &VersionReq) -> Result<Option<Self::Dependency>> {
-		let source = match self.sources.get(name) {
+	async fn depedency(&self, pack_id: &str, req: &VersionReq) -> Result<Option<Self::Dependency>> {
+		let source = match self.sources.get(pack_id) {
 			Some(s) => { s }
 			None => { return Ok(None) }
 		};

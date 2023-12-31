@@ -44,7 +44,7 @@ pub struct Source {
 #[async_trait]
 pub trait DependencyResolver {
 	type Dependency: Dependency;
-	async fn depedency(&self, name: &str, req: &VersionReq) -> Result<Option<Self::Dependency>>;
+	async fn depedency(&self, pack_id: &str, req: &VersionReq) -> Result<Option<Self::Dependency>>;
 }
 
 #[async_trait]
@@ -76,10 +76,10 @@ impl Source {
 		let dependencies = {
 			let mut map = HashMap::with_capacity(dependencies.len());
 
-			for (name, req) in dependencies {
+			for (id, req) in dependencies {
 				let req = VersionReq::parse(&req)?;
-				let dep = dependency_resolver.depedency(&name, &req).await?;
-				map.insert(name, dep);
+				let dep = dependency_resolver.depedency(&id, &req).await?;
+				map.insert(id, dep);
 			}
 
 			map
@@ -98,13 +98,13 @@ impl Source {
 	}
 
 	#[inline]
-	pub fn name(&self) -> &str {
-		&self.name
+	pub fn version(&self) -> &Version {
+		&self.version
 	}
 
 	#[inline]
-	pub fn version(&self) -> &Version {
-		&self.version
+	pub fn pack_id(&self) -> &str {
+		&self.pack_id
 	}
 }
 
