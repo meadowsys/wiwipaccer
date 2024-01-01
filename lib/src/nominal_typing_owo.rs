@@ -8,6 +8,8 @@
 
 #![allow(clippy::partialeq_ne_impl)]
 
+use serde::de::{ Deserialize, Deserializer, DeserializeOwned, DeserializeSeed };
+use serde::ser::{ Serialize, Serializer };
 use std::cmp::Ordering;
 use std::fmt::{ self, Debug, Display, Formatter };
 use std::hash::{ Hash, Hasher };
@@ -256,5 +258,40 @@ where
 		Self: Sized
 	{
 		Self(Ord::clamp(self.0, min.0, max.0), PhantomData)
+	}
+}
+
+impl<'de, T, M> Deserialize<'de> for Nominal<T, M>
+where
+	T: Deserialize<'de>
+{
+	#[inline]
+	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+	where
+		D: Deserializer<'de>
+	{
+		Deserialize::deserialize(deserializer)
+			.map(|t| Self(t, PhantomData))
+	}
+
+	#[inline]
+	fn deserialize_in_place<D>(deserializer: D, place: &mut Self) -> Result<(), D::Error>
+	where
+		D: Deserializer<'de>
+	{
+		Deserialize::deserialize_in_place(deserializer, &mut place.0)
+	}
+}
+
+impl<T, M> Serialize for Nominal<T, M>
+where
+	T: Serialize
+{
+	#[inline]
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	where
+		S: Serializer
+	{
+		Serialize::serialize(&self.0, serializer)
 	}
 }
