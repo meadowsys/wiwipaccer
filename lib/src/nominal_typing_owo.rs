@@ -145,25 +145,6 @@ where
 	}
 }
 
-impl<T, M> PartialEq<T> for Nominal<T, M>
-where
-	T: PartialEq<T>
-{
-	#[inline]
-	fn eq(&self, other: &T) -> bool {
-		<T as PartialEq>::eq(&self.0, other)
-	}
-
-	#[inline]
-	fn ne(&self, other: &T) -> bool {
-		// in case T has overridden ne
-		<T as PartialEq>::ne(&self.0, other)
-	}
-}
-
-// not possible:
-// impl<T, M> PartialEq<Nominal<T, M>> for T
-
 impl<T, M> Eq for Nominal<T, M> where T: Eq {}
 
 impl<T, M> PartialOrd<Nominal<T, M>> for Nominal<T, M>
@@ -195,39 +176,6 @@ where
 		<T as PartialOrd>::ge(&self.0, &other.0)
 	}
 }
-
-impl<T, M> PartialOrd<T> for Nominal<T, M>
-where
-	T: PartialOrd<T>
-{
-	#[inline]
-	fn partial_cmp(&self, other: &T) -> Option<Ordering> {
-		<T as PartialOrd>::partial_cmp(&self.0, other)
-	}
-
-	#[inline]
-	fn lt(&self, other: &T) -> bool {
-		<T as PartialOrd>::lt(&self.0, other)
-	}
-
-	#[inline]
-	fn le(&self, other: &T) -> bool {
-		<T as PartialOrd>::le(&self.0, other)
-	}
-
-	#[inline]
-	fn gt(&self, other: &T) -> bool {
-		<T as PartialOrd>::gt(&self.0, other)
-	}
-
-	#[inline]
-	fn ge(&self, other: &T) -> bool {
-		<T as PartialOrd>::ge(&self.0, other)
-	}
-}
-
-// not possible:
-// impl<T, M> PartialOrd<Nominal<T, M>> for T
 
 impl<T, M> Ord for Nominal<T, M>
 where
