@@ -32,9 +32,9 @@ pub async fn check_is_file_silent_fail(path: &str) -> bool {
 	}
 }
 
-/// Ok(Some(manifest)): success (obviously)
-/// Ok(None): manifest doesn't exist
-/// Err(err): other error
+/// `Ok(Some(manifest))`: success (obviously)\
+/// `Ok(None)`: manifest doesn't exist\
+/// `Err(err)`: other error
 pub async fn check_for_and_read_manifest<T>(path: &str) -> Result<Option<T>>
 where
 	T: DeserializeOwned
