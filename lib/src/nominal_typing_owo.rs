@@ -33,28 +33,33 @@ pub(crate) use nominal;
 pub struct Nominal<T, M>(T, PhantomData<M>);
 
 impl<T, M> Nominal<T, M> {
+	/// Wraps a value into a Nominal struct
 	#[inline]
-	pub fn from(value: T) -> Self {
+	pub fn new(value: T) -> Self {
 		Self(value, PhantomData)
 	}
 
+	/// Consumes the wrapper, returning the value
 	#[inline]
-	pub fn into(self) -> T {
+	pub fn into_inner(self) -> T {
 		self.0
 	}
-}
 
-impl<T, M> Deref for Nominal<T, M> {
-	type Target = T;
+	/// Gets a reference to inner
+	///
+	/// Note: [`Deref`] is not implemented on purpose, to prevent accidental
+	/// auto-derefs
 	#[inline]
-	fn deref(&self) -> &Self::Target {
+	pub fn ref_inner(&self) -> &T {
 		&self.0
 	}
-}
 
-impl<T, M> DerefMut for Nominal<T, M> {
+	/// Gets a mutable reference to inner
+	///
+	/// Note: [`DerefMut`] is not implemented on purpose, to prevent accidental
+	/// auto-derefs
 	#[inline]
-	fn deref_mut(&mut self) -> &mut Self::Target {
+	pub fn mut_inner(&mut self) -> &mut T {
 		&mut self.0
 	}
 }
@@ -67,13 +72,13 @@ where
 {
 	#[inline]
 	fn clone(&self) -> Self {
-		let t = <T as Clone>::clone(&self.0);
+		let t = <T as Clone>::clone(self.ref_inner());
 		Self(t, PhantomData)
 	}
 
 	#[inline]
 	fn clone_from(&mut self, source: &Self) {
-		<T as Clone>::clone_from(&mut self.0, source)
+		<T as Clone>::clone_from(self.mut_inner(), source.ref_inner())
 	}
 }
 impl<T, M> Copy for Nominal<T, M> where T: Copy {}
@@ -84,7 +89,7 @@ where
 {
 	#[inline]
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		<T as Debug>::fmt(&self.0, f)
+		<T as Debug>::fmt(self.ref_inner(), f)
 	}
 }
 
@@ -94,7 +99,7 @@ where
 {
 	#[inline]
 	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-		<T as Display>::fmt(&self.0, f)
+		<T as Display>::fmt(self.ref_inner(), f)
 	}
 }
 
@@ -115,7 +120,7 @@ where
 {
 	#[inline]
 	fn hash<H: Hasher>(&self, state: &mut H) {
-		<T as Hash>::hash(&self.0, state)
+		<T as Hash>::hash(self.ref_inner(), state)
 	}
 
 	#[inline]
@@ -135,13 +140,13 @@ where
 {
 	#[inline]
 	fn eq(&self, other: &Nominal<T, M>) -> bool {
-		<T as PartialEq>::eq(self, &other.0)
+		<T as PartialEq>::eq(self.ref_inner(), other.ref_inner())
 	}
 
 	#[inline]
 	fn ne(&self, other: &Nominal<T, M>) -> bool {
 		// in case T has overridden ne
-		<T as PartialEq>::ne(self, &other.0)
+		<T as PartialEq>::ne(self.ref_inner(), other.ref_inner())
 	}
 }
 
@@ -153,27 +158,27 @@ where
 {
 	#[inline]
 	fn partial_cmp(&self, other: &Nominal<T, M>) -> Option<Ordering> {
-		<T as PartialOrd>::partial_cmp(&self.0, &other.0)
+		<T as PartialOrd>::partial_cmp(self.ref_inner(), other.ref_inner())
 	}
 
 	#[inline]
 	fn lt(&self, other: &Nominal<T, M>) -> bool {
-		<T as PartialOrd>::lt(&self.0, &other.0)
+		<T as PartialOrd>::lt(self.ref_inner(), other.ref_inner())
 	}
 
 	#[inline]
 	fn le(&self, other: &Nominal<T, M>) -> bool {
-		<T as PartialOrd>::le(&self.0, &other.0)
+		<T as PartialOrd>::le(self.ref_inner(), other.ref_inner())
 	}
 
 	#[inline]
 	fn gt(&self, other: &Nominal<T, M>) -> bool {
-		<T as PartialOrd>::gt(&self.0, &other.0)
+		<T as PartialOrd>::gt(self.ref_inner(), other.ref_inner())
 	}
 
 	#[inline]
 	fn ge(&self, other: &Nominal<T, M>) -> bool {
-		<T as PartialOrd>::ge(&self.0, &other.0)
+		<T as PartialOrd>::ge(self.ref_inner(), other.ref_inner())
 	}
 }
 
@@ -183,7 +188,7 @@ where
 {
 	#[inline]
 	fn cmp(&self, other: &Self) -> Ordering {
-		<T as Ord>::cmp(&self.0, &other.0)
+		<T as Ord>::cmp(self.ref_inner(), other.ref_inner())
 	}
 
 	#[inline]
@@ -191,7 +196,7 @@ where
 	where
 		Self: Sized
 	{
-		let t = <T as Ord>::max(self.0, other.0);
+		let t = <T as Ord>::max(self.into_inner(), other.into_inner());
 		Self(t, PhantomData)
 	}
 
@@ -200,7 +205,7 @@ where
 	where
 		Self: Sized
 	{
-		let t = <T as Ord>::min(self.0, other.0);
+		let t = <T as Ord>::min(self.into_inner(), other.into_inner());
 		Self(t, PhantomData)
 	}
 
@@ -209,7 +214,7 @@ where
 	where
 		Self: Sized
 	{
-		let t = <T as Ord>::clamp(self.0, min.0, max.0);
+		let t = <T as Ord>::clamp(self.into_inner(), min.into_inner(), max.into_inner());
 		Self(t, PhantomData)
 	}
 }
@@ -232,7 +237,7 @@ where
 	where
 		D: Deserializer<'de>
 	{
-		<T as Deserialize>::deserialize_in_place(deserializer, &mut place.0)
+		<T as Deserialize>::deserialize_in_place(deserializer, place.mut_inner())
 	}
 }
 
@@ -245,6 +250,6 @@ where
 	where
 		S: Serializer
 	{
-		<T as Serialize>::serialize(&self.0, serializer)
+		<T as Serialize>::serialize(self.ref_inner(), serializer)
 	}
 }
