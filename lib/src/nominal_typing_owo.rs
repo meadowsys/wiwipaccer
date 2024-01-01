@@ -15,14 +15,14 @@ use std::marker::PhantomData;
 use std::ops::{ Deref, DerefMut };
 
 macro_rules! nominal {
-	(pub name: $name:ident, marker: $marker:ident, type: $type:ident) => {
+	(pub name: $name:ident, marker: $marker:ident, type: $type:ty) => {
 		pub struct $marker;
-		pub type $name = Nominal<$type, $marker>;
+		pub type $name = crate::nominal_typing_owo::Nominal<$type, $marker>;
 	};
 
 	(name: $name:ident, marker: $marker:ident, type: $type:ident) => {
 		struct $marker;
-		type $name = Nominal<$type, $marker>;
+		type $name = crate::nominal_typing_owo::Nominal<$type, $marker>;
 	};
 }
 pub(crate) use nominal;
@@ -32,12 +32,12 @@ pub struct Nominal<T, M>(T, PhantomData<M>);
 
 impl<T, M> Nominal<T, M> {
 	#[inline]
-	fn from(value: T) -> Self {
+	pub fn from(value: T) -> Self {
 		Self(value, PhantomData)
 	}
 
 	#[inline]
-	fn into(self) -> T {
+	pub fn into(self) -> T {
 		self.0
 	}
 }
