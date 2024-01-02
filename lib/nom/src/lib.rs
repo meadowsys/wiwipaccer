@@ -5,35 +5,22 @@
 //!
 //! The struct is `repr(transparent)` and have `#[inline]` on all functions, so
 //! it all should be zero cost, optimised away by the rust compiler.
+//!
+//! Nominal typing is great c:
 
 #![allow(clippy::partialeq_ne_impl)]
 
-use serde::de::{ Deserialize, Deserializer };
-use serde::ser::{ Serialize, Serializer };
+#[cfg(feature = "serde")]
+use serde::{
+	de::{ Deserialize, Deserializer },
+	ser::{ Serialize, Serializer }
+};
 use std::cmp::Ordering;
 use std::fmt::{ self, Debug, Display, Formatter };
 use std::hash::{ Hash, Hasher };
 use std::marker::PhantomData;
 
-/// Usage examples:
-///
-/// ```rs
-/// nominal!(pub name: MyStruct, marker: MyStructMarker, inner: String);
-/// nominal!(name: MyPrivateStruct, marker: MyPrivateStructMarker, inner: usize);
-/// ```
-///
-/// this macro will generate a type alias to Nominal by the name provided,
-/// generating a unit struct using the value for marker provided, wrapping a
-/// value of the inner type provided, adding pub modifiers if its specified, which
-/// ends up like like:
-///
-/// ```rs
-/// pub struct MyStructMarker;
-/// pub type MyStruct = crate::nominal_typing_owo::Nominal<String, MyStructMarker>;
-///
-/// struct MyPrivateStructMarker;
-/// type MyPrivateStruct = crate::nominal_typing_owo::Nominal<String, MyPrivateStructMarker>;
-/// ```
+/// See [`Nominal`] for more information on how to use this macro
 #[macro_export]
 macro_rules! nominal {
 	(pub name: $name:ident, marker: $marker:ident, inner: $type:ty) => {
@@ -47,6 +34,30 @@ macro_rules! nominal {
 	};
 }
 
+/// The struct is `repr(transparent)` and have `#[inline]` on all functions, so
+/// it all should be zero cost, optimised away by the rust compiler.
+///
+/// Usage of this struct is usually done through the [`nominal!`] macro.
+///
+/// Usage examples:
+///
+/// ```rs
+/// nominal!(pub name: MyStruct, marker: MyStructMarker, inner: String);
+/// nominal!(name: MyPrivateStruct, marker: MyPrivateStructMarker, inner: usize);
+/// ```
+///
+/// this macro will generate a type alias to Nominal by the name provided,
+/// generating a unit struct using the value for marker provided, wrapping a
+/// value of the inner type provided, adding pub modifiers if its specified, which
+/// generates code like like:
+///
+/// ```rs
+/// pub struct MyStructMarker;
+/// pub type MyStruct = crate::nominal_typing_owo::Nominal<String, MyStructMarker>;
+///
+/// struct MyPrivateStructMarker;
+/// type MyPrivateStruct = crate::nominal_typing_owo::Nominal<String, MyPrivateStructMarker>;
+/// ```
 #[repr(transparent)]
 pub struct Nominal<T, M>(T, PhantomData<M>);
 
@@ -237,6 +248,7 @@ where
 	}
 }
 
+#[cfg(feature = "serde")]
 impl<'de, T, M> Deserialize<'de> for Nominal<T, M>
 where
 	T: Deserialize<'de>
@@ -259,6 +271,7 @@ where
 	}
 }
 
+#[cfg(feature = "serde")]
 impl<T, M> Serialize for Nominal<T, M>
 where
 	T: Serialize

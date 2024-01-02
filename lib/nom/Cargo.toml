@@ -6,4 +6,7 @@ license.workspace = true
 publish = false
 
 [dependencies]
-serde.workspace = true
+serde = { workspace = true, optional = true }
+
+[features]
+serde = ["dep:serde"]
