@@ -1,4 +1,4 @@
-//! Generic, zero-cost (`repr(transparent)`) that wrap data in a newtype so you
+//! Generic, zero-cost struct that wraps data in a newtype so you
 //! don't ex. accidentally pass a filepath ([`String`]) as an ID (also [`String`])
 //! or something similar, which is something I (Vapor | Meadowsys) am always
 //! paranoid about..
@@ -16,13 +16,32 @@ use std::hash::{ Hash, Hasher };
 use std::marker::PhantomData;
 use std::ops::{ Deref, DerefMut };
 
+/// Usage examples:
+///
+/// ```rs
+/// nominal!(pub name: MyStruct, marker: MyStructMarker, inner: String);
+/// nominal!(name: MyPrivateStruct, marker: MyPrivateStructMarker, inner: usize);
+/// ```
+///
+/// this macro will generate a type alias to Nominal by the name provided,
+/// generating a unit struct using the value for marker provided, wrapping a
+/// value of the inner type provided, adding pub modifiers if its specified, which
+/// ends up like like:
+///
+/// ```rs
+/// pub struct MyStructMarker;
+/// pub type MyStruct = crate::nominal_typing_owo::Nominal<String, MyStructMarker>;
+///
+/// struct MyPrivateStructMarker;
+/// type MyPrivateStruct = crate::nominal_typing_owo::Nominal<String, MyPrivateStructMarker>;
+/// ```
 macro_rules! nominal {
-	(pub name: $name:ident, marker: $marker:ident, type: $type:ty) => {
+	(pub name: $name:ident, marker: $marker:ident, inner: $type:ty) => {
 		pub struct $marker;
 		pub type $name = crate::nominal_typing_owo::Nominal<$type, $marker>;
 	};
 
-	(name: $name:ident, marker: $marker:ident, type: $type:ident) => {
+	(name: $name:ident, marker: $marker:ident, inner: $type:ident) => {
 		struct $marker;
 		type $name = crate::nominal_typing_owo::Nominal<$type, $marker>;
 	};
@@ -47,7 +66,7 @@ impl<T, M> Nominal<T, M> {
 
 	/// Gets a reference to inner
 	///
-	/// Note: [`Deref`] is not implemented on purpose, to prevent accidental
+	/// Note: [`Deref`] is not implemented on purpose, to prevent unintentional
 	/// auto-derefs
 	#[inline]
 	pub fn ref_inner(&self) -> &T {
@@ -56,7 +75,7 @@ impl<T, M> Nominal<T, M> {
 
 	/// Gets a mutable reference to inner
 	///
-	/// Note: [`DerefMut`] is not implemented on purpose, to prevent accidental
+	/// Note: [`DerefMut`] is not implemented on purpose, to prevent unintentional
 	/// auto-derefs
 	#[inline]
 	pub fn mut_inner(&mut self) -> &mut T {
