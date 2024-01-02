@@ -8,13 +8,12 @@
 
 #![allow(clippy::partialeq_ne_impl)]
 
-use serde::de::{ Deserialize, Deserializer, DeserializeOwned, DeserializeSeed };
+use serde::de::{ Deserialize, Deserializer };
 use serde::ser::{ Serialize, Serializer };
 use std::cmp::Ordering;
 use std::fmt::{ self, Debug, Display, Formatter };
 use std::hash::{ Hash, Hasher };
 use std::marker::PhantomData;
-use std::ops::{ Deref, DerefMut };
 
 /// Usage examples:
 ///
@@ -35,18 +34,18 @@ use std::ops::{ Deref, DerefMut };
 /// struct MyPrivateStructMarker;
 /// type MyPrivateStruct = crate::nominal_typing_owo::Nominal<String, MyPrivateStructMarker>;
 /// ```
+#[macro_export]
 macro_rules! nominal {
 	(pub name: $name:ident, marker: $marker:ident, inner: $type:ty) => {
 		pub struct $marker;
-		pub type $name = crate::nominal_typing_owo::Nominal<$type, $marker>;
+		pub type $name = $crate::Nominal<$type, $marker>;
 	};
 
 	(name: $name:ident, marker: $marker:ident, inner: $type:ident) => {
 		struct $marker;
-		type $name = crate::nominal_typing_owo::Nominal<$type, $marker>;
+		type $name = $crate::Nominal<$type, $marker>;
 	};
 }
-pub(crate) use nominal;
 
 #[repr(transparent)]
 pub struct Nominal<T, M>(T, PhantomData<M>);

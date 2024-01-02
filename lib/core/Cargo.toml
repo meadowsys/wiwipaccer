@@ -1,0 +1,11 @@
+[package]
+name = "wiwipaccer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+nominal = { path = "../nom" }
+serde.workspace = true
+wiwipaccer-util = { path = "../util" }
