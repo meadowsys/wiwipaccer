@@ -23,14 +23,14 @@ use std::marker::PhantomData;
 /// See [`Nominal`] for more information on how to use this macro
 #[macro_export]
 macro_rules! nominal {
-	(pub name: $name:ident, marker: $marker:ident, inner: $type:ty) => {
-		pub struct $marker;
-		pub type $name = $crate::Nominal<$type, $marker>;
+	($vis:vis  name: $name:ident, marker: $marker:ident, inner: <$($lifetimes:lifetime),+> $type:ty) => {
+		$vis struct $marker;
+		$vis type $name<$($lifetimes),+> = $crate::Nominal<$type, $marker>;
 	};
 
-	(name: $name:ident, marker: $marker:ident, inner: $type:ident) => {
-		struct $marker;
-		type $name = $crate::Nominal<$type, $marker>;
+	($vis:vis name: $name:ident, marker: $marker:ident, inner: $type:ty) => {
+		$vis struct $marker;
+		$vis type $name = $crate::Nominal<$type, $marker>;
 	};
 }
 
@@ -41,22 +41,47 @@ macro_rules! nominal {
 ///
 /// Usage examples:
 ///
-/// ```rs
+/// ```
 /// nominal!(pub name: MyStruct, marker: MyStructMarker, inner: String);
 /// nominal!(name: MyPrivateStruct, marker: MyPrivateStructMarker, inner: usize);
+///
+/// // borrowed data is also supported
+/// nominal!(pub name: MyStruct, marker: MyStructMarker, inner: <'h> &'h str);
+/// nominal!(name: MyPrivateStruct, marker: MyPrivateStructMarker, inner: <'a, 'b, 'c> &'a (&'b str, &'c usize));
 /// ```
 ///
-/// this macro will generate a type alias to Nominal by the name provided,
+/// Then, you can use the wrapper type like so:
+///
+/// ```
+/// # fn main() {
+/// let mut my_struct = MyStruct::new("".to_string());
+///
+/// let borrowed = my_struct.ref_inner();
+/// let mut_borrowed = my_struct.mut_inner();
+///
+/// let string = my_struct.into_inner();
+/// # }
+/// ```
+///
+/// this macro generates a type alias to Nominal by the name provided,
 /// generating a unit struct using the value for marker provided, wrapping a
 /// value of the inner type provided, adding pub modifiers if its specified, which
 /// generates code like like:
 ///
-/// ```rs
+/// ```
 /// pub struct MyStructMarker;
 /// pub type MyStruct = crate::nominal_typing_owo::Nominal<String, MyStructMarker>;
 ///
 /// struct MyPrivateStructMarker;
 /// type MyPrivateStruct = crate::nominal_typing_owo::Nominal<String, MyPrivateStructMarker>;
+///
+/// // borrowed:
+///
+/// pub struct MyStructMarker;
+/// pub type MyStruct<'h> = nominal::Nominal<&'h str, MyStructMarker>
+///
+/// pub struct MyPrivateStructMarker;
+/// type MyPrivateStruct<'a, 'b, 'c> = nominal::Nominal<&'a (&'b str, &'c usize), MyPrivateStructMarker>
 /// ```
 #[repr(transparent)]
 pub struct Nominal<T, M>(T, PhantomData<M>);
