@@ -111,18 +111,20 @@ impl<'h> pack::DependencyResolver for DependencyResolver<'h> {
 		&self,
 		pack_id: &pack::nom::PackID,
 		version_req: &pack::nom::VersionReq
-	) -> pack::error::Result<Option<Self::Dependency>> {
+	) -> pack::error::Result<pack::DependencyResult<Self::Dependency>> {
 		let pack = match self.packs.ref_inner().get(pack_id) {
 			Some(s) => { s }
-			None => { return Ok(None) }
+			None => { return Ok(pack::DependencyResult::NotFound) }
 		};
 
 		if let Some(version) = pack.optional_version().ref_inner() {
-			if !version_req.ref_inner().matches(version) { return Ok(None) }
+			if !version_req.ref_inner().matches(version) {
+				return Ok(pack::DependencyResult::VersionNotSatisfied(version.clone()))
+			}
 		}
 
 		let dependency = Dependency { pack };
-		Ok(Some(dependency))
+		Ok(pack::DependencyResult::Found(dependency))
 	}
 }
 

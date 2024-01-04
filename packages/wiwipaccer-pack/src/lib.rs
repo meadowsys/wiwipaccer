@@ -57,6 +57,17 @@ pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 	}
 }
 
+pub enum DependencyResult<D> {
+	/// Found and satisfies version requirement
+	Found(D),
+	/// Not available at all
+	NotFound,
+	/// Found, but doesn't satisfy the version requirement. The version
+	/// is included in this enum variant so it can be included in
+	/// an error message
+	VersionNotSatisfied(semver::Version)
+}
+
 #[async_trait]
 pub trait DependencyResolver {
 	type Dependency: Dependency;
@@ -64,7 +75,7 @@ pub trait DependencyResolver {
 		&self,
 		pack_id: &nom::PackID,
 		version_req: &nom::VersionReq
-	) -> Result<Option<Self::Dependency>>;
+	) -> Result<DependencyResult<Self::Dependency>>;
 }
 
 #[async_trait]
@@ -122,6 +133,7 @@ impl Pack {
 
 		let dependencies = {
 			let mut map = HashMap::with_capacity(dependencies.len());
+			let mut not_satisfied = Vec::with_capacity(dependencies.len());
 
 			for (id, req) in dependencies {
 				let id = nom::PackID::new(id.into_inner());
@@ -130,10 +142,24 @@ impl Pack {
 					.map_err(Error)?;
 				let req = nom::VersionReq::new(req);
 
-				let dep = dep_resolver.dependency(&id, &req).await?;
+				let dep = match dep_resolver.dependency(&id, &req).await? {
+					DependencyResult::Found(d) => { d }
+					DependencyResult::VersionNotSatisfied(v) => {
+						not_satisfied.push((id, req, Some(v)));
+						continue
+					}
+					DependencyResult::NotFound => {
+						not_satisfied.push((id, req, None));
+						continue
+					}
+				};
 
 				let id = nom::PackID::new(id.into_inner());
 				map.insert(id, (dep, req));
+			}
+
+			if !not_satisfied.is_empty() {
+				return Err(Error(ErrorInner::DepsNotSatisfied(not_satisfied)))
 			}
 
 			map
