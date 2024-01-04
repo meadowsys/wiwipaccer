@@ -70,7 +70,7 @@ impl Workspace {
 		let projects = pack_ids.ref_inner()
 			.iter()
 			.map(|id| packs.ref_inner().get(id).expect("invalid state"))
-			.map(|source| source.pack_id().clone().into_inner())
+			.map(|pack| pack.pack_id().clone().into_inner())
 			.map(meta_nom::Project::new)
 			.collect();
 		let projects = meta_nom::Projects::new(projects);
