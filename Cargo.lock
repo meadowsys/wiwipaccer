@@ -514,6 +514,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "wiwipaccer-workspace"
+version = "0.0.0"
+dependencies = [
+ "async-trait",
+ "hashbrown",
+ "nominal",
+ "semver",
+ "serde",
+ "thiserror",
+ "wiwipaccer-pack",
+]
+
+[[package]]
 name = "zerocopy"
 version = "0.7.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
