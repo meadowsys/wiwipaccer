@@ -1,6 +1,0 @@
-these are meta files imported by `src-tauri/src/main.rs` and used in various things.
-They are basically compile time constants, included using the `include!` and `include_str!`
-rust macros. Mainly used in CI builds.
-
-`updater-enabled` and `updater-nice-platform-name` are set by `.github/workflows/ci.yml`
-`version` is set by `scripts/update-tauri-app-version-to-next.ts`
