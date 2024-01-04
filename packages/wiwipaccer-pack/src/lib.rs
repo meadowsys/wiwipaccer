@@ -39,7 +39,8 @@ pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 	pub mod meta_nom {
 		nominal!(pub Name, inner: String);
 		nominal!(pub PackID, inner: String);
-		nominal!(pub DescriptionOptional, inner: Option<String>);
+		nominal!(pub Description, inner: String);
+		nominal!(pub DescriptionOptional, inner: Option<Description>);
 		nominal!(pub VersionOptional, inner: Option<String>);
 		nominal!(pub VersionReq, inner: String);
 		nominal!(pub DependenciesOptional, inner: Option<HashMap<PackID, VersionReq>>);
@@ -49,8 +50,8 @@ pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 		nominal!(pub Name, inner: String);
 		nominal!(pub Dir, inner: String);
 		nominal!(pub PackID, inner: String);
-		nominal!(pub DescriptionOptional, inner: Option<String>);
-		nominal!(pub DescriptionUnwrapped, inner: String);
+		nominal!(pub Description, inner: String);
+		nominal!(pub DescriptionOptional, inner: Option<Description>);
 		nominal!(pub VersionOptional, inner: Option<semver::Version>);
 		nominal!(pub VersionReq, inner: semver::VersionReq);
 		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
@@ -117,7 +118,10 @@ impl Pack {
 			MetaFile::Version1 { name, pack_id, description, version, dependencies } => {
 				let name = nom::Name::new(name.into_inner());
 				let pack_id = nom::PackID::new(pack_id.into_inner());
-				let description = nom::DescriptionOptional::new(description.into_inner());
+				let description = nom::DescriptionOptional::new(
+					description.into_inner()
+						.map(|d| nom::Description::new(d.into_inner()))
+				);
 				let version = version.into_inner()
 					.as_deref()
 					.map(semver::Version::parse)
@@ -196,12 +200,11 @@ impl Pack {
 	}
 
 	#[inline]
-	pub fn unwrap_description(&self) -> nom::DescriptionUnwrapped {
-		let description = self.description
+	pub fn unwrap_description(&self) -> nom::Description {
+		self.description
 			.clone()
 			.into_inner()
-			.unwrap_or_else(|| "no description provided".into());
-		nom::DescriptionUnwrapped::new(description)
+			.unwrap_or_else(|| nom::Description::new("no description provided".into()))
 	}
 
 	#[inline]
