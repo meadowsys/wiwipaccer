@@ -15,7 +15,7 @@ pub(crate) enum ErrorInner {
 	#[error("error parsing semver:\n{0}")]
 	SemverParseError(#[from] semver::Error),
 
-	#[error("expected source dir to be a dir:\n{0}")]
+	#[error("expected source path to be a dir:\n{0}")]
 	SourceDirIsNotDir(String),
 
 	#[error(transparent)]

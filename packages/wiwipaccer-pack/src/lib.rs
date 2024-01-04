@@ -17,9 +17,9 @@ enum MetaFile {
 	Version1 {
 		name: meta_nom::Name,
 		pack_id: meta_nom::PackID,
-		description: meta_nom::OptionalDescription,
-		version: meta_nom::OptionalVersion,
-		dependencies: meta_nom::OptionalDependencies
+		description: meta_nom::DescriptionOptional,
+		version: meta_nom::VersionOptional,
+		dependencies: meta_nom::DependenciesOptional
 	}
 }
 
@@ -28,8 +28,8 @@ pub struct Pack {
 	name: nom::Name,
 	dir: nom::Dir,
 	pack_id: nom::PackID,
-	description: nom::OptionalDescription,
-	version: nom::OptionalVersion,
+	description: nom::DescriptionOptional,
+	version: nom::VersionOptional,
 	dependencies: nom::Dependencies
 }
 
@@ -39,23 +39,34 @@ pub const SOURCE_META_FILENAME: &str = "pack.wiwimeta";
 	pub mod meta_nom {
 		nominal!(pub Name, inner: String);
 		nominal!(pub PackID, inner: String);
-		nominal!(pub OptionalDescription, inner: Option<String>);
-		nominal!(pub OptionalVersion, inner: Option<String>);
+		nominal!(pub DescriptionOptional, inner: Option<String>);
+		nominal!(pub VersionOptional, inner: Option<String>);
 		nominal!(pub VersionReq, inner: String);
-		nominal!(pub OptionalDependencies, inner: Option<HashMap<PackID, VersionReq>>);
+		nominal!(pub DependenciesOptional, inner: Option<HashMap<PackID, VersionReq>>);
 	}
 
 	pub mod nom {
 		nominal!(pub Name, inner: String);
+		nominal!(pub NameBorrowed, inner: ref <'h> &'h str);
+
 		nominal!(pub Dir, inner: String);
+		nominal!(pub DirBorrowed, inner: ref<'h> &'h str);
+
 		nominal!(pub PackID, inner: String);
-		nominal!(pub BorrowedPackID, inner: ref <'h> &'h str);
-		nominal!(pub OptionalDescription, inner: Option<String>);
-		nominal!(pub UnwrappedDescription, inner: String);
-		nominal!(pub OptionalVersion, inner: Option<semver::Version>);
+		nominal!(pub PackIDBorrowed, inner: ref <'h> &'h str);
+
+		nominal!(pub DescriptionOptional, inner: Option<String>);
+		nominal!(pub DescriptionOptionalBorrowed, inner: ref <'h> Option<&'h str>);
+		nominal!(pub DescriptionUnwrapped, inner: String);
+
+		nominal!(pub VersionOptional, inner: Option<semver::Version>);
+		nominal!(pub VersionOptionalBorrowed, inner: ref <'h> Option<&'h semver::Version>);
+
 		nominal!(pub VersionReq, inner: semver::VersionReq);
-		nominal!(pub BorrowedVersionReq, inner: ref <'h> &'h semver::VersionReq);
+		nominal!(pub VersionReqBorrowed, inner: ref <'h> &'h semver::VersionReq);
+
 		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
+		nominal!(pub DependenciesBorrowed, inner: ref <'h> &'h HashMap<PackID, VersionReq>);
 	}
 }
 
@@ -64,8 +75,8 @@ pub trait DependencyResolver {
 	type Dependency: Dependency;
 	async fn dependency(
 		&self,
-		pack_id: nom::BorrowedPackID<'_>,
-		version_req: nom::BorrowedVersionReq<'_>
+		pack_id: nom::PackIDBorrowed<'_>,
+		version_req: nom::VersionReqBorrowed<'_>
 	) -> Result<Option<Self::Dependency>>;
 }
 
@@ -108,14 +119,14 @@ impl Pack {
 			MetaFile::Version1 { name, pack_id, description, version, dependencies } => {
 				let name = nom::Name::new(name.into_inner());
 				let pack_id = nom::PackID::new(pack_id.into_inner());
-				let description = nom::OptionalDescription::new(description.into_inner());
+				let description = nom::DescriptionOptional::new(description.into_inner());
 				let version = version.into_inner()
 					.as_deref()
 					.map(semver::Version::parse)
 					.transpose()
 					.map_err(Into::into)
 					.map_err(Error)?;
-				let version = nom::OptionalVersion::new(version);
+				let version = nom::VersionOptional::new(version);
 				let dependencies = dependencies.into_inner().unwrap_or_default();
 
 				(name, pack_id, description, version, dependencies)
@@ -129,8 +140,8 @@ impl Pack {
 				let req = semver::VersionReq::parse(req.ref_inner())
 					.map_err(Into::into)
 					.map_err(Error)?;
-				let borrowed_id = nom::BorrowedPackID::new(id.ref_inner());
-				let borrowed_req = nom::BorrowedVersionReq::new(&req);
+				let borrowed_id = nom::PackIDBorrowed::new(id.ref_inner());
+				let borrowed_req = nom::VersionReqBorrowed::new(&req);
 
 				let dep = dep_resolver.dependency(borrowed_id, borrowed_req).await?;
 
@@ -155,42 +166,42 @@ impl Pack {
 
 impl Pack {
 	#[inline]
-	pub fn name(&self) -> &nom::Name {
-		&self.name
+	pub fn name(&self) -> nom::NameBorrowed {
+		nom::NameBorrowed::new(self.name.ref_inner())
 	}
 
 	#[inline]
-	pub fn dir(&self) -> &nom::Dir {
-		&self.dir
+	pub fn dir(&self) -> nom::DirBorrowed {
+		nom::DirBorrowed::new(self.dir.ref_inner())
 	}
 
 	#[inline]
-	pub fn pack_id(&self) -> &nom::PackID {
-		&self.pack_id
+	pub fn pack_id(&self) -> nom::PackIDBorrowed {
+		nom::PackIDBorrowed::new(self.pack_id.ref_inner())
 	}
 
 	#[inline]
-	pub fn optional_description(&self) -> &nom::OptionalDescription {
-		&self.description
+	pub fn optional_description(&self) -> nom::DescriptionOptionalBorrowed {
+		nom::DescriptionOptionalBorrowed::new(self.description.ref_inner().as_deref())
 	}
 
 	#[inline]
-	pub fn unwrap_description(&self) -> nom::UnwrappedDescription {
+	pub fn unwrap_description(&self) -> nom::DescriptionUnwrapped {
 		let description = self.description
 			.clone()
 			.into_inner()
 			.unwrap_or_else(|| "no description provided".into());
-		nom::UnwrappedDescription::new(description)
+		nom::DescriptionUnwrapped::new(description)
 	}
 
 	#[inline]
-	pub fn optional_version(&self) -> &nom::OptionalVersion {
-		&self.version
+	pub fn optional_version(&self) -> nom::VersionOptionalBorrowed {
+		nom::VersionOptionalBorrowed::new(self.version.ref_inner().as_ref())
 	}
 
 	#[inline]
-	pub fn dependencies(&self) -> &nom::Dependencies {
-		&self.dependencies
+	pub fn dependencies(&self) -> nom::DependenciesBorrowed {
+		nom::DependenciesBorrowed::new(self.dependencies.ref_inner())
 	}
 
 	#[inline]
