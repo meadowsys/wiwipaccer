@@ -15,6 +15,7 @@ license = "AGPL-3.0-only"
 async-trait = "0.1.77"
 camino = "1.1.6"
 hashbrown = { version = "0.14.3", features = ["serde"] }
+ron = "0.8.1"
 semver = "1.0.21"
 serde = { version = "1.0.194", features = ["derive"] }
 thiserror = "1.0.56"

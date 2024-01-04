@@ -8,7 +8,7 @@ use ::async_trait::async_trait;
 use ::camino::Utf8PathBuf;
 use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
-use ::wiwipaccer_util::fs;
+use ::wiwipaccer_util::{ fs, ron };
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "meta_version")]
@@ -19,10 +19,11 @@ enum MetaFile {
 		pack_id: meta_nom::PackID,
 		description: meta_nom::OptionalDescription,
 		version: meta_nom::OptionalVersion,
-		dependencies: meta_nom::Dependencies
+		dependencies: meta_nom::OptionalDependencies
 	}
 }
 
+#[derive(Debug)]
 pub struct Pack {
 	name: nom::Name,
 	dir: nom::Dir,
@@ -41,7 +42,7 @@ pub const SOURCE_META_FILENAME: &str = "pack.wiwimeta";
 		nominal!(pub OptionalDescription, inner: Option<String>);
 		nominal!(pub OptionalVersion, inner: Option<String>);
 		nominal!(pub VersionReq, inner: String);
-		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
+		nominal!(pub OptionalDependencies, inner: Option<HashMap<PackID, VersionReq>>);
 	}
 
 	pub mod nom {
@@ -63,8 +64,8 @@ pub trait DependencyResolver {
 	type Dependency: Dependency;
 	async fn dependency(
 		&self,
-		pack_id: nom::BorrowedPackID,
-		version_req: nom::BorrowedVersionReq
+		pack_id: nom::BorrowedPackID<'_>,
+		version_req: nom::BorrowedVersionReq<'_>
 	) -> Result<Option<Self::Dependency>>;
 }
 
@@ -99,11 +100,56 @@ impl Pack {
 			.map_err(Into::into)
 			.map_err(Error)?;
 
-		// then read it
-		// then map to runtime struct
-		// then solve deps (pass them into resolver)
+		let meta_file = ron::from_str(&meta_file)
+			.map_err(Into::into)
+			.map_err(Error)?;
 
-		todo!()
+		let (name, pack_id, description, version, dependencies) = match meta_file {
+			MetaFile::Version1 { name, pack_id, description, version, dependencies } => {
+				let name = nom::Name::new(name.into_inner());
+				let pack_id = nom::PackID::new(pack_id.into_inner());
+				let description = nom::OptionalDescription::new(description.into_inner());
+				let version = version.into_inner()
+					.as_deref()
+					.map(semver::Version::parse)
+					.transpose()
+					.map_err(Into::into)
+					.map_err(Error)?;
+				let version = nom::OptionalVersion::new(version);
+				let dependencies = dependencies.into_inner().unwrap_or_default();
+
+				(name, pack_id, description, version, dependencies)
+			}
+		};
+
+		let dependencies = {
+			let mut map = HashMap::with_capacity(dependencies.len());
+
+			for (id, req) in dependencies {
+				let req = semver::VersionReq::parse(req.ref_inner())
+					.map_err(Into::into)
+					.map_err(Error)?;
+				let borrowed_id = nom::BorrowedPackID::new(id.ref_inner());
+				let borrowed_req = nom::BorrowedVersionReq::new(&req);
+
+				let dep = dep_resolver.dependency(borrowed_id, borrowed_req).await?;
+
+				let id = nom::PackID::new(id.into_inner());
+				map.insert(id, (dep, req));
+			}
+
+			map
+		};
+
+		let dependencies = dependencies.into_iter()
+			.map(|(id, (_, req))| (
+				id,
+				nom::VersionReq::new(req)
+			))
+			.collect();
+		let dependencies = nom::Dependencies::new(dependencies);
+
+		Ok(Pack { name, dir, pack_id, description, version, dependencies })
 	}
 }
 

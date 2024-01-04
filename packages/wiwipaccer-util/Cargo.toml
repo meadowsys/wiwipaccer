@@ -7,5 +7,7 @@ publish = false
 
 [dependencies]
 nominal = { path = "../nominal", features = ["serde"] }
+ron.workspace = true
+serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
