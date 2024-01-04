@@ -47,26 +47,13 @@ pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 
 	pub mod nom {
 		nominal!(pub Name, inner: String);
-		nominal!(pub NameBorrowed, inner: ref <'h> &'h str);
-
 		nominal!(pub Dir, inner: String);
-		nominal!(pub DirBorrowed, inner: ref<'h> &'h str);
-
 		nominal!(pub PackID, inner: String);
-		nominal!(pub PackIDBorrowed, inner: ref <'h> &'h str);
-
 		nominal!(pub DescriptionOptional, inner: Option<String>);
-		nominal!(pub DescriptionOptionalBorrowed, inner: ref <'h> Option<&'h str>);
 		nominal!(pub DescriptionUnwrapped, inner: String);
-
 		nominal!(pub VersionOptional, inner: Option<semver::Version>);
-		nominal!(pub VersionOptionalBorrowed, inner: ref <'h> Option<&'h semver::Version>);
-
 		nominal!(pub VersionReq, inner: semver::VersionReq);
-		nominal!(pub VersionReqBorrowed, inner: ref <'h> &'h semver::VersionReq);
-
 		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
-		nominal!(pub DependenciesBorrowed, inner: ref <'h> &'h HashMap<PackID, VersionReq>);
 	}
 }
 
@@ -75,8 +62,8 @@ pub trait DependencyResolver {
 	type Dependency: Dependency;
 	async fn dependency(
 		&self,
-		pack_id: nom::PackIDBorrowed<'_>,
-		version_req: nom::VersionReqBorrowed<'_>
+		pack_id: &nom::PackID,
+		version_req: &nom::VersionReq
 	) -> Result<Option<Self::Dependency>>;
 }
 
@@ -137,13 +124,13 @@ impl Pack {
 			let mut map = HashMap::with_capacity(dependencies.len());
 
 			for (id, req) in dependencies {
+				let id = nom::PackID::new(id.into_inner());
 				let req = semver::VersionReq::parse(req.ref_inner())
 					.map_err(Into::into)
 					.map_err(Error)?;
-				let borrowed_id = nom::PackIDBorrowed::new(id.ref_inner());
-				let borrowed_req = nom::VersionReqBorrowed::new(&req);
+				let req = nom::VersionReq::new(req);
 
-				let dep = dep_resolver.dependency(borrowed_id, borrowed_req).await?;
+				let dep = dep_resolver.dependency(&id, &req).await?;
 
 				let id = nom::PackID::new(id.into_inner());
 				map.insert(id, (dep, req));
@@ -153,10 +140,7 @@ impl Pack {
 		};
 
 		let dependencies = dependencies.into_iter()
-			.map(|(id, (_, req))| (
-				id,
-				nom::VersionReq::new(req)
-			))
+			.map(|(id, (_, req))| (id, req))
 			.collect();
 		let dependencies = nom::Dependencies::new(dependencies);
 
@@ -166,23 +150,23 @@ impl Pack {
 
 impl Pack {
 	#[inline]
-	pub fn name(&self) -> nom::NameBorrowed {
-		nom::NameBorrowed::new(self.name.ref_inner())
+	pub fn name(&self) -> &nom::Name {
+		&self.name
 	}
 
 	#[inline]
-	pub fn dir(&self) -> nom::DirBorrowed {
-		nom::DirBorrowed::new(self.dir.ref_inner())
+	pub fn dir(&self) -> &nom::Dir {
+		&self.dir
 	}
 
 	#[inline]
-	pub fn pack_id(&self) -> nom::PackIDBorrowed {
-		nom::PackIDBorrowed::new(self.pack_id.ref_inner())
+	pub fn pack_id(&self) -> &nom::PackID {
+		&self.pack_id
 	}
 
 	#[inline]
-	pub fn optional_description(&self) -> nom::DescriptionOptionalBorrowed {
-		nom::DescriptionOptionalBorrowed::new(self.description.ref_inner().as_deref())
+	pub fn optional_description(&self) -> &nom::DescriptionOptional {
+		&self.description
 	}
 
 	#[inline]
@@ -195,13 +179,13 @@ impl Pack {
 	}
 
 	#[inline]
-	pub fn optional_version(&self) -> nom::VersionOptionalBorrowed {
-		nom::VersionOptionalBorrowed::new(self.version.ref_inner().as_ref())
+	pub fn optional_version(&self) -> &nom::VersionOptional {
+		&self.version
 	}
 
 	#[inline]
-	pub fn dependencies(&self) -> nom::DependenciesBorrowed {
-		nom::DependenciesBorrowed::new(self.dependencies.ref_inner())
+	pub fn dependencies(&self) -> &nom::Dependencies {
+		&self.dependencies
 	}
 
 	#[inline]
