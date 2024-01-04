@@ -20,69 +20,36 @@ use std::fmt::{ self, Debug, Display, Formatter };
 use std::hash::{ Hash, Hasher };
 use std::marker::PhantomData;
 
-/// See [`Nominal`] for more information on how to use this macro
 #[macro_export]
 macro_rules! nominal {
-	($vis:vis  name: $name:ident, marker: $marker:ident, inner: <$($lifetimes:lifetime),+> $type:ty) => {
+	($vis:vis $name:ident, marker: $marker:ident, inner: $( ref <$($lifetimes:lifetime),+> )? $type:ty) => {
 		$vis struct $marker;
-		$vis type $name<$($lifetimes),+> = $crate::Nominal<$type, $marker>;
-	};
-
-	($vis:vis name: $name:ident, marker: $marker:ident, inner: $type:ty) => {
-		$vis struct $marker;
-		$vis type $name = $crate::Nominal<$type, $marker>;
+		$vis type $name$( <$($lifetimes),+> )? = $crate::Nominal<$type, $marker>;
 	};
 }
 
-/// The struct is `repr(transparent)` and have `#[inline]` on all functions, so
-/// it all should be zero cost, optimised away by the rust compiler.
-///
-/// Usage of this struct is usually done through the [`nominal!`] macro.
-///
-/// Usage examples:
-///
-/// ```
-/// nominal!(pub name: MyStruct, marker: MyStructMarker, inner: String);
-/// nominal!(name: MyPrivateStruct, marker: MyPrivateStructMarker, inner: usize);
-///
-/// // borrowed data is also supported
-/// nominal!(pub name: MyStruct, marker: MyStructMarker, inner: <'h> &'h str);
-/// nominal!(name: MyPrivateStruct, marker: MyPrivateStructMarker, inner: <'a, 'b, 'c> &'a (&'b str, &'c usize));
-/// ```
-///
-/// Then, you can use the wrapper type like so:
-///
-/// ```
-/// # fn main() {
-/// let mut my_struct = MyStruct::new("".to_string());
-///
-/// let borrowed = my_struct.ref_inner();
-/// let mut_borrowed = my_struct.mut_inner();
-///
-/// let string = my_struct.into_inner();
-/// # }
-/// ```
-///
-/// this macro generates a type alias to Nominal by the name provided,
-/// generating a unit struct using the value for marker provided, wrapping a
-/// value of the inner type provided, adding pub modifiers if its specified, which
-/// generates code like like:
-///
-/// ```
-/// pub struct MyStructMarker;
-/// pub type MyStruct = crate::nominal_typing_owo::Nominal<String, MyStructMarker>;
-///
-/// struct MyPrivateStructMarker;
-/// type MyPrivateStruct = crate::nominal_typing_owo::Nominal<String, MyPrivateStructMarker>;
-///
-/// // borrowed:
-///
-/// pub struct MyStructMarker;
-/// pub type MyStruct<'h> = nominal::Nominal<&'h str, MyStructMarker>
-///
-/// pub struct MyPrivateStructMarker;
-/// type MyPrivateStruct<'a, 'b, 'c> = nominal::Nominal<&'a (&'b str, &'c usize), MyPrivateStructMarker>
-/// ```
+#[macro_export]
+macro_rules! nominal_mod {
+	{
+		$(
+			$mod_vis:vis mod $mod_name:ident {
+				$( nominal!($item_vis:vis $name:ident, inner: $( ref <$($lifetimes:lifetime),+> )? $type:ty); )*
+			}
+		)*
+	} => {
+		$(
+			$mod_vis mod $mod_name {
+				pub mod marker {
+					$( pub struct $name; )*
+				}
+
+				use super::*;
+				$( $item_vis type $name$( <$($lifetimes),+> )? = $crate::Nominal<$type, marker::$name>; )*
+			}
+		)*
+	}
+}
+
 #[repr(transparent)]
 pub struct Nominal<T, M>(T, PhantomData<M>);
 
