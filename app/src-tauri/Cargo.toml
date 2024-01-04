@@ -9,6 +9,7 @@ publish = false
 tauri-build = { version = "2.0.0-alpha.13", features = [] }
 
 [dependencies]
+serde.workspace = true
 serde_json.workspace = true
 tauri = { version = "2.0.0-alpha.20", features = [] }
 
