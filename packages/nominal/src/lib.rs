@@ -15,7 +15,6 @@ use serde::{
 	de::{ Deserialize, Deserializer },
 	ser::{ Serialize, Serializer }
 };
-use std::borrow::{ Borrow, BorrowMut };
 use std::cmp::Ordering;
 use std::fmt::{ self, Debug, Display, Formatter };
 use std::hash::{ Hash, Hasher };
@@ -238,20 +237,6 @@ where
 	{
 		let t = <T as Ord>::clamp(self.into_inner(), min.into_inner(), max.into_inner());
 		Self(t, PhantomData)
-	}
-}
-
-impl<T, M> Borrow<T> for Nominal<T, M> {
-	#[inline]
-	fn borrow(&self) -> &T {
-		self.ref_inner()
-	}
-}
-
-impl<T, M> BorrowMut<T> for Nominal<T, M> {
-	#[inline]
-	fn borrow_mut(&mut self) -> &mut T {
-		self.mut_inner()
 	}
 }
 
