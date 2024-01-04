@@ -3,8 +3,7 @@ resolver = "2"
 members = [
 	"app/src-tauri",
 	"lib/core",
-	"lib/nom",
-	"lib/util"
+	"lib/nom"
 ]
 
 [workspace.package]
