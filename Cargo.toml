@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+	"packages/nominal"
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "AGPL-3.0-only"
+
+[workspace.dependencies]
+serde = { version = "1.0.194", features = ["derive"] }
+
+[profile.dev]
+opt-level = 0 # none
+debug-assertions = true
+debug = true
+incremental = true
+
+[profile.release]
+opt-level = 3 # all
+debug-assertions = false
+lto = true
+codegen-units = 1
