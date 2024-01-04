@@ -12,11 +12,11 @@ pub(crate) enum ErrorInner {
 	#[error("expected meta file to be a file:\n{0}")]
 	MetaFileIsNotFile(String),
 
+	#[error("expected pack path to be a dir:\n{0}")]
+	PackDirIsNotDir(String),
+
 	#[error("error parsing semver:\n{0}")]
 	SemverParseError(#[from] semver::Error),
-
-	#[error("expected source path to be a dir:\n{0}")]
-	SourceDirIsNotDir(String),
 
 	#[error(transparent)]
 	UtilError(#[from] wiwipaccer_util::error::Error)

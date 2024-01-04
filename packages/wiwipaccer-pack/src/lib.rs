@@ -33,7 +33,7 @@ pub struct Pack {
 	dependencies: nom::Dependencies
 }
 
-pub const SOURCE_META_FILENAME: &str = "pack.wiwimeta";
+pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 
 ::nominal::nominal_mod! {
 	pub mod meta_nom {
@@ -95,10 +95,10 @@ impl Pack {
 			.await
 			.map_err(Into::into)
 			.map_err(Error)?;
-		if !dir_metadata.is_dir() { return Err(Error(ErrorInner::SourceDirIsNotDir(dir.into_inner()))) }
+		if !dir_metadata.is_dir() { return Err(Error(ErrorInner::PackDirIsNotDir(dir.into_inner()))) }
 
 		let mut meta_path = Utf8PathBuf::from(dir.ref_inner());
-		meta_path.push(SOURCE_META_FILENAME);
+		meta_path.push(PACK_META_FILENAME);
 
 		let meta_metadata = fs::metadata(fs::nom::Path::new(meta_path.as_str().into()))
 			.await
