@@ -5,8 +5,10 @@ pub mod error;
 
 use crate::error::*;
 use ::async_trait::async_trait;
+use ::camino::Utf8PathBuf;
 use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
+use ::wiwipaccer_util::fs;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "meta_version")]
@@ -30,6 +32,8 @@ pub struct Pack {
 	dependencies: nom::Dependencies
 }
 
+pub const SOURCE_META_FILENAME: &str = "pack.wiwimeta";
+
 ::nominal::nominal_mod! {
 	pub mod meta_nom {
 		nominal!(pub Name, inner: String);
@@ -51,6 +55,55 @@ pub struct Pack {
 		nominal!(pub VersionReq, inner: semver::VersionReq);
 		nominal!(pub BorrowedVersionReq, inner: ref <'h> &'h semver::VersionReq);
 		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
+	}
+}
+
+#[async_trait]
+pub trait DependencyResolver {
+	type Dependency: Dependency;
+	async fn dependency(
+		&self,
+		pack_id: nom::BorrowedPackID,
+		version_req: nom::BorrowedVersionReq
+	) -> Result<Option<Self::Dependency>>;
+}
+
+#[async_trait]
+pub trait Dependency {}
+
+impl Pack {
+	pub async fn new<R, D>(dir: nom::Dir, dep_resolver: R)
+		-> Result<Self>
+	where
+		R: DependencyResolver<Dependency = D>,
+		D: Dependency
+	{
+		let path = fs::nom::Path::new(dir.clone().into_inner());
+		let dir_metadata = fs::metadata(path)
+			.await
+			.map_err(Into::into)
+			.map_err(Error)?;
+		if !dir_metadata.is_dir() { return Err(Error(ErrorInner::SourceDirIsNotDir(dir.into_inner()))) }
+
+		let mut meta_path = Utf8PathBuf::from(dir.ref_inner());
+		meta_path.push(SOURCE_META_FILENAME);
+
+		let meta_metadata = fs::metadata(fs::nom::Path::new(meta_path.as_str().into()))
+			.await
+			.map_err(Into::into)
+			.map_err(Error)?;
+		if !meta_metadata.is_file() { return Err(Error(ErrorInner::MetaFileIsNotFile(meta_path.as_str().into()))) }
+
+		let meta_file = fs::read_to_string(fs::nom::Path::new(meta_path.as_str().into()))
+			.await
+			.map_err(Into::into)
+			.map_err(Error)?;
+
+		// then read it
+		// then map to runtime struct
+		// then solve deps (pass them into resolver)
+
+		todo!()
 	}
 }
 
@@ -97,29 +150,5 @@ impl Pack {
 	#[inline]
 	pub fn has_dependencies(&self) -> bool {
 		!self.dependencies.ref_inner().is_empty()
-	}
-}
-
-#[async_trait]
-pub trait DependencyResolver {
-	type Dependency: Dependency;
-	async fn dependency(
-		&self,
-		pack_id: nom::BorrowedPackID,
-		version_req: nom::BorrowedVersionReq
-	) -> Result<Option<Self::Dependency>>;
-}
-
-#[async_trait]
-pub trait Dependency {}
-
-impl Pack {
-	pub async fn new<R, D>(dir: nom::Dir, dep_resolver: R)
-		-> Result<Self>
-	where
-		R: DependencyResolver<Dependency = D>,
-		D: Dependency
-	{
-		todo!()
 	}
 }
