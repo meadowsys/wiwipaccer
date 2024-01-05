@@ -39,6 +39,7 @@ use ::hashbrown::HashMap;
 		nominal!(pub Name, inner: String);
 		nominal!(pub Description, inner: Option<String>);
 		nominal!(pub ID, inner: String);
+		nominal!(pub Default, inner: Option<String>);
 	}
 
 	pub mod texture_m {}

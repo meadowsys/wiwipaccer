@@ -16,7 +16,7 @@ enum MetaFile {
 	Version1 {
 		name: n::texture::Name,
 		description: n::texture::Description,
-		// default
+		default: n::texture::Default
 	}
 }
 
@@ -27,8 +27,8 @@ pub struct Texture {
 	/// also the shortpath. To get path to texture dir, you can do
 	/// `format!("{root_dir}/{TEXTURES_DIR}/{texture_id}")`
 	texture_id: n::texture::ID,
-	root_dir: n::global::RootDirPath
-	// default
+	root_dir: n::global::RootDirPath,
+	default: n::texture::Default
 }
 
 impl Texture {
@@ -62,12 +62,12 @@ impl Texture {
 			.map_err(Into::into)
 			.map_err(Error)?;
 
-		let (name, description) = match meta_file {
-			MetaFile::Version1 { name, description } => {
-				(name, description)
+		let (name, description, default) = match meta_file {
+			MetaFile::Version1 { name, description, default } => {
+				(name, description, default)
 			}
 		};
 
-		Ok(Some(Self { name, description, texture_id, root_dir }))
+		Ok(Some(Self { name, description, texture_id, root_dir, default }))
 	}
 }
