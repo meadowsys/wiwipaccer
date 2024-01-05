@@ -10,10 +10,11 @@ async-trait.workspace = true
 camino.workspace = true
 hashbrown.workspace = true
 nominal = { path = "../nominal", features = ["serde"] }
+ron.workspace = true
 semver.workspace = true
 serde.workspace = true
 thiserror.workspace = true
-wiwipaccer-util = { path = "../wiwipaccer-util" }
+tokio.workspace = true
 
 # workspace:
 # async-trait.workspace = true

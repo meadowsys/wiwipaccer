@@ -496,18 +496,8 @@ dependencies = [
  "camino",
  "hashbrown",
  "nominal",
- "semver",
- "serde",
- "thiserror",
- "wiwipaccer-util",
-]
-
-[[package]]
-name = "wiwipaccer-util"
-version = "0.0.0"
-dependencies = [
- "nominal",
  "ron",
+ "semver",
  "serde",
  "thiserror",
  "tokio",

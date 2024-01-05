@@ -10,5 +10,5 @@ pub struct Error(pub(crate) ErrorInner);
 #[derive(Debug, Error)]
 pub(crate) enum ErrorInner {
 	#[error(transparent)]
-	PackError(#[from] wiwipaccer_pack::error::Error)
+	PackError(#[from] crate::pack::error::Error)
 }

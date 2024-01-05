@@ -3,13 +3,13 @@
 
 pub mod error;
 
-use crate::error::*;
+use crate::util::{ consts, fs, ron };
+use error::*;
 use ::async_trait::async_trait;
 use ::camino::Utf8PathBuf;
 use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
-use ::wiwipaccer_texture as textures;
-use ::wiwipaccer_util::{ consts, fs, ron };
+use super::texture;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "meta_version")]
@@ -55,7 +55,7 @@ pub struct Pack {
 		nominal!(pub VersionReq, inner: semver::VersionReq);
 		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
 		nominal!(pub Dir, inner: String);
-		nominal!(pub Textures, inner: HashMap<textures::nom::TextureID, textures::Texture>);
+		nominal!(pub Textures, inner: HashMap<texture::nom::TextureID, texture::Texture>);
 	}
 }
 
@@ -195,10 +195,10 @@ impl Pack {
 				let texture_id = texture_id.to_str()
 					.ok_or_else(|| Error(ErrorInner::NonUtf8Path))?;
 
-				let texture_id = textures::nom::TextureID::new(texture_id.into());
-				let root_dir = textures::nom::RootDir::new(dir.clone().into_inner());
+				let texture_id = texture::nom::TextureID::new(texture_id.into());
+				let root_dir = texture::nom::RootDir::new(dir.clone().into_inner());
 
-				let texture = textures::Texture::new(root_dir, texture_id.clone())
+				let texture = texture::Texture::new(root_dir, texture_id.clone())
 					.await
 					.map_err(Into::into)
 					.map_err(Error)?;

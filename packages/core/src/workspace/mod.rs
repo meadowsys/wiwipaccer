@@ -3,11 +3,11 @@
 
 pub mod error;
 
-use crate::error::*;
+use error::*;
+use super::pack;
 use ::async_trait::async_trait;
 use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
-use ::wiwipaccer_pack::{ self as pack, nom as pack_nom };
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "meta_version")]
@@ -35,8 +35,8 @@ pub struct Workspace {
 
 	pub mod nom {
 		nominal!(pub Name, inner: String);
-		nominal!(pub Packs, inner: HashMap<pack_nom::PackID, pack::Pack>);
-		nominal!(pub PackIDs, inner: Vec<pack_nom::PackID>);
+		nominal!(pub Packs, inner: HashMap<crate::pack::nom::PackID, crate::pack::Pack>);
+		nominal!(pub PackIDs, inner: Vec<crate::pack::nom::PackID>);
 	}
 }
 
@@ -55,7 +55,7 @@ impl Workspace {
 				let mut new = Self::new(nom::Name::new(name.into_inner()));
 
 				for dir in packs.into_inner() {
-					let dir = pack_nom::Dir::new(dir.into_inner());
+					let dir = crate::pack::nom::Dir::new(dir.into_inner());
 					new.add_pack(dir).await?;
 				}
 
@@ -82,7 +82,7 @@ impl Workspace {
 		WorkspaceConfig::Version1 { name, packs }
 	}
 
-	pub async fn add_pack(&mut self, dir: pack_nom::Dir) -> Result<()> {
+	pub async fn add_pack(&mut self, dir: crate::pack::nom::Dir) -> Result<()> {
 		let packs = &self.packs;
 		let resolver = DependencyResolver { packs };
 
@@ -104,7 +104,7 @@ struct DependencyResolver<'h> {
 }
 
 struct Dependency<'h> {
-	pack: &'h pack::Pack
+	pack: &'h crate::pack::Pack
 }
 
 #[async_trait]
@@ -113,8 +113,8 @@ impl<'h> pack::DependencyResolver for DependencyResolver<'h> {
 
 	async fn dependency(
 		&self,
-		pack_id: &pack_nom::PackID,
-		version_req: &pack_nom::VersionReq
+		pack_id: &pack::nom::PackID,
+		version_req: &pack::nom::VersionReq
 	) -> pack::error::Result<pack::DependencyResult<Self::Dependency>> {
 		let pack = match self.packs.ref_inner().get(pack_id) {
 			Some(s) => { s }

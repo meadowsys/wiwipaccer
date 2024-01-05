@@ -1,4 +1,4 @@
-use crate::error::*;
+use super::error::*;
 use ::std::fs;
 use ::std::io::Read as _;
 

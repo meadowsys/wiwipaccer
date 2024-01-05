@@ -1,6 +1,6 @@
 //! provides ron serialise/deserialise functions using wiwipaccer's default ron config
 
-use crate::error::*;
+use super::error::*;
 use ::ron::extensions::Extensions;
 pub use ::ron::ser::PrettyConfig;
 use ::serde::{ Deserialize, Serialize };

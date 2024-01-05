@@ -19,7 +19,7 @@ pub(crate) enum ErrorInner {
 			.collect::<Vec<_>>()
 			.join(", ")
 	)]
-	DepsNotSatisfied(Vec<(crate::nom::PackID, crate::nom::VersionReq, Option<semver::Version>)>),
+	DepsNotSatisfied(Vec<(crate::pack::nom::PackID, crate::pack::nom::VersionReq, Option<semver::Version>)>),
 
 	#[error("expected meta file to be a file:\n{0}")]
 	MetaFileIsNotFile(String),
@@ -34,8 +34,8 @@ pub(crate) enum ErrorInner {
 	SemverParseError(#[from] semver::Error),
 
 	#[error(transparent)]
-	TextureError(#[from] wiwipaccer_texture::error::Error),
+	TextureError(#[from] crate::texture::error::Error),
 
 	#[error(transparent)]
-	UtilError(#[from] wiwipaccer_util::error::Error)
+	UtilError(#[from] crate::util::error::Error)
 }
