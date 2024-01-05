@@ -4,6 +4,7 @@ members = [
 	"packages/nominal",
 	"packages/wiwipaccer-pack",
 	"packages/wiwipaccer-texture",
+	"packages/wiwipaccer-texture-option",
 	"packages/wiwipaccer-util",
 	"packages/wiwipaccer-workspace"
 ]

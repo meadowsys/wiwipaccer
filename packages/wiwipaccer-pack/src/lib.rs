@@ -9,7 +9,7 @@ use ::camino::Utf8PathBuf;
 use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
 use ::wiwipaccer_texture as textures;
-use ::wiwipaccer_util::{ fs, ron };
+use ::wiwipaccer_util::{ consts, fs, ron };
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "meta_version")]
@@ -34,8 +34,6 @@ pub struct Pack {
 	dir: nom::Dir,
 	textures: nom::Textures
 }
-
-pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 
 ::nominal::nominal_mod! {
 	pub mod meta_nom {
@@ -100,7 +98,7 @@ impl Pack {
 		if !dir_metadata.is_dir() { return Err(Error(ErrorInner::PackDirIsNotDir(dir.into_inner()))) }
 
 		let mut meta_path = Utf8PathBuf::from(dir.ref_inner());
-		meta_path.push(PACK_META_FILENAME);
+		meta_path.push(consts::PACK_META_FILENAME);
 
 		let meta_metadata = fs::metadata(fs::nom::Path::new(meta_path.as_str().into()))
 			.await
@@ -179,7 +177,7 @@ impl Pack {
 
 		let textures = {
 			let mut textures_dir = Utf8PathBuf::from(dir.ref_inner());
-			textures_dir.push(textures::TEXTURES_DIR);
+			textures_dir.push(consts::TEXTURES_DIR);
 
 			let mut read_dir = fs::read_dir(fs::nom::Path::new(textures_dir.as_str().into()))
 				.await

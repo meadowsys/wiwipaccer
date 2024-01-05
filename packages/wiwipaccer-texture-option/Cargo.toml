@@ -1,0 +1,14 @@
+[package]
+name = "wiwipaccer-texture-option"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+camino.workspace = true
+hashbrown.workspace = true
+nominal = { path = "../nominal", features = ["serde"] }
+serde.workspace = true
+thiserror.workspace = true
+wiwipaccer-util = { path = "../wiwipaccer-util" }

@@ -516,6 +516,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "wiwipaccer-texture-option"
+version = "0.0.0"
+dependencies = [
+ "camino",
+ "hashbrown",
+ "nominal",
+ "serde",
+ "thiserror",
+ "wiwipaccer-util",
+]
+
+[[package]]
 name = "wiwipaccer-util"
 version = "0.0.0"
 dependencies = [
