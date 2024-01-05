@@ -1,0 +1,60 @@
+[package]
+name = "wiwipaccer-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+async-trait.workspace = true
+camino.workspace = true
+hashbrown.workspace = true
+nominal = { path = "../nominal", features = ["serde"] }
+semver.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+wiwipaccer-util = { path = "../wiwipaccer-util" }
+
+# workspace:
+# async-trait.workspace = true
+# hashbrown.workspace = true
+# nominal = { path = "../nominal", features = ["serde"] }
+# semver.workspace = true
+# serde.workspace = true
+# thiserror.workspace = true
+# wiwipaccer-pack = { path = "../wiwipaccer-pack" }
+# wiwipaccer-util = { path = "../wiwipaccer-util" }
+
+# pack:
+# async-trait.workspace = true
+# camino.workspace = true
+# hashbrown.workspace = true
+# nominal = { path = "../nominal", features = ["serde"] }
+# semver.workspace = true
+# serde.workspace = true
+# thiserror.workspace = true
+# wiwipaccer-texture = { path = "../wiwipaccer-texture" }
+# wiwipaccer-util = { path = "../wiwipaccer-util" }
+
+# texture:
+# camino.workspace = true
+# hashbrown.workspace = true
+# nominal = { path = "../nominal", features = ["serde"] }
+# serde.workspace = true
+# thiserror.workspace = true
+# wiwipaccer-util = { path = "../wiwipaccer-util" }
+
+# option:
+# camino.workspace = true
+# hashbrown.workspace = true
+# nominal = { path = "../nominal", features = ["serde"] }
+# serde.workspace = true
+# thiserror.workspace = true
+# wiwipaccer-util = { path = "../wiwipaccer-util" }
+
+# util
+# nominal = { path = "../nominal", features = ["serde"] }
+# ron.workspace = true
+# serde.workspace = true
+# thiserror.workspace = true
+# tokio.workspace = true
