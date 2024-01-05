@@ -3,6 +3,7 @@
 
 pub mod error;
 
+use crate::nom as n;
 use crate::util::{ consts, fs, ron };
 use error::*;
 use ::camino::Utf8PathBuf;
@@ -13,47 +14,33 @@ use ::serde::{ Deserialize, Serialize };
 enum MetaFile {
 	#[serde(rename = "1")]
 	Version1 {
-		name: meta_nom::Name,
-		description: meta_nom::DescriptionOptional,
+		name: n::texture::Name,
+		description: n::texture::Description,
 		// default
 	}
 }
 
 #[derive(Debug)]
 pub struct Texture {
-	name: nom::Name,
-	description: nom::DescriptionOptional,
+	name: n::texture::Name,
+	description: n::texture::Description,
 	/// also the shortpath. To get path to texture dir, you can do
 	/// `format!("{root_dir}/{TEXTURES_DIR}/{texture_id}")`
-	texture_id: nom::TextureID,
-	root_dir: nom::RootDir
+	texture_id: n::texture::ID,
+	root_dir: n::global::RootDirPath
 	// default
-}
-
-::nominal::nominal_mod! {
-	pub mod meta_nom {
-		nominal!(pub Name, inner: String);
-		nominal!(pub DescriptionOptional, inner: Option<String>);
-	}
-
-	pub mod nom {
-		nominal!(pub Name, inner: String);
-		nominal!(pub DescriptionOptional, inner: Option<String>);
-		nominal!(pub TextureID, inner: String);
-		nominal!(pub RootDir, inner: String);
-	}
 }
 
 impl Texture {
 	pub async fn new(
-		root_dir: nom::RootDir,
-		texture_id: nom::TextureID
+		root_dir: n::global::RootDirPath,
+		texture_id: n::texture::ID
 	) -> Result<Option<Self>> {
 		let mut texture_dir = Utf8PathBuf::from(root_dir.ref_inner());
 		texture_dir.push(consts::TEXTURES_DIR);
 		texture_dir.push(texture_id.ref_inner().as_str());
 
-		let texture_dir_meta = fs::metadata(fs::nom::Path::new(texture_dir.as_str().into()))
+		let texture_dir_meta = fs::metadata(n::global::Path::new(texture_dir.as_str().into()))
 			.await
 			.map_err(Into::into)
 			.map_err(Error)?;
@@ -66,7 +53,7 @@ impl Texture {
 		let mut manifest_path = texture_dir;
 		manifest_path.push(consts::TEXTURE_META_FILENAME);
 
-		let meta_file = fs::read_to_string(fs::nom::Path::new(manifest_path.as_str().into()))
+		let meta_file = fs::read_to_string(n::global::FilePath::new(manifest_path.as_str().into()))
 			.await
 			.map_err(Into::into)
 			.map_err(Error)?;
@@ -77,9 +64,6 @@ impl Texture {
 
 		let (name, description) = match meta_file {
 			MetaFile::Version1 { name, description } => {
-				let name = nom::Name::new(name.into_inner());
-				let description = nom::DescriptionOptional::new(description.into_inner());
-
 				(name, description)
 			}
 		};

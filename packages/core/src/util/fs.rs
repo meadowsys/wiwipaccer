@@ -1,23 +1,17 @@
+use crate::nom as n;
 use super::error::*;
 use ::std::fs;
 use ::std::io::Read as _;
 
-::nominal::nominal_mod! {
-	pub mod nom {
-		nominal!(pub Path, inner: String);
-		nominal!(pub FileSize, inner: usize);
-	}
-}
-
 #[inline]
-pub async fn metadata(path: nom::Path) -> Result<fs::Metadata> {
+pub async fn metadata(path: n::global::Path) -> Result<fs::Metadata> {
 	let f = || fs::metadata(path.into_inner())
 		.map_err(|e| Error(ErrorInner::FSError(e)));
 	spawn_blocking(f).await
 }
 
 // TODO: can probably be optimised (one less meta call?) if rewritten by hand?
-pub async fn read_to_string(path: nom::Path) -> Result<String> {
+pub async fn read_to_string(path: n::global::FilePath) -> Result<String> {
 	let f = || fs::read(path.into_inner())
 		.map_err(|e| Error(ErrorInner::FSError(e)));
 	let bytes = spawn_blocking(f).await?;
@@ -29,7 +23,7 @@ pub async fn read_to_string(path: nom::Path) -> Result<String> {
 }
 
 #[inline]
-pub async fn read_dir(path: nom::Path) -> Result<ReadDir> {
+pub async fn read_dir(path: n::global::DirPath) -> Result<ReadDir> {
 	tokio::fs::read_dir(path.into_inner())
 		.await
 		.map(ReadDir)

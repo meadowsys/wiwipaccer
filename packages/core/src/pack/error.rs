@@ -1,4 +1,5 @@
-use thiserror::Error;
+use crate::nom as n;
+use ::thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -19,7 +20,7 @@ pub(crate) enum ErrorInner {
 			.collect::<Vec<_>>()
 			.join(", ")
 	)]
-	DepsNotSatisfied(Vec<(crate::pack::nom::PackID, crate::pack::nom::VersionReq, Option<semver::Version>)>),
+	DepsNotSatisfied(Vec<(n::pack::ID, ::semver::VersionReq, Option<::semver::Version>)>),
 
 	#[error("expected meta file to be a file:\n{0}")]
 	MetaFileIsNotFile(String),
