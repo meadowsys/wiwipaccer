@@ -17,8 +17,8 @@ enum MetaFile {
 	#[serde(rename = "1")]
 	Version1 {
 		name: meta_nom::Name,
-		pack_id: meta_nom::PackID,
 		description: meta_nom::DescriptionOptional,
+		pack_id: meta_nom::PackID,
 		version: meta_nom::VersionOptional,
 		dependencies: meta_nom::DependenciesOptional
 	}
@@ -27,11 +27,11 @@ enum MetaFile {
 #[derive(Debug)]
 pub struct Pack {
 	name: nom::Name,
-	dir: nom::Dir,
-	pack_id: nom::PackID,
 	description: nom::DescriptionOptional,
+	pack_id: nom::PackID,
 	version: nom::VersionOptional,
 	dependencies: nom::Dependencies,
+	dir: nom::Dir,
 	textures: nom::Textures
 }
 
@@ -40,9 +40,9 @@ pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 ::nominal::nominal_mod! {
 	pub mod meta_nom {
 		nominal!(pub Name, inner: String);
-		nominal!(pub PackID, inner: String);
 		nominal!(pub Description, inner: String);
 		nominal!(pub DescriptionOptional, inner: Option<Description>);
+		nominal!(pub PackID, inner: String);
 		nominal!(pub VersionOptional, inner: Option<String>);
 		nominal!(pub VersionReq, inner: String);
 		nominal!(pub DependenciesOptional, inner: Option<HashMap<PackID, VersionReq>>);
@@ -50,13 +50,13 @@ pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 
 	pub mod nom {
 		nominal!(pub Name, inner: String);
-		nominal!(pub Dir, inner: String);
-		nominal!(pub PackID, inner: String);
 		nominal!(pub Description, inner: String);
 		nominal!(pub DescriptionOptional, inner: Option<Description>);
+		nominal!(pub PackID, inner: String);
 		nominal!(pub VersionOptional, inner: Option<semver::Version>);
 		nominal!(pub VersionReq, inner: semver::VersionReq);
 		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
+		nominal!(pub Dir, inner: String);
 		nominal!(pub Textures, inner: HashMap<textures::nom::TextureID, textures::Texture>);
 	}
 }
@@ -212,7 +212,7 @@ impl Pack {
 			nom::Textures::new(t)
 		};
 
-		Ok(Pack { name, dir, pack_id, description, version, dependencies, textures })
+		Ok(Pack { name, description, pack_id, version, dependencies, dir, textures })
 	}
 }
 

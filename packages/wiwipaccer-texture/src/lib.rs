@@ -22,11 +22,11 @@ enum MetaFile {
 #[derive(Debug)]
 pub struct Texture {
 	name: nom::Name,
-	root_dir: nom::RootDir,
+	description: nom::DescriptionOptional,
 	/// also the shortpath. To get path to texture dir, you can do
 	/// `format!("{root_dir}/{TEXTURES_DIR}/{texture_id}")`
 	texture_id: nom::TextureID,
-	description: nom::DescriptionOptional
+	root_dir: nom::RootDir
 	// default
 }
 
@@ -41,9 +41,9 @@ pub const TEXTURE_META_FILENAME: &str = "texture.wiwimeta";
 
 	pub mod nom {
 		nominal!(pub Name, inner: String);
-		nominal!(pub RootDir, inner: String);
-		nominal!(pub TextureID, inner: String);
 		nominal!(pub DescriptionOptional, inner: Option<String>);
+		nominal!(pub TextureID, inner: String);
+		nominal!(pub RootDir, inner: String);
 	}
 }
 
@@ -87,6 +87,6 @@ impl Texture {
 			}
 		};
 
-		Ok(Some(Self { name, root_dir, texture_id, description }))
+		Ok(Some(Self { name, description, texture_id, root_dir }))
 	}
 }
