@@ -499,6 +499,19 @@ dependencies = [
  "semver",
  "serde",
  "thiserror",
+ "wiwipaccer-textures",
+ "wiwipaccer-util",
+]
+
+[[package]]
+name = "wiwipaccer-textures"
+version = "0.0.0"
+dependencies = [
+ "camino",
+ "hashbrown",
+ "nominal",
+ "serde",
+ "thiserror",
  "wiwipaccer-util",
 ]
 

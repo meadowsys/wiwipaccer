@@ -29,6 +29,14 @@ pub async fn read_to_string(path: nom::Path) -> Result<String> {
 }
 
 #[inline]
+pub async fn read_dir(path: nom::Path) -> Result<ReadDir> {
+	tokio::fs::read_dir(path.into_inner())
+		.await
+		.map(ReadDir)
+		.map_err(|e| Error(ErrorInner::FSError(e)))
+}
+
+#[inline]
 async fn spawn_blocking<F, T>(f: F) -> Result<T>
 where
 	F: FnOnce() -> Result<T> + Send + 'static,
@@ -37,5 +45,17 @@ where
 	match ::tokio::task::spawn_blocking(f).await {
 		Ok(r) => { r }
 		Err(e) => { Err(Error(ErrorInner::BackgroundTaskFailed(e))) }
+	}
+}
+
+#[repr(transparent)]
+pub struct ReadDir(tokio::fs::ReadDir);
+
+impl ReadDir {
+	#[inline]
+	pub async fn next(&mut self) -> Result<Option<tokio::fs::DirEntry>> {
+		self.0.next_entry()
+			.await
+			.map_err(|e| Error(ErrorInner::FSError(e)))
 	}
 }

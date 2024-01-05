@@ -24,11 +24,17 @@ pub(crate) enum ErrorInner {
 	#[error("expected meta file to be a file:\n{0}")]
 	MetaFileIsNotFile(String),
 
+	#[error("non UTF-8 paths are not supported")]
+	NonUtf8Path,
+
 	#[error("expected pack path to be a dir:\n{0}")]
 	PackDirIsNotDir(String),
 
 	#[error("error parsing semver:\n{0}")]
 	SemverParseError(#[from] semver::Error),
+
+	#[error(transparent)]
+	TextureError(#[from] wiwipaccer_textures::error::Error),
 
 	#[error(transparent)]
 	UtilError(#[from] wiwipaccer_util::error::Error)

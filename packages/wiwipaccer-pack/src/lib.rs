@@ -8,6 +8,7 @@ use ::async_trait::async_trait;
 use ::camino::Utf8PathBuf;
 use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
+use ::wiwipaccer_textures as textures;
 use ::wiwipaccer_util::{ fs, ron };
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -23,14 +24,14 @@ enum MetaFile {
 	}
 }
 
-#[derive(Debug)]
 pub struct Pack {
 	name: nom::Name,
 	dir: nom::Dir,
 	pack_id: nom::PackID,
 	description: nom::DescriptionOptional,
 	version: nom::VersionOptional,
-	dependencies: nom::Dependencies
+	dependencies: nom::Dependencies,
+	textures: nom::Textures
 }
 
 pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
@@ -55,6 +56,7 @@ pub const PACK_META_FILENAME: &str = "pack.wiwimeta";
 		nominal!(pub VersionOptional, inner: Option<semver::Version>);
 		nominal!(pub VersionReq, inner: semver::VersionReq);
 		nominal!(pub Dependencies, inner: HashMap<PackID, VersionReq>);
+		nominal!(pub Textures, inner: HashMap<textures::nom::TextureID, textures::Texture>);
 	}
 }
 
@@ -174,7 +176,42 @@ impl Pack {
 			.collect();
 		let dependencies = nom::Dependencies::new(dependencies);
 
-		Ok(Pack { name, dir, pack_id, description, version, dependencies })
+		let textures = {
+			let mut textures_dir = Utf8PathBuf::from(dir.ref_inner());
+			textures_dir.push(textures::TEXTURES_DIR);
+
+			let mut read_dir = fs::read_dir(fs::nom::Path::new(textures_dir.as_str().into()))
+				.await
+				.map_err(Into::into)
+				.map_err(Error)?;
+			let mut t = HashMap::new();
+
+			while let Some(file) = {
+				read_dir.next()
+					.await
+					.map_err(Into::into)
+					.map_err(Error)?
+			} {
+				let texture_id = file.file_name();
+				let texture_id = texture_id.to_str()
+					.ok_or_else(|| Error(ErrorInner::NonUtf8Path))?;
+
+				let texture_id = textures::nom::TextureID::new(texture_id.into());
+				let root_dir = textures::nom::RootDir::new(dir.clone().into_inner());
+
+				let texture = textures::Texture::new(root_dir, texture_id.clone())
+					.await
+					.map_err(Into::into)
+					.map_err(Error)?;
+				if let Some(texture) = texture {
+					t.insert(texture_id, texture);
+				}
+			}
+
+			nom::Textures::new(t)
+		};
+
+		Ok(Pack { name, dir, pack_id, description, version, dependencies, textures })
 	}
 }
 
