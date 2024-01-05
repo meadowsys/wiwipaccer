@@ -13,5 +13,5 @@ nominal = { path = "../nominal", features = ["serde"] }
 semver.workspace = true
 serde.workspace = true
 thiserror.workspace = true
-wiwipaccer-textures = { path = "../wiwipaccer-textures" }
+wiwipaccer-texture = { path = "../wiwipaccer-texture" }
 wiwipaccer-util = { path = "../wiwipaccer-util" }

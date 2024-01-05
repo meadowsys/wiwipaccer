@@ -3,7 +3,7 @@ resolver = "2"
 members = [
 	"packages/nominal",
 	"packages/wiwipaccer-pack",
-	"packages/wiwipaccer-textures",
+	"packages/wiwipaccer-texture",
 	"packages/wiwipaccer-util",
 	"packages/wiwipaccer-workspace"
 ]

@@ -34,7 +34,7 @@ pub(crate) enum ErrorInner {
 	SemverParseError(#[from] semver::Error),
 
 	#[error(transparent)]
-	TextureError(#[from] wiwipaccer_textures::error::Error),
+	TextureError(#[from] wiwipaccer_texture::error::Error),
 
 	#[error(transparent)]
 	UtilError(#[from] wiwipaccer_util::error::Error)

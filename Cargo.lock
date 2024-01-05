@@ -499,12 +499,12 @@ dependencies = [
  "semver",
  "serde",
  "thiserror",
- "wiwipaccer-textures",
+ "wiwipaccer-texture",
  "wiwipaccer-util",
 ]
 
 [[package]]
-name = "wiwipaccer-textures"
+name = "wiwipaccer-texture"
 version = "0.0.0"
 dependencies = [
  "camino",

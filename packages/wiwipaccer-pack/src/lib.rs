@@ -8,7 +8,7 @@ use ::async_trait::async_trait;
 use ::camino::Utf8PathBuf;
 use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
-use ::wiwipaccer_textures as textures;
+use ::wiwipaccer_texture as textures;
 use ::wiwipaccer_util::{ fs, ron };
 
 #[derive(Debug, Deserialize, Serialize)]
