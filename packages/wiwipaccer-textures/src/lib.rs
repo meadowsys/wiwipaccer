@@ -1,3 +1,6 @@
+// TODO: remove this when more done
+#![allow(dead_code, unused_imports, unused_variables)]
+
 pub mod error;
 
 use crate::error::*;
@@ -16,6 +19,7 @@ enum MetaFile {
 	}
 }
 
+#[derive(Debug)]
 pub struct Texture {
 	name: nom::Name,
 	root_dir: nom::RootDir,

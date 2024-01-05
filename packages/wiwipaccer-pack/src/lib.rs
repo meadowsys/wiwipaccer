@@ -24,6 +24,7 @@ enum MetaFile {
 	}
 }
 
+#[derive(Debug)]
 pub struct Pack {
 	name: nom::Name,
 	dir: nom::Dir,

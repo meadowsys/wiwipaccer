@@ -1,3 +1,6 @@
+// TODO: remove this when more done
+#![allow(dead_code, unused_imports, unused_variables)]
+
 pub mod error;
 
 use crate::error::*;
@@ -16,6 +19,7 @@ pub enum WorkspaceConfig {
 	}
 }
 
+#[derive(Debug)]
 pub struct Workspace {
 	name: nom::Name,
 	packs: nom::Packs,
