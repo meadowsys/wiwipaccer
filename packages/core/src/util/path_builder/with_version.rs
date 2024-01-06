@@ -6,12 +6,12 @@ use super::WithOption;
 
 const VERSION_META_FILENAME: &str = "version.wiwimeta";
 
-pub struct WithVersion<'r, 't, 'o, 'v> {
-	pub(super) prev: WithOption<'r, 't, 'o>,
-	pub(super) version_id: &'v n::version::ID
+pub struct WithVersion<'h> {
+	pub(super) prev: WithOption<'h>,
+	pub(super) version_id: &'h n::version::ID
 }
 
-impl<'r, 't, 'o, 'v> WithVersion<'r, 't, 'o, 'v> {
+impl<'h> WithVersion<'h> {
 	#[inline]
 	pub(super) fn _version_dir(&self) -> Utf8PathBuf {
 		let mut path = self.prev._option_dir();

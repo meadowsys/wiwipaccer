@@ -7,12 +7,12 @@ use super::WithOption;
 
 const TEXTURE_META_FILENAME: &str = "texture.wiwimeta";
 
-pub struct WithTexture<'r, 't> {
-	pub(super) prev: Root<'r>,
-	pub(super) texture_id: &'t n::texture::ID
+pub struct WithTexture<'h> {
+	pub(super) prev: Root<'h>,
+	pub(super) texture_id: &'h n::texture::ID
 }
 
-impl<'r, 't> WithTexture<'r, 't> {
+impl<'h> WithTexture<'h> {
 	#[inline]
 	pub(super) fn _texture_dir(&self) -> Utf8PathBuf {
 		let mut path = self.prev._textures_path();
@@ -93,7 +93,7 @@ impl<'r, 't> WithTexture<'r, 't> {
 	}
 
 	#[inline]
-	pub fn with_option(self, option_id: &n::option::ID) -> WithOption {
+	pub fn with_option(self, option_id: &'h n::option::ID) -> WithOption {
 		WithOption { prev: self, option_id }
 	}
 }

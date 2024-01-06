@@ -7,12 +7,12 @@ use super::WithVersion;
 
 const OPTION_META_FILENAME: &str = "option.wiwimeta";
 
-pub struct WithOption<'r, 't, 'o> {
-	pub(super) prev: WithTexture<'r, 't>,
-	pub(super) option_id: &'o n::option::ID
+pub struct WithOption<'h> {
+	pub(super) prev: WithTexture<'h>,
+	pub(super) option_id: &'h n::option::ID
 }
 
-impl<'r, 't, 'o> WithOption<'r, 't, 'o> {
+impl<'h> WithOption<'h> {
 	#[inline]
 	pub(super) fn _option_dir(&self) -> Utf8PathBuf {
 		let mut path = self.prev._texture_dir();
@@ -112,7 +112,7 @@ impl<'r, 't, 'o> WithOption<'r, 't, 'o> {
 	}
 
 	#[inline]
-	pub fn with_version(self, version_id: &n::version::ID) -> WithVersion {
+	pub fn with_version(self, version_id: &'h n::version::ID) -> WithVersion {
 		WithVersion { prev: self, version_id }
 	}
 }

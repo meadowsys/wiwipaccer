@@ -7,11 +7,11 @@ use super::WithTexture;
 const PACK_META_FILENAME: &str = "pack.wiwimeta";
 const TEXTURES_DIR: &str = "textures";
 
-pub struct Root<'r> {
-	pub(super) root_dir: &'r n::global::RootDirPath
+pub struct Root<'h> {
+	pub(super) root_dir: &'h n::global::RootDirPath
 }
 
-impl<'r> Root<'r> {
+impl<'h> Root<'h> {
 	#[inline]
 	pub(super) fn _root_dir(&self) -> Utf8PathBuf {
 		Utf8PathBuf::from(self.root_dir.clone().into_inner())
@@ -85,7 +85,7 @@ impl<'r> Root<'r> {
 	}
 
 	#[inline]
-	pub fn with_texture(self, texture_id: &n::texture::ID) -> WithTexture {
+	pub fn with_texture(self, texture_id: &'h n::texture::ID) -> WithTexture {
 		WithTexture { prev: self, texture_id }
 	}
 }
