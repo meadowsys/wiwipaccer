@@ -5,7 +5,15 @@ use ::hashbrown::HashMap;
 		nominal!(pub Path, inner: String);
 		nominal!(pub DirPath, inner: String);
 		nominal!(pub FilePath, inner: String);
+
 		nominal!(pub RootDirPath, inner: String);
+		nominal!(pub RootManifestPath, inner: String);
+		nominal!(pub TextureDirPath, inner: String);
+		nominal!(pub TextureManifestPath, inner: String);
+		nominal!(pub OptionDirPath, inner: String);
+		nominal!(pub OptionManifestPath, inner: String);
+		nominal!(pub VersionDirPath, inner: String);
+		nominal!(pub VersionManifestPath, inner: String);
 	}
 
 	pub mod workspace {
@@ -40,6 +48,7 @@ use ::hashbrown::HashMap;
 		nominal!(pub Description, inner: Option<String>);
 		nominal!(pub ID, inner: String);
 		nominal!(pub Default, inner: Option<String>);
+		nominal!(pub Options, inner: HashMap<option::ID, crate::option::TextureOption>);
 	}
 
 	pub mod texture_m {}
@@ -53,7 +62,7 @@ use ::hashbrown::HashMap;
 	pub mod option_m {}
 
 	pub mod version {
-		// nominal!(pub ID, inner: String);
+		nominal!(pub ID, inner: String);
 	}
 
 	pub mod version_m {}
