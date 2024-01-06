@@ -1,8 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
-	"packages/nominal",
-	"packages/core"
+	"packages/core",
+	"packages/mc-versions-macro",
+	"packages/nominal"
 ]
 
 [workspace.package]

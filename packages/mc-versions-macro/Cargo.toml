@@ -1,0 +1,10 @@
+[package]
+name = "mc-versions-macro"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+proc-macro2 = "1.0.76"
+quote = "1.0.35"
