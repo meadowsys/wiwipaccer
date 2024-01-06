@@ -50,9 +50,11 @@ impl Texture {
 			Err(e) => { return Err(into_err(e)) }
 		};
 
-		let manifest_path = p.texture_manifest()
-			.await
-			.map_err(into_err)?;
+		let manifest_path = match p.texture_manifest().await {
+			Ok(p) => { p }
+			Err(e) if e.is_not_file_error() => { return Ok(None) }
+			Err(e) => { return Err(into_err(e)) }
+		};
 
 		let meta_file = fs::read_to_string(n::global::FilePath::new(manifest_path.into_inner()))
 			.await
