@@ -10,6 +10,16 @@ pub async fn metadata(path: n::global::Path) -> Result<fs::Metadata> {
 	spawn_blocking(f).await
 }
 
+#[inline]
+pub async fn is_dir(path: n::global::Path) -> Result<bool> {
+	Ok(metadata(path).await?.is_dir())
+}
+
+#[inline]
+pub async fn is_file(path: n::global::Path) -> Result<bool> {
+	Ok(metadata(path).await?.is_file())
+}
+
 // TODO: can probably be optimised (one less meta call?) if rewritten by hand?
 pub async fn read_to_string(path: n::global::FilePath) -> Result<String> {
 	let f = || fs::read(path.into_inner())

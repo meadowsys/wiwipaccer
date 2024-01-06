@@ -15,6 +15,17 @@ pub(crate) enum ErrorInner {
 	#[error("FS error:\n{0}")]
 	FSError(#[source] std::io::Error),
 
+	#[error("provided path for {path_name} is not a dir: {path}")]
+	PathIsNotDir {
+		path: String,
+		path_name: String
+	},
+	#[error("provided path for {path_name} is not a file: {path}")]
+	PathIsNotFile {
+		path: String,
+		path_name: String
+	},
+
 	#[error("error parsing ron:\n{0}")]
 	RonError(#[from] ron::error::Error),
 
