@@ -25,9 +25,9 @@ jobs:
       run: |
         curl -sSf https://piston-meta.mojang.com/mc/game/version_manifest_v2.json > packages/mc-versions-macro/src/version_manifest_v2.json
         if [ -z "$(git status --porcelain=v1 2>/dev/null)" ]; then
-          echo "new=true" >> $GITHUB_OUTPUT
-        else
           echo "new=false" >> $GITHUB_OUTPUT
+        else
+          echo "new=true" >> $GITHUB_OUTPUT
         fi
 
     - name: commit/push
