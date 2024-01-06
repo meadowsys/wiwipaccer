@@ -4,7 +4,7 @@
 pub mod error;
 
 use crate::nom as n;
-use crate::util::{ consts, fs, ron };
+use crate::util::{ fs, path_builder, ron };
 use error::*;
 use ::camino::Utf8PathBuf;
 use ::serde::{ Deserialize, Serialize };
@@ -36,24 +36,25 @@ impl Texture {
 		root_dir: n::global::RootDirPath,
 		texture_id: n::texture::ID
 	) -> Result<Option<Self>> {
-		let mut texture_dir = Utf8PathBuf::from(root_dir.ref_inner());
-		texture_dir.push(consts::TEXTURES_DIR);
-		texture_dir.push(texture_id.ref_inner().as_str());
+		let p = path_builder(&root_dir)
+			.with_texture(&texture_id);
 
-		let texture_dir_meta = fs::metadata(n::global::Path::new(texture_dir.as_str().into()))
-			.await
-			.map_err(Into::into)
-			.map_err(Error)?;
 
 		// silently ignore if its not a dir
 		// maybe in the future we can log this as debug information,
 		// that it saw this but skipped it
-		if !texture_dir_meta.is_dir() { return Ok(None) }
+		let texture_dir = match p.texture_dir().await {
+			Ok(p) => { p }
+			Err(e) if e.is_not_dir_error() => { return Ok(None) }
+			Err(e) => { return Err(e).map_err(Into::into).map_err(Error) }
+		};
 
-		let mut manifest_path = texture_dir;
-		manifest_path.push(consts::TEXTURE_META_FILENAME);
+		let manifest_path = p.texture_manifest()
+			.await
+			.map_err(Into::into)
+			.map_err(Error)?;
 
-		let meta_file = fs::read_to_string(n::global::FilePath::new(manifest_path.as_str().into()))
+		let meta_file = fs::read_to_string(n::global::FilePath::new(manifest_path.into_inner()))
 			.await
 			.map_err(Into::into)
 			.map_err(Error)?;

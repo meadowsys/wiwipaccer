@@ -4,7 +4,7 @@
 pub mod error;
 
 use crate::nom as n;
-use crate::util::{ consts, fs, ron };
+use crate::util::{ fs, path_builder, ron };
 use error::*;
 use ::async_trait::async_trait;
 use ::camino::Utf8PathBuf;
@@ -67,23 +67,20 @@ impl Pack {
 		R: DependencyResolver<Dependency = D>,
 		D: Dependency
 	{
-		let path = n::global::Path::new(dir.clone().into_inner());
-		let dir_metadata = fs::metadata(path)
+		let root_dir = n::global::RootDirPath::new(dir.clone().into_inner());
+		let p = path_builder(&root_dir);
+
+		let root_dir = p.root_dir()
 			.await
 			.map_err(Into::into)
 			.map_err(Error)?;
-		if !dir_metadata.is_dir() { return Err(Error(ErrorInner::PackDirIsNotDir(dir.into_inner()))) }
 
-		let mut meta_path = Utf8PathBuf::from(dir.ref_inner());
-		meta_path.push(consts::PACK_META_FILENAME);
-
-		let meta_metadata = fs::metadata(n::global::Path::new(meta_path.as_str().into()))
+		let meta_path = p.root_manifest()
 			.await
 			.map_err(Into::into)
 			.map_err(Error)?;
-		if !meta_metadata.is_file() { return Err(Error(ErrorInner::MetaFileIsNotFile(meta_path.as_str().into()))) }
 
-		let meta_file = fs::read_to_string(n::global::FilePath::new(meta_path.as_str().into()))
+		let meta_file = fs::read_to_string(n::global::FilePath::new(meta_path.into_inner()))
 			.await
 			.map_err(Into::into)
 			.map_err(Error)?;
@@ -149,12 +146,12 @@ impl Pack {
 		let dependencies = n::pack::Dependencies::new(dependencies);
 
 		let textures = {
-			let mut textures_dir = Utf8PathBuf::from(dir.ref_inner());
-			textures_dir.push(consts::TEXTURES_DIR);
+			let textures_dir = p.textures_path()
+				.await
+				.map_err(Into::into)
+				.map_err(Error)?;
 
-			// TODO: check textures_dir is actually a dir first
-
-			let mut read_dir = fs::read_dir(n::global::DirPath::new(textures_dir.as_str().into()))
+			let mut read_dir = fs::read_dir(n::global::DirPath::new(textures_dir.clone().into_inner()))
 				.await
 				.map_err(Into::into)
 				.map_err(Error)?;

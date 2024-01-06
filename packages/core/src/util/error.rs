@@ -38,3 +38,15 @@ pub(crate) enum ErrorInner {
 		bytes: Vec<u8>
 	}
 }
+
+impl Error {
+	#[inline]
+	pub fn is_not_dir_error(&self) -> bool {
+		matches!(self.0, ErrorInner::PathIsNotDir { .. })
+	}
+
+	#[inline]
+	pub fn is_not_file_error(&self) -> bool {
+		matches!(self.0, ErrorInner::PathIsNotFile { .. })
+	}
+}
