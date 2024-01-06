@@ -5,7 +5,6 @@ use super::super::fs;
 use super::Root;
 use super::WithOption;
 
-const TEXTURES_DIR: &str = "textures";
 const TEXTURE_META_FILENAME: &str = "texture.wiwimeta";
 
 pub struct WithTexture<'r, 't> {
@@ -16,8 +15,7 @@ pub struct WithTexture<'r, 't> {
 impl<'r, 't> WithTexture<'r, 't> {
 	#[inline]
 	pub(super) fn _texture_dir(&self) -> Utf8PathBuf {
-		let mut path = self.prev._root_dir();
-		path.push(TEXTURES_DIR);
+		let mut path = self.prev._textures_path();
 		path.push(self.texture_id.ref_inner());
 
 		path
@@ -41,6 +39,16 @@ impl<'r, 't> WithTexture<'r, 't> {
 	#[inline]
 	pub unsafe fn root_manifest_unchecked(&self) -> n::global::RootManifestPath {
 		self.prev.root_manifest_unchecked()
+	}
+
+	#[inline]
+	pub async fn textures_path(&self) -> Result<n::global::TexturesPath> {
+		self.prev.textures_path().await
+	}
+
+	#[inline]
+	pub unsafe fn textures_path_unchecked(&self) -> n::global::TexturesPath {
+		self.prev.textures_path_unchecked()
 	}
 
 	#[inline]

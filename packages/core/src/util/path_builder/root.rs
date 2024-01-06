@@ -5,6 +5,7 @@ use super::super::fs;
 use super::WithTexture;
 
 const PACK_META_FILENAME: &str = "pack.wiwimeta";
+const TEXTURES_DIR: &str = "textures";
 
 pub struct Root<'r> {
 	pub(super) root_dir: &'r n::global::RootDirPath
@@ -14,6 +15,13 @@ impl<'r> Root<'r> {
 	#[inline]
 	pub(super) fn _root_dir(&self) -> Utf8PathBuf {
 		Utf8PathBuf::from(self.root_dir.clone().into_inner())
+	}
+
+	#[inline]
+	pub(super) fn _textures_path(&self) -> Utf8PathBuf {
+		let mut dir = self._root_dir();
+		dir.push(TEXTURES_DIR);
+		dir
 	}
 
 	#[inline]
@@ -54,6 +62,26 @@ impl<'r> Root<'r> {
 		let mut path = self._root_dir();
 		path.push(PACK_META_FILENAME);
 		n::global::RootManifestPath::new(path.into_string())
+	}
+
+	#[inline]
+	pub async fn textures_path(&self) -> Result<n::global::TexturesPath> {
+		let path = unsafe { self.textures_path_unchecked() };
+		let res = fs::is_dir(n::global::Path::new(path.clone().into_inner())).await?;
+
+		if res {
+			Ok(path)
+		} else {
+			let path = path.into_inner();
+			let path_name = "textures path".into();
+			Err(Error(ErrorInner::PathIsNotFile { path, path_name }))
+		}
+	}
+
+	#[inline]
+	pub unsafe fn textures_path_unchecked(&self) -> n::global::TexturesPath {
+		let path = self._textures_path().into_string();
+		n::global::TexturesPath::new(path)
 	}
 
 	#[inline]

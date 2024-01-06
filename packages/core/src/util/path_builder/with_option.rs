@@ -41,6 +41,16 @@ impl<'r, 't, 'o> WithOption<'r, 't, 'o> {
 	}
 
 	#[inline]
+	pub async fn textures_path(&self) -> Result<n::global::TexturesPath> {
+		self.prev.textures_path().await
+	}
+
+	#[inline]
+	pub unsafe fn textures_path_unchecked(&self) -> n::global::TexturesPath {
+		self.prev.textures_path_unchecked()
+	}
+
+	#[inline]
 	pub async fn texture_dir(&self) -> Result<n::global::TextureDirPath> {
 		self.prev.texture_dir().await
 	}

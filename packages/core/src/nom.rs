@@ -8,6 +8,7 @@ use ::hashbrown::HashMap;
 
 		nominal!(pub RootDirPath, inner: String);
 		nominal!(pub RootManifestPath, inner: String);
+		nominal!(pub TexturesPath, inner: String);
 		nominal!(pub TextureDirPath, inner: String);
 		nominal!(pub TextureManifestPath, inner: String);
 		nominal!(pub OptionDirPath, inner: String);
