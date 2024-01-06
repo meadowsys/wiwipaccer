@@ -12,3 +12,11 @@ pub(crate) enum ErrorInner {
 	#[error(transparent)]
 	UtilError(#[from] crate::util::error::Error)
 }
+
+impl crate::util::IntoError for Error {
+	type Inner = ErrorInner;
+	#[inline]
+	fn with_inner(inner: Self::Inner) -> Self {
+		Error(inner)
+	}
+}

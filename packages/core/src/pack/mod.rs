@@ -4,7 +4,7 @@
 pub mod error;
 
 use crate::nom as n;
-use crate::util::{ fs, path_builder, ron };
+use crate::util::{ fs, into_err, path_builder, ron };
 use error::*;
 use ::async_trait::async_trait;
 use ::camino::Utf8PathBuf;
@@ -72,22 +72,18 @@ impl Pack {
 
 		let root_dir = p.root_dir()
 			.await
-			.map_err(Into::into)
-			.map_err(Error)?;
+			.map_err(into_err)?;
 
 		let meta_path = p.root_manifest()
 			.await
-			.map_err(Into::into)
-			.map_err(Error)?;
+			.map_err(into_err)?;
 
 		let meta_file = fs::read_to_string(n::global::FilePath::new(meta_path.into_inner()))
 			.await
-			.map_err(Into::into)
-			.map_err(Error)?;
+			.map_err(into_err)?;
 
 		let meta_file = ron::from_str(&meta_file)
-			.map_err(Into::into)
-			.map_err(Error)?;
+			.map_err(into_err)?;
 
 		let (name, pack_id, description, version, dependencies) = match meta_file {
 			MetaFile::Version1 { name, pack_id, description, version, dependencies } => {
@@ -98,8 +94,7 @@ impl Pack {
 					.as_deref()
 					.map(semver::Version::parse)
 					.transpose()
-					.map_err(Into::into)
-					.map_err(Error)?;
+					.map_err(into_err)?;
 				let version = n::pack::Version::new(version);
 				let dependencies = dependencies.into_inner().unwrap_or_default();
 
@@ -114,8 +109,7 @@ impl Pack {
 			for (id, req) in dependencies {
 				let id = n::pack::ID::new(id.into_inner());
 				let req = semver::VersionReq::parse(req.ref_inner())
-					.map_err(Into::into)
-					.map_err(Error)?;
+					.map_err(into_err)?;
 
 				let dep = match dep_resolver.dependency(&id, &req).await? {
 					DependencyResult::Found(d) => { d }
@@ -148,20 +142,17 @@ impl Pack {
 		let textures = {
 			let textures_dir = p.textures_path()
 				.await
-				.map_err(Into::into)
-				.map_err(Error)?;
+				.map_err(into_err)?;
 
 			let mut read_dir = fs::read_dir(n::global::DirPath::new(textures_dir.clone().into_inner()))
 				.await
-				.map_err(Into::into)
-				.map_err(Error)?;
+				.map_err(into_err)?;
 			let mut t = HashMap::new();
 
 			while let Some(file) = {
 				read_dir.next()
 					.await
-					.map_err(Into::into)
-					.map_err(Error)?
+					.map_err(into_err)?
 			} {
 				let texture_id = file.file_name();
 				let texture_id = texture_id.to_str()
@@ -172,8 +163,7 @@ impl Pack {
 
 				let texture = texture::Texture::new(root_dir, texture_id.clone())
 					.await
-					.map_err(Into::into)
-					.map_err(Error)?;
+					.map_err(into_err)?;
 				if let Some(texture) = texture {
 					t.insert(texture_id, texture);
 				}

@@ -4,6 +4,7 @@
 pub mod error;
 
 use crate::nom as n;
+use crate::util::into_err;
 use error::*;
 use super::pack;
 use ::async_trait::async_trait;
@@ -75,8 +76,7 @@ impl Workspace {
 
 		let pack = pack::Pack::new(dir, resolver)
 			.await
-			.map_err(Into::into)
-			.map_err(Error)?;
+			.map_err(into_err)?;
 		let id = pack.pack_id().clone();
 
 		self.packs.mut_inner().insert(id.clone(), pack);

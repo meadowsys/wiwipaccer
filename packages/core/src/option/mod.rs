@@ -4,7 +4,7 @@
 pub mod error;
 
 use crate::nom as n;
-use crate::util::{ fs, path_builder, ron };
+use crate::util::{ fs, into_err, path_builder, ron };
 use error::*;
 use ::camino::Utf8PathBuf;
 use ::serde::{ Deserialize, Serialize };
@@ -43,22 +43,19 @@ impl TextureOption {
 		let option_dir = match p.option_dir().await {
 			Ok(p) => { p }
 			Err(e) if e.is_not_dir_error() => { return Ok(None) }
-			Err(e) => { return Err(e).map_err(Into::into).map_err(Error) }
+			Err(e) => { return Err(into_err(e)) }
 		};
 
 		let manifest_path = p.texture_manifest()
 			.await
-			.map_err(Into::into)
-			.map_err(Error)?;
+			.map_err(into_err)?;
 
 		let meta_file = fs::read_to_string(n::global::FilePath::new(manifest_path.into_inner()))
 			.await
-			.map_err(Into::into)
-			.map_err(Error)?;
+			.map_err(into_err)?;
 
 		let meta_file = ron::from_str(&meta_file)
-			.map_err(Into::into)
-			.map_err(Error)?;
+		.map_err(into_err)?;
 
 		let (name, description) = match meta_file {
 			MetaFile::Version1 { name, description } => {

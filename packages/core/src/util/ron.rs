@@ -1,6 +1,7 @@
 //! provides ron serialise/deserialise functions using wiwipaccer's default ron config
 
 use super::error::*;
+use super::into_err;
 use ::ron::extensions::Extensions;
 pub use ::ron::ser::PrettyConfig;
 use ::serde::{ Deserialize, Serialize };
@@ -27,8 +28,7 @@ where
 	ron::Options::default()
 		.with_default_extension(extensions())
 		.from_str(s)
-		.map_err(Into::into)
-		.map_err(Error)
+		.map_err(into_err)
 }
 
 /// Serialize struct to a ron string, enabling some extensions, and not using
@@ -40,8 +40,7 @@ where
 	ron::Options::default()
 		.with_default_extension(extensions())
 		.to_string(value)
-		.map_err(Into::into)
-		.map_err(Error)
+		.map_err(into_err)
 }
 
 /// Serialize struct to a ron string, enabling some extensions, and using default
@@ -74,6 +73,5 @@ where
 	ron::Options::default()
 		.with_default_extension(extensions())
 		.to_string_pretty(value, config)
-		.map_err(Into::into)
-		.map_err(Error)
+		.map_err(into_err)
 }

@@ -50,3 +50,11 @@ impl Error {
 		matches!(self.0, ErrorInner::PathIsNotFile { .. })
 	}
 }
+
+impl crate::util::IntoError for Error {
+	type Inner = ErrorInner;
+	#[inline]
+	fn with_inner(inner: Self::Inner) -> Self {
+		Error(inner)
+	}
+}
