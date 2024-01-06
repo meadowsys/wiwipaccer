@@ -9,6 +9,12 @@ pub struct Error(pub(crate) ErrorInner);
 
 #[derive(Debug, Error)]
 pub(crate) enum ErrorInner {
+	#[error("non UTF-8 paths are not supported")]
+	NonUtf8Path,
+
+	#[error(transparent)]
+	OptionError(#[from] crate::option::error::Error),
+
 	#[error(transparent)]
 	UtilError(#[from] crate::util::error::Error)
 }

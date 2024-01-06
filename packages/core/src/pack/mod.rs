@@ -67,7 +67,7 @@ impl Pack {
 		R: DependencyResolver<Dependency = D>,
 		D: Dependency
 	{
-		let root_dir = n::global::RootDirPath::new(dir.clone().into_inner());
+		let root_dir = n::global::RootDirPath::new(dir.into_inner());
 		let p = path_builder(&root_dir);
 
 		let root_dir = p.root_dir()
@@ -143,11 +143,12 @@ impl Pack {
 			let textures_dir = p.textures_path()
 				.await
 				.map_err(into_err)?;
+			let mut textures_nom = n::pack::Textures::default();
+			let textures = textures_nom.mut_inner();
 
 			let mut read_dir = fs::read_dir(n::global::DirPath::new(textures_dir.clone().into_inner()))
 				.await
 				.map_err(into_err)?;
-			let mut t = HashMap::new();
 
 			while let Some(file) = {
 				read_dir.next()
@@ -157,22 +158,19 @@ impl Pack {
 				let texture_id = file.file_name();
 				let texture_id = texture_id.to_str()
 					.ok_or_else(|| Error(ErrorInner::NonUtf8Path))?;
-
 				let texture_id = n::texture::ID::new(texture_id.into());
-				let root_dir = n::global::RootDirPath::new(dir.clone().into_inner());
 
-				let texture = texture::Texture::new(root_dir, texture_id.clone())
+				let texture = texture::Texture::new(root_dir.clone(), texture_id.clone())
 					.await
 					.map_err(into_err)?;
+
 				if let Some(texture) = texture {
-					t.insert(texture_id, texture);
+					textures.insert(texture_id, texture);
 				}
 			}
 
-			n::pack::Textures::new(t)
+			textures_nom
 		};
-
-		let root_dir = n::global::RootDirPath::new(dir.into_inner());
 
 		Ok(Pack { name, description, pack_id, version, dependencies, root_dir, textures })
 	}

@@ -3,6 +3,7 @@
 
 pub mod error;
 
+use crate::option;
 use crate::nom as n;
 use crate::util::{ fs, into_err ,path_builder, ron };
 use error::*;
@@ -28,7 +29,8 @@ pub struct Texture {
 	/// `format!("{root_dir}/{TEXTURES_DIR}/{texture_id}")`
 	texture_id: n::texture::ID,
 	root_dir: n::global::RootDirPath,
-	default: n::texture::Default
+	default: n::texture::Default,
+	options: n::texture::Options
 }
 
 impl Texture {
@@ -65,6 +67,36 @@ impl Texture {
 			}
 		};
 
-		Ok(Some(Self { name, description, texture_id, root_dir, default }))
+		let options = {
+			let mut options_nom = n::texture::Options::default();
+
+			let mut read_dir = fs::read_dir(n::global::DirPath::new(texture_dir.clone().into_inner()))
+				.await
+				.map_err(into_err)?;
+			let options = options_nom.mut_inner();
+
+			while let Some(file) = {
+				read_dir.next()
+					.await
+					.map_err(into_err)?
+			} {
+				let option_id = file.file_name();
+				let option_id = option_id.to_str()
+					.ok_or_else(|| Error(ErrorInner::NonUtf8Path))?;
+				let option_id = n::option::ID::new(option_id.into());
+
+				let option = option::TextureOption::new(root_dir.clone(), texture_id.clone(), option_id.clone())
+					.await
+					.map_err(into_err)?;
+
+				if let Some(option) = option {
+					options.insert(option_id, option);
+				}
+			}
+
+			options_nom
+		};
+
+		Ok(Some(Self { name, description, texture_id, root_dir, default, options }))
 	}
 }

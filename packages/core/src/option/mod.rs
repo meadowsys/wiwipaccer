@@ -19,6 +19,7 @@ enum MetaFile {
 	}
 }
 
+#[derive(Debug)]
 pub struct TextureOption {
 	name: n::option::Name,
 	description: n::option::Description,
