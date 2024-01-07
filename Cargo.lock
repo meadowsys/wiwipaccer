@@ -176,6 +176,7 @@ dependencies = [
  "chrono",
  "proc-macro2",
  "quote",
+ "ron",
  "serde",
  "serde_json",
 ]
