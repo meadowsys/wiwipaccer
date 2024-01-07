@@ -41,13 +41,9 @@ pub(crate) enum ErrorInner {
 
 impl Error {
 	#[inline]
-	pub fn is_not_dir_error(&self) -> bool {
-		matches!(self.0, ErrorInner::PathIsNotDir { .. })
-	}
-
-	#[inline]
-	pub fn is_not_file_error(&self) -> bool {
-		matches!(self.0, ErrorInner::PathIsNotFile { .. })
+	pub fn is_wrong_type_error(&self) -> bool {
+		use ErrorInner::*;
+		matches!(self.0, PathIsNotDir { .. } | PathIsNotFile { .. })
 	}
 }
 

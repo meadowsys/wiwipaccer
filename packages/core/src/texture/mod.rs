@@ -5,7 +5,7 @@ pub mod error;
 
 use crate::option;
 use crate::nom as n;
-use crate::util::{ fs, into_err ,path_builder, ron };
+use crate::util::{ fs, into_err, path_builder, ron };
 use error::*;
 use ::camino::Utf8PathBuf;
 use ::serde::{ Deserialize, Serialize };
@@ -46,13 +46,13 @@ impl Texture {
 		// that it saw this but skipped it
 		let texture_dir = match p.texture_dir().await {
 			Ok(p) => { p }
-			Err(e) if e.is_not_dir_error() => { return Ok(None) }
+			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
 			Err(e) => { return Err(into_err(e)) }
 		};
 
 		let manifest_path = match p.texture_manifest().await {
 			Ok(p) => { p }
-			Err(e) if e.is_not_file_error() => { return Ok(None) }
+			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
 			Err(e) => { return Err(into_err(e)) }
 		};
 

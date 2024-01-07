@@ -43,22 +43,22 @@ impl TextureOption {
 		// that it saw this but skipped it
 		let option_dir = match p.option_dir().await {
 			Ok(p) => { p }
-			Err(e) if e.is_not_dir_error() => { return Ok(None) }
+			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
 			Err(e) => { return Err(into_err(e)) }
 		};
 
-		let manifest_path = match p.texture_manifest().await {
+		let meta_path = match p.texture_manifest().await {
 			Ok(p) => { p }
-			Err(e) if e.is_not_file_error() => { return Ok(None) }
+			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
 			Err(e) => { return Err(into_err(e)) }
 		};
 
-		let meta_file = fs::read_to_string(n::global::FilePath::new(manifest_path.into_inner()))
+		let meta_file = fs::read_to_string(n::global::FilePath::new(meta_path.into_inner()))
 			.await
 			.map_err(into_err)?;
 
 		let meta_file = ron::from_str(&meta_file)
-		.map_err(into_err)?;
+			.map_err(into_err)?;
 
 		let (name, description) = match meta_file {
 			MetaFile::Version1 { name, description } => {
