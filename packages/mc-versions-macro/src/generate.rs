@@ -17,7 +17,7 @@ struct Latest {
 	snapshot: String
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 struct Version {
 	id: String,
 	r#type: String,
@@ -61,24 +61,27 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 			}
 		})?;
 
-	// validation of release/snapshot (not necessary but ueah)
-	let release = manifest.versions.iter().any(|v| v.id == manifest.latest.release);
-	let snapshot = manifest.versions.iter().any(|v| v.id == manifest.latest.snapshot);
+	let Manifest { latest, versions } = manifest;
 
-	match (release, snapshot) {
-		(true, true) => { Ok(()) }
-		(true, false) => { Err(quote! {
+	let release = versions.iter().find(|v| v.id == latest.release);
+	let snapshot = versions.iter().find(|v| v.id == latest.snapshot);
+
+	let (release, snapshot) = match (release, snapshot) {
+		(Some(release), Some(snapshot)) => {
+			let release = gen_release(release.clone(), &version_validation, &mut 0);
+			let snapshot = gen_release(snapshot.clone(), &version_validation, &mut 0);
+			Ok((release, snapshot))
+		}
+		(Some(_), None) => { Err(quote! {
 			compile_error!("manifest is invalid: latest snapshot does not have corresponding entry in versions");
 		}) }
-		(false, true) => { Err(quote! {
+		(None, Some(_)) => { Err(quote! {
 			compile_error!("manifest is invalid: latest release does not have corresponding entry in versions");
 		}) }
-		(false, false) => { Err(quote! {
+		(None, None) => { Err(quote! {
 			compile_error!("manifest is invalid: both latest release and snapshot do not have corresponding entries in versions");
 		}) }
 	}?;
-
-	let Manifest { latest, versions } = manifest;
 
 	let mut versions = versions.into_iter()
 		.map(|v| {
@@ -89,41 +92,7 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 
 	let mut max_version = 0u8;
 	let versions = versions.into_iter()
-		.map(|(_, Version { id: name, r#type, .. })| {
-			let release_type = match &*r#type {
-				"snapshot" => { quote! { ReleaseType::Snapshot } }
-				"release" => { quote! { ReleaseType::Release } }
-				"old_beta" => { quote! { ReleaseType::OldBeta } }
-				"old_alpha" => { quote! { ReleaseType::OldAlpha } }
-				t => { unreachable!("unexpectedly got \"{t}\" for a release type") }
-			};
-
-			let validated = version_validation.iter().find(|v| v.0 == name);
-			let pack_format = if let Some((_, format)) = validated {
-				match format {
-					PackFormat::Verified(v) => {
-						max_version = u8::max(max_version, *v);
-						quote! { PackFormat::Verified(#v) }
-					}
-					PackFormat::Unverified(v) => {
-						max_version = u8::max(max_version, *v);
-						quote! { PackFormat::Unverified(#v) }
-					}
-					PackFormat::Unknown => { quote! { PackFormat::Unknown } }
-					PackFormat::None => { quote! { PackFormat::None } }
-				}
-			} else {
-				quote! { PackFormat::Unknown }
-			};
-
-			quote! {
-				MCVersion {
-					name: #name,
-					release_type: #release_type,
-					pack_format: #pack_format
-				}
-			}
-		})
+		.map(|(_, v)| gen_release(v, &version_validation, &mut max_version))
 		.collect::<Vec<_>>();
 
 	Ok(quote! {
@@ -148,10 +117,65 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 				None
 			}
 
+			pub const LATEST_RELEASE: MCVersion = #release;
+			pub const LATEST_SNAPSHOT: MCVersion = #snapshot;
+
 			pub const MAX_VERSION: u8 = #max_version;
+
 			pub const MC_VERSIONS: &[MCVersion] = &[
 				#( #versions ),*
 			];
 		}
 	})
+}
+
+fn gen_release(
+	Version { id: name, r#type, .. }: Version,
+	version_validation: &[(String, PackFormat)],
+	max_version: &mut u8
+) -> TokenStream {
+	let release_type = gen_release_type(r#type);
+	let pack_format = gen_pack_format(&name, version_validation, max_version);
+
+	quote! {
+		MCVersion {
+			name: #name,
+			release_type: #release_type,
+			pack_format: #pack_format
+		}
+	}
+}
+
+fn gen_release_type(release_type: String) -> TokenStream {
+	match &*release_type {
+		"snapshot" => { quote! { ReleaseType::Snapshot } }
+		"release" => { quote! { ReleaseType::Release } }
+		"old_beta" => { quote! { ReleaseType::OldBeta } }
+		"old_alpha" => { quote! { ReleaseType::OldAlpha } }
+		t => { unreachable!("unexpectedly got \"{t}\" for a release type") }
+	}
+}
+
+fn gen_pack_format(
+	name: &str,
+	version_validation: &[(String, PackFormat)],
+	max_version: &mut u8
+) -> TokenStream {
+	let validated = version_validation.iter().find(|v| v.0 == name);
+	if let Some((_, format)) = validated {
+		match format {
+			PackFormat::Verified(v) => {
+				*max_version = u8::max(*max_version, *v);
+				quote! { PackFormat::Verified(#v) }
+			}
+			PackFormat::Unverified(v) => {
+				*max_version = u8::max(*max_version, *v);
+				quote! { PackFormat::Unverified(#v) }
+			}
+			PackFormat::Unknown => { quote! { PackFormat::Unknown } }
+			PackFormat::None => { quote! { PackFormat::None } }
+		}
+	} else {
+		quote! { PackFormat::Unknown }
+	}
 }
