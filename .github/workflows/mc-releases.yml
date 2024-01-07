@@ -20,10 +20,16 @@ jobs:
     - name: checkout code
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-    - name: fetch new versions data
+    - name: setup bun
+      uses: oven-sh/setup-bun@9b21598af8d4dfc302e5a30250007de0fda92acc # v1.1.1
+
+    - name: install deps
+      run: bun i
+
+    - name: run fetcher script
       id: new
       run: |
-        curl -sSf https://piston-meta.mojang.com/mc/game/version_manifest_v2.json > packages/mc-versions-macro/src/version_manifest_v2.json
+        bun ./scripts/fetch_manifest.ts
         if [ -z "$(git status --porcelain=v1 2>/dev/null)" ]; then
           echo "new=false" >> $GITHUB_OUTPUT
         else
