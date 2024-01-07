@@ -5,8 +5,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-    - "packages/mc-versions-macro/**"
-    - "!packages/mc-versions-macro/src/version_manifest_v2.json"
+    - "scripts/fetch_manifest.ts"
 
 concurrency:
   group: mc-releases
