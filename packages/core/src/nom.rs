@@ -58,6 +58,7 @@ use ::hashbrown::HashMap;
 		nominal!(pub Name, inner: String);
 		nominal!(pub Description, inner: Option<String>);
 		nominal!(pub ID, inner: String);
+		nominal!(pub Versions, inner: HashMap<version::ID, crate::version::Version>);
 	}
 
 	pub mod option_m {}

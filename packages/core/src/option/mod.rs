@@ -5,6 +5,7 @@ pub mod error;
 
 use crate::nom as n;
 use crate::util::{ fs, into_err, path_builder, ron };
+use crate::version;
 use error::*;
 use ::camino::Utf8PathBuf;
 use ::serde::{ Deserialize, Serialize };
@@ -25,7 +26,8 @@ pub struct TextureOption {
 	description: n::option::Description,
 	texture_id: n::texture::ID,
 	option_id: n::option::ID,
-	root_dir: n::global::RootDirPath
+	root_dir: n::global::RootDirPath,
+	versions: n::option::Versions
 }
 
 impl TextureOption {
@@ -66,6 +68,39 @@ impl TextureOption {
 			}
 		};
 
-		Ok(Some(Self { name, description, texture_id, option_id, root_dir }))
+		let versions = {
+			let mut versions_nom = n::option::Versions::default();
+
+			let mut read_dir = fs::read_dir(n::global::DirPath::new(option_dir.clone().into_inner()))
+				.await
+				.map_err(into_err)?;
+			let versions = versions_nom.mut_inner();
+
+			while let Some(file) = {
+				read_dir.next()
+					.await
+					.map_err(into_err)?
+			} {
+				let version_id = file.file_name();
+				let version_id = version_id.to_str()
+					.ok_or_else(|| Error(ErrorInner::NonUtf8Path))?;
+				let version_id = n::version::ID::new(version_id.into());
+
+				let version = version::Version::new(
+					root_dir.clone(),
+					texture_id.clone(),
+					option_id.clone(),
+					version_id.clone()
+				).await.map_err(into_err)?;
+
+				if let Some(version) = version {
+					versions.insert(version_id, version);
+				}
+			}
+
+			versions_nom
+		};
+
+		Ok(Some(Self { name, description, texture_id, option_id, root_dir, versions }))
 	}
 }

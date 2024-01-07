@@ -9,14 +9,8 @@ pub struct Error(pub(crate) ErrorInner);
 
 #[derive(Debug, Error)]
 pub(crate) enum ErrorInner {
-	#[error("non UTF-8 paths are not supported")]
-	NonUtf8Path,
-
 	#[error(transparent)]
-	UtilError(#[from] crate::util::error::Error),
-
-	#[error(transparent)]
-	VersionError(#[from] crate::version::error::Error)
+	UtilError(#[from] crate::util::error::Error)
 }
 
 impl crate::util::IntoError for Error {
