@@ -30,6 +30,7 @@ let validator = z.object({
 let manifest_url = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 let manifest = await fetch(manifest_url).then(r => r.text());
 let json = validator.parse(JSON.parse(manifest));
+json.versions.sort((a, b) => Date.parse(a.releaseTime) - Date.parse(b.releaseTime));
 
 let formatted = `
 { "latest":
