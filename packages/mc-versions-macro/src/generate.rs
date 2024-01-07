@@ -87,6 +87,7 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 		.collect::<Vec<_>>();
 	versions.sort_unstable_by_key(|v| std::cmp::Reverse(v.0));
 
+	let mut max_version = 0u8;
 	let versions = versions.into_iter()
 		.map(|(_, Version { id: name, r#type, .. })| {
 			let release_type = match &*r#type {
@@ -100,8 +101,14 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 			let validated = version_validation.iter().find(|v| v.0 == name);
 			let pack_format = if let Some((_, format)) = validated {
 				match format {
-					PackFormat::Verified(v) => { quote! { PackFormat::Verified(#v) } }
-					PackFormat::Unverified(v) => { quote! { PackFormat::Unverified(#v) } }
+					PackFormat::Verified(v) => {
+						max_version = u8::max(max_version, *v);
+						quote! { PackFormat::Verified(#v) }
+					}
+					PackFormat::Unverified(v) => {
+						max_version = u8::max(max_version, *v);
+						quote! { PackFormat::Unverified(#v) }
+					}
 					PackFormat::Unknown => { quote! { PackFormat::Unknown } }
 					PackFormat::None => { quote! { PackFormat::None } }
 				}
@@ -141,6 +148,7 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 				None
 			}
 
+			pub const MAX_VERSION: u8 = #max_version;
 			pub const MC_VERSIONS: &[MCVersion] = &[
 				#( #versions ),*
 			];
