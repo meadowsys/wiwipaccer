@@ -2,11 +2,11 @@
 	"name": "wiwipaccer",
 	"private": true,
 	"scripts": {
-		"build": "nuxt build",
-		"dev": "nuxt dev --no-clear",
-		"generate": "nuxt generate",
-		"preview": "nuxt preview",
-		"postinstall": "nuxt prepare"
+		"build": "bun --bun nuxt build",
+		"dev": "bun --bun nuxt dev --no-clear",
+		"generate": "bun --bun nuxt generate",
+		"preview": "bun --bun nuxt preview",
+		"postinstall": "bun --bun nuxt prepare"
 	},
 	"devDependencies": {
 		"nuxt": "^3.9.0",

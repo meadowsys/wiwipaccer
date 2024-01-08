@@ -4,6 +4,11 @@
 	"workspaces": [
 		"packages/app"
 	],
+	"scripts": {
+		"app:build-release": "cd packages/app && bun tauri build",
+		"app:build-debug": "cd packages/app && bun tauri build --debug",
+		"app:dev": "cd packages/app && bun dev"
+	},
 	"devDependencies": {
 		"bun-types": "^1.0.21",
 		"zod": "^3.22.4"
