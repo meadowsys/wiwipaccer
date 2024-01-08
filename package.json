@@ -1,5 +1,9 @@
 {
+	"name": "wiwipaccer-workspace",
 	"private": true,
+	"workspaces": [
+		"packages/app"
+	],
 	"devDependencies": {
 		"bun-types": "^1.0.21",
 		"zod": "^3.22.4"

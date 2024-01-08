@@ -1,0 +1,16 @@
+{
+	"name": "wiwipaccer",
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev --no-clear",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare"
+	},
+	"devDependencies": {
+		"nuxt": "^3.9.0",
+		"vue": "^3.4.5",
+		"vue-router": "^4.2.5"
+	}
+}
