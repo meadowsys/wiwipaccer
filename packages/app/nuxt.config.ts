@@ -2,5 +2,10 @@
 
 export default defineNuxtConfig({
 	telemetry: false,
-	devtools: { enabled: true }
+	devtools: { enabled: true },
+	ssr: false,
+	vite: {
+		server: { strictPort: true }
+	},
+	builder: "vite"
 });
