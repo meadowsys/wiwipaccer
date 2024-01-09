@@ -1,5 +1,6 @@
-use tauri::{ AppHandle, Runtime, Window, WindowBuilder, WindowUrl };
 use crate::error::*;
+use ::std::result::Result as StdResult;
+use ::tauri::{ AppHandle, Manager as _, Runtime, Window, WindowBuilder, WindowUrl };
 
 const START_LABEL: &str = "start";
 const START_URL: &str = "start";
@@ -18,19 +19,19 @@ pub enum OpenOpts {
 /// context, even if block_on is used
 pub async fn open<R: Runtime>(handle: &AppHandle<R>, opts: OpenOpts) -> Window<R> {
 	use OpenOpts::*;
-	match opts {
+	let (label, url) = match opts {
 		Start => {
-			common_builder(handle, START_LABEL.into(), START_URL.into())
-				.await
-				.build_window()
+			(START_LABEL.into(), START_URL.into())
 		}
 		Workspace { path } => {
-			let label = encode_workspace_label(path);
-			common_builder(handle, label, WORKSPACE_URL.into())
-				.await
-				.build_window()
+			(encode_workspace_label(path), WORKSPACE_URL.into())
 		}
-	}
+	};
+
+	common_builder(handle, label, url)
+		.await
+		.map(build_window)
+		.unwrap_or_else(unminimise_and_focus)
 }
 
 #[inline]
@@ -38,13 +39,18 @@ async fn common_builder<R: Runtime>(
 	handle: &AppHandle<R>,
 	label: String,
 	url: String
-) -> WindowBuilder<R> {
-	WindowBuilder::new(handle, label, WindowUrl::App(url.into()))
+) -> StdResult<WindowBuilder<R>, Window<R>> {
+	if let Some(window) = handle.get_window(&label) {
+		return Err(window)
+	}
+
+	let builder = WindowBuilder::new(handle, label, WindowUrl::App(url.into()))
 		.accept_first_mouse(false)
 		.enable_clipboard_access()
-		.title("")
+		.title("");
 		// ?????
 		// .disable_file_drop_handler()
+	Ok(builder)
 }
 
 #[inline]
@@ -63,14 +69,14 @@ pub fn decode_workspace_label(label: String) -> Option<String> {
 	}
 }
 
-pub trait WindowBuilderExt<R: Runtime> {
-	fn build_window(self) -> Window<R>;
+#[inline]
+fn build_window<R: Runtime>(builder: WindowBuilder<R>) -> Window<R> {
+	builder.build()
+		.expect("window failed to build")
 }
 
-impl<R: Runtime> WindowBuilderExt<R> for WindowBuilder<'_, R> {
-	#[inline]
-	fn build_window(self) -> Window<R> {
-		self.build()
-			.expect("window failed to build")
-	}
+fn unminimise_and_focus<R: Runtime>(window: Window<R>) -> Window<R> {
+	window.unminimize().expect("couldn't unminimise window");
+	window.set_focus().expect("couldn't focus window");
+	window
 }
