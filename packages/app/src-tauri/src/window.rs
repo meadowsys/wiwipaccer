@@ -16,21 +16,19 @@ pub enum OpenOpts {
 /// apparently on Windows™, creating a window builder deadlocks when used in a
 /// synchronous command smh, so making this fn async will force an async call
 /// context, even if block_on is used
-pub async fn open<R: Runtime>(handle: &AppHandle<R>, opts: OpenOpts) -> Result<Window<R>> {
+pub async fn open<R: Runtime>(handle: &AppHandle<R>, opts: OpenOpts) -> Window<R> {
 	use OpenOpts::*;
 	match opts {
 		Start => {
-			let window = common_builder(handle, START_LABEL.into(), START_URL.into())
+			common_builder(handle, START_LABEL.into(), START_URL.into())
 				.await
-				.build_window();
-			Ok(window)
+				.build_window()
 		}
 		Workspace { path } => {
 			let label = encode_workspace_label(path);
-			let window = common_builder(handle, label, WORKSPACE_URL.into())
+			common_builder(handle, label, WORKSPACE_URL.into())
 				.await
-				.build_window();
-			Ok(window)
+				.build_window()
 		}
 	}
 }
@@ -65,7 +63,7 @@ pub fn decode_workspace_label(label: String) -> Option<String> {
 	}
 }
 
-trait WindowBuilderExt<R: Runtime> {
+pub trait WindowBuilderExt<R: Runtime> {
 	fn build_window(self) -> Window<R>;
 }
 

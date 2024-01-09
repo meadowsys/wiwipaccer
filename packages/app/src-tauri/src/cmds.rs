@@ -16,7 +16,7 @@ pub async fn open_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()
 			return Err(Error(ErrorInner::NonUtf8Path))
 		};
 
-		let _window = window::open(&handle, OpenOpts::Workspace { path });
+		let _window = window::open(&handle, OpenOpts::Workspace { path }).await;
 
 		Ok(())
 	}).await

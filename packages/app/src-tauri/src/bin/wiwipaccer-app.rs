@@ -3,8 +3,9 @@
 	windows_subsystem = "windows"
 )]
 
-use wiwipaccer_app::*;
-use wiwipaccer_app::window::OpenOpts;
+use ::tauri::async_runtime;
+use ::wiwipaccer_app::*;
+use ::wiwipaccer_app::window::OpenOpts;
 
 fn main() {
 	let rt = rt::get_rt();
@@ -14,7 +15,8 @@ fn main() {
 		.setup(|app| {
 			let handle = app.handle();
 
-			let _window = window::open(handle, OpenOpts::Start);
+			let window_future = window::open(handle, OpenOpts::Start);
+			let _window = async_runtime::block_on(window_future);
 
 			Ok(())
 		})
