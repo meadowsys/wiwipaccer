@@ -3,8 +3,7 @@
 	windows_subsystem = "windows"
 )]
 
-mod cmds;
-mod error;
+use wiwipaccer_app::cmds;
 
 use ::tauri::{ async_runtime, WindowBuilder, WindowUrl };
 
