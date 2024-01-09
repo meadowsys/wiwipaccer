@@ -9,6 +9,8 @@
 		"postinstall": "bun --bun nuxt prepare"
 	},
 	"devDependencies": {
+		"@nuxt/ui": "^2.11.1",
+		"@tauri-apps/cli": "=2.0.0-alpha.20",
 		"nuxt": "^3.9.1",
 		"vue": "^3.4.5",
 		"vue-router": "^4.2.5"
