@@ -4467,7 +4467,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "wiwipaccer-app"
+name = "wiwipaccer"
 version = "0.0.0"
 dependencies = [
  "hex",

@@ -4,8 +4,8 @@
 )]
 
 use ::tauri::async_runtime;
-use ::wiwipaccer_app::*;
-use ::wiwipaccer_app::window::OpenOpts;
+use ::wiwipaccer::*;
+use ::wiwipaccer::window::OpenOpts;
 
 fn main() {
 	let rt = rt::get_rt();
