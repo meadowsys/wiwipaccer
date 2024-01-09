@@ -14,7 +14,6 @@ pub(crate) enum ErrorInner {
 	NonUtf8Path
 }
 
-// because i dunno, tauri arnd its JSON IPC
 pub type ResultStringErr<T> = std::result::Result<T, String>;
 #[inline]
 pub async fn string_error<F, T, R>(f: F) -> ResultStringErr<T>

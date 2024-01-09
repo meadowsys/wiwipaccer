@@ -3,29 +3,18 @@
 	windows_subsystem = "windows"
 )]
 
-use wiwipaccer_app::cmds;
-
-use ::tauri::{ async_runtime, WindowBuilder, WindowUrl };
+use wiwipaccer_app::*;
+use wiwipaccer_app::window::OpenOpts;
 
 fn main() {
-	let rt = tokio::runtime::Builder::new_multi_thread()
-		.enable_all()
-		.worker_threads(2)
-		.build()
-		.expect("error building async runtime");
-	async_runtime::set(rt.handle().clone());
+	let rt = rt::get_rt();
+	::tauri::async_runtime::set(rt.handle().clone());
 
 	tauri::Builder::default()
 		.setup(|app| {
 			let handle = app.handle();
 
-			let start_url = WindowUrl::App("start".into());
-			let _window = WindowBuilder::new(handle, "start", start_url)
-				.accept_first_mouse(false)
-				.enable_clipboard_access()
-				.title("")
-				.build()
-				.expect("failed to create window");
+			let _window = window::open(handle, OpenOpts::Start);
 
 			Ok(())
 		})

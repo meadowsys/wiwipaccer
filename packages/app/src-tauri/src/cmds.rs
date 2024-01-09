@@ -1,7 +1,7 @@
 use crate::error::*;
-use rfd::AsyncFileDialog;
-
-use tauri::{ AppHandle, Runtime, WindowBuilder, WindowUrl };
+use crate::window::{ self, OpenOpts };
+use ::rfd::AsyncFileDialog;
+use ::tauri::{ AppHandle, Runtime };
 
 #[tauri::command]
 pub async fn open_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()> {
@@ -11,19 +11,12 @@ pub async fn open_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()
 			.await;
 		let path = folder.unwrap();
 		let path = if let Some(path) = path.path().to_str() {
-			path
+			path.into()
 		} else {
 			return Err(Error(ErrorInner::NonUtf8Path))
 		};
 
-		let label = hex::encode(path);
-
-		let _window = WindowBuilder::new(&handle, label, WindowUrl::App("opened-workspace".into()))
-			.accept_first_mouse(false)
-			.enable_clipboard_access()
-			.title("")
-			.build()
-			.expect("failed to create window");
+		let _window = window::open(&handle, OpenOpts::Workspace { path });
 
 		Ok(())
 	}).await
