@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<nuxt-welcome />
+		<nuxt-page />
 	</div>
 </template>
 

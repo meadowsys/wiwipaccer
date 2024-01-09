@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
+import { getIconCollections } from "@egoist/tailwindcss-icons";
+
 export default defineNuxtConfig({
 	telemetry: false,
 	devtools: { enabled: true },
@@ -7,5 +9,12 @@ export default defineNuxtConfig({
 	vite: {
 		server: { strictPort: true }
 	},
-	builder: "vite"
+	builder: "vite",
+	modules: [
+		"@nuxt/ui"
+	],
+	ui: {
+		global: true,
+		icons: ["ph"]
+	}
 });

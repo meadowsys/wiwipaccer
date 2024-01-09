@@ -9,7 +9,9 @@
 		"postinstall": "bun --bun nuxt prepare"
 	},
 	"devDependencies": {
+		"@iconify/json": "^2.2.166",
 		"@nuxt/ui": "^2.11.1",
+		"@tauri-apps/api": "=2.0.0-alpha.13",
 		"@tauri-apps/cli": "=2.0.0-alpha.20",
 		"nuxt": "^3.9.1",
 		"vue": "^3.4.5",

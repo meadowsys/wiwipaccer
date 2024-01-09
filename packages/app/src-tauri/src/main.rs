@@ -3,6 +3,9 @@
 	windows_subsystem = "windows"
 )]
 
+mod cmds;
+mod error;
+
 use ::tauri::{ async_runtime, WindowBuilder, WindowUrl };
 
 fn main() {
@@ -27,7 +30,9 @@ fn main() {
 
 			Ok(())
 		})
-		.invoke_handler(tauri::generate_handler![])
+		.invoke_handler(tauri::generate_handler![
+			cmds::open_dialog
+		])
 		.build(tauri::generate_context!())
 		.expect("error running app")
 		.run(|_app, _event| {
