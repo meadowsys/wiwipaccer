@@ -9,6 +9,7 @@
 		"postinstall": "bun --bun nuxt prepare"
 	},
 	"devDependencies": {
+		"@fluent/bundle": "0.18.0",
 		"@iconify/json": "^2.2.166",
 		"@nuxt/ui": "^2.11.1",
 		"@tauri-apps/api": "=2.0.0-alpha.13",
