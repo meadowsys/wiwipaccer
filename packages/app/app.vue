@@ -1,11 +1,14 @@
 <template>
-	<div>
+	<nuxt-layout>
 		<nuxt-page />
-	</div>
+	</nuxt-layout>
 </template>
 
 <style>
 	html { overscroll-behavior: none }
+	html, body, #__nuxt {
+		height: 100%;
+	}
 </style>
 
 <script setup lang="ts">

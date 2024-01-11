@@ -2,6 +2,9 @@ use crate::error::*;
 use ::std::result::Result as StdResult;
 use ::tauri::{ AppHandle, Manager as _, Runtime, Window, WindowBuilder, WindowUrl };
 
+// #[cfg(target_os = "macos")]
+// use ::tauri::TitleBarStyle;
+
 const START_LABEL: &str = "start";
 const START_URL: &str = "start";
 const WORKSPACE_LABEL_PREFIX: &str = "workspace-";
@@ -47,9 +50,16 @@ async fn common_builder<R: Runtime>(
 	let builder = WindowBuilder::new(handle, label, WindowUrl::App(url.into()))
 		.accept_first_mouse(false)
 		.enable_clipboard_access()
-		.title("");
-		// ?????
-		// .disable_file_drop_handler()
+		.hidden_title(true)
+		// .decorations(false)
+		// .transparent(true)
+		.min_inner_size(800., 500.)
+		.title("")
+		.disable_file_drop_handler();
+
+	// #[cfg(target_os = "macos")]
+	// let builder = builder.title_bar_style(TitleBarStyle::Overlay);
+
 	Ok(builder)
 }
 
