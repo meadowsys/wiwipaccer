@@ -12,6 +12,7 @@
 		"@fluent/bundle": "0.18.0",
 		"@iconify/json": "^2.2.166",
 		"@nuxt/ui": "^2.11.1",
+		"@pinia/nuxt": "0.5.1",
 		"@tauri-apps/api": "=2.0.0-alpha.13",
 		"@tauri-apps/cli": "=2.0.0-alpha.20",
 		"nuxt": "^3.9.1",

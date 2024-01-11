@@ -11,7 +11,8 @@ export default defineNuxtConfig({
 	},
 	builder: "vite",
 	modules: [
-		"@nuxt/ui"
+		"@nuxt/ui",
+		"@pinia/nuxt"
 	],
 	ui: {
 		global: true,
