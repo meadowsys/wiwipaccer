@@ -1,10 +1,5 @@
-import type { App, InjectionKey } from "vue";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 import type { FluentVariable } from "@fluent/bundle";
-
-const all_files = [
-	"start"
-];
 
 export type Locale = string;
 export type Path = string;
@@ -21,6 +16,11 @@ export const use_i18n = defineStore("i18n-strings", () => {
 	const loaded_locales = ref<Array<string>>([]);
 
 	async function fetch_all(locale: string) {
+		let all_files = (await (await $fetch("/i18n/files.txt") as Blob).text())
+			.trim()
+			.split("\n")
+			.map(l => l.trim());
+
 		let fetched_optional = await Promise.all(all_files.map(async (path) => {
 			try {
 				return [path, await (await $fetch(`/i18n/${locale}/${path}.ftl`) as Blob).text()] as const
