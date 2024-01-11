@@ -16,7 +16,7 @@ export const use_i18n = defineStore("i18n-strings", () => {
 	const loaded_locales = ref<Array<string>>([]);
 
 	async function fetch_all(locale: string) {
-		let all_files = (await (await $fetch("/i18n/files.txt") as Blob).text())
+		let all_files = (await $fetch("/i18n/files.txt") as string)
 			.trim()
 			.split("\n")
 			.map(l => l.trim());
