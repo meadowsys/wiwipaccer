@@ -9,7 +9,7 @@ fn incrementing_uwu() -> String {
 }
 
 #[inline]
-pub fn get_rt() -> runtime::Runtime {
+pub fn create_rt() -> runtime::Runtime {
 	runtime::Builder::new_multi_thread()
 		.enable_all()
 		.worker_threads(2)

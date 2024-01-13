@@ -10,6 +10,9 @@ pub struct Error(pub(crate) ErrorInner);
 
 #[derive(Debug, Error)]
 pub(crate) enum ErrorInner {
+	#[error(transparent)]
+	SurrealDBError(#[from] surrealdb::Error),
+
 	#[error("non UTF-8 paths are not supported")]
 	NonUtf8Path
 }
@@ -22,4 +25,11 @@ where
 	R: Future<Output = Result<T>>
 {
 	f().await.map_err(|e| e.to_string())
+}
+
+pub(crate) fn into_err<E>(error: E) -> Error
+where
+	E: Into<ErrorInner>
+{
+	Error(error.into())
 }

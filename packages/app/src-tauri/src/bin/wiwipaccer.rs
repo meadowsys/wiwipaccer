@@ -7,8 +7,13 @@ use ::tauri::async_runtime;
 use ::wiwipaccer::*;
 use ::wiwipaccer::window::OpenOpts;
 
+
+#[cfg(not(debug_assertions))]
+#[global_allocator]
+static ALLOC: ::mimalloc::MiMalloc = ::mimalloc::MiMalloc;
+
 fn main() {
-	let rt = rt::get_rt();
+	let rt = rt::create_rt();
 	::tauri::async_runtime::set(rt.handle().clone());
 
 	tauri::Builder::default()

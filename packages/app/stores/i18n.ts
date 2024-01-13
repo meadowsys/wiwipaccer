@@ -42,6 +42,8 @@ export const use_i18n = defineStore("i18n-strings", () => {
 		for (const [path, bundle] of bundles) {
 			locales.value[locale][path] = bundle;
 		}
+
+		loaded_locales.value.push(locale);
 	}
 
 	async function set_locale(locale: string) {
@@ -52,7 +54,7 @@ export const use_i18n = defineStore("i18n-strings", () => {
 		current_locale.value = locale;
 	}
 
-	function t<Opts extends Record<string, FluentVariable>>(key: string, opts?: Opts) {
+	function t(key: string, opts?: Record<string, FluentVariable>) {
 		let splitkey = key.split(".");
 		if (splitkey.length < 2) return key;
 
