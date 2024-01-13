@@ -27,9 +27,9 @@
 			<slot />
 		</div>
 	</div>
-	<div v-else>
+	<template v-else>
 		<slot />
-	</div>
+	</template>
 </template>
 
 <script setup lang="ts">
