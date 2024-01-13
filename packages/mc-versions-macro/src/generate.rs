@@ -100,6 +100,10 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 	Ok(quote! {
 		pub mod mc_versions {
 			pub struct MCVersion {
+				inner: Inner
+			}
+
+			pub struct Inner {
 				pub name: &'static str,
 				pub release_type: ReleaseType,
 				pub pack_format: PackFormat
@@ -117,6 +121,13 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 				Unverified(u8),
 				Unknown,
 				None
+			}
+
+			impl ::std::ops::Deref for MCVersion {
+				type Target = Inner;
+				fn deref(&self) -> &Self::Target {
+					&self.inner
+				}
 			}
 
 			pub const LATEST_RELEASE: MCVersion = #release;
@@ -141,9 +152,11 @@ fn gen_release(
 
 	quote! {
 		MCVersion {
-			name: #name,
-			release_type: #release_type,
-			pack_format: #pack_format
+			inner: Inner {
+				name: #name,
+				release_type: #release_type,
+				pack_format: #pack_format
+			}
 		}
 	}
 }
