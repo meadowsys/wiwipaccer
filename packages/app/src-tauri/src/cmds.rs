@@ -3,8 +3,18 @@ use crate::window::{ self, OpenOpts };
 use ::rfd::AsyncFileDialog;
 use ::tauri::{ AppHandle, Runtime };
 
+// dunno why i did this lol
+#[inline]
+pub fn command_handler<R: Runtime>()
+	-> impl Fn(tauri::ipc::Invoke<R>) -> bool + Send + Sync + 'static
+{
+	tauri::generate_handler![
+		open_workspace_dialog
+	]
+}
+
 #[tauri::command]
-pub async fn open_workspace_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()> {
+async fn open_workspace_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()> {
 	string_error(|| async {
 		let path = AsyncFileDialog::new()
 			.pick_folder()

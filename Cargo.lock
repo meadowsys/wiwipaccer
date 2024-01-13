@@ -6199,6 +6199,7 @@ dependencies = [
 name = "wiwipaccer"
 version = "0.0.0"
 dependencies = [
+ "camino",
  "hex",
  "mimalloc",
  "rfd",

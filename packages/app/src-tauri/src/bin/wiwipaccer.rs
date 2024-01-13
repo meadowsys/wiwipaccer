@@ -3,10 +3,9 @@
 	windows_subsystem = "windows"
 )]
 
-use ::tauri::async_runtime;
+use ::tauri::{ async_runtime, Manager, RunEvent };
 use ::wiwipaccer::*;
 use ::wiwipaccer::window::OpenOpts;
-
 
 #[cfg(not(debug_assertions))]
 #[global_allocator]
@@ -14,23 +13,34 @@ static ALLOC: ::mimalloc::MiMalloc = ::mimalloc::MiMalloc;
 
 fn main() {
 	let rt = rt::create_rt();
-	::tauri::async_runtime::set(rt.handle().clone());
+	async_runtime::set(rt.handle().clone());
 
 	tauri::Builder::default()
 		.setup(|app| {
 			let handle = app.handle();
+
+			let appdb_state = async_runtime::block_on(data::AppDB::new(handle))
+				.expect("failed to create db");
+			app.manage(appdb_state);
 
 			let window_future = window::open(handle, OpenOpts::Start);
 			let _window = async_runtime::block_on(window_future);
 
 			Ok(())
 		})
-		.invoke_handler(tauri::generate_handler![
-			cmds::open_workspace_dialog
-		])
+		.invoke_handler(cmds::command_handler())
 		.build(tauri::generate_context!())
 		.expect("error running app")
-		.run(|_app, _event| {
-			// stuff happens
+		.run(|app, event| {
+			// there will be more handlers implemented later
+			// TODO: remove this clippy lint lol
+			#[allow(clippy::single_match)]
+			match event {
+				RunEvent::Exit => {
+					app.state::<data::AppDB>()
+						.drop_db();
+				}
+				_ => {}
+			}
 		})
 }

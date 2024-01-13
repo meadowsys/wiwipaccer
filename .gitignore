@@ -6,3 +6,5 @@ target
 .nitro
 .cache
 dist
+
+/packages/app/src-tauri/dev-home-dir
