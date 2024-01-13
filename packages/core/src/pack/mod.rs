@@ -61,7 +61,7 @@ pub trait DependencyResolver {
 pub trait Dependency {}
 
 impl Pack {
-	pub async fn new<R, D>(dir: n::global::DirPath, dep_resolver: R)
+	pub(crate) async fn new<R, D>(dir: n::global::DirPath, dep_resolver: R)
 		-> Result<Self>
 	where
 		R: DependencyResolver<Dependency = D>,

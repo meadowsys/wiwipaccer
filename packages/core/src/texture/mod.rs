@@ -34,7 +34,7 @@ pub struct Texture {
 }
 
 impl Texture {
-	pub async fn new(
+	pub(crate) async fn new(
 		root_dir: n::global::RootDirPath,
 		texture_id: n::texture::ID
 	) -> Result<Option<Self>> {

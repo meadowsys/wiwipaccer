@@ -31,7 +31,7 @@ pub struct TextureOption {
 }
 
 impl TextureOption {
-	pub async fn new(
+	pub(crate) async fn new(
 		root_dir: n::global::RootDirPath,
 		texture_id: n::texture::ID,
 		option_id: n::option::ID
