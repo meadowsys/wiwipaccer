@@ -4,7 +4,8 @@
 pub mod error;
 
 use crate::nom as n;
-use error::*;
+use crate::util::ron;
+use self::error::*;
 use super::pack;
 use ::async_trait::async_trait;
 use ::camino::Utf8Path;
@@ -37,8 +38,8 @@ impl Workspace {
 		Self { name, packs, pack_ids }
 	}
 
-	pub async fn from_config(config: WorkspaceConfig) -> Result<Self> {
-		let new = match config {
+	pub async fn from_config(config: &str) -> Result<Self> {
+		let new = match ron::from_str(config)? {
 			WorkspaceConfig::Version1 { name, packs } => {
 				let mut new = Self::new(n::workspace::Name::new(name.into_inner()));
 

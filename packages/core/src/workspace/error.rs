@@ -8,5 +8,8 @@ pub enum Error {
 	AbsolutePathOnly(String),
 
 	#[error(transparent)]
-	PackError(#[from] crate::pack::error::Error)
+	PackError(#[from] crate::pack::error::Error),
+
+	#[error(transparent)]
+	UtilError(#[from] crate::util::error::Error)
 }
