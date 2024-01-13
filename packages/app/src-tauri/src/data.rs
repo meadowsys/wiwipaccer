@@ -4,7 +4,9 @@ use ::surrealdb::Surreal;
 use ::surrealdb::engine::local::{ Db, SpeeDb };
 use ::surrealdb::opt::Config;
 use ::surrealdb::dbs::Capabilities;
-use ::tauri::{ Runtime, AppHandle };
+use ::tauri::{ AppHandle, Runtime };
+#[cfg_attr(debug_assertions, allow(unused_imports))]
+use ::tauri::Manager as _;
 use ::tokio::sync::RwLock;
 
 const APPDATA_ROOTDIR: &str = ".wiwipaccer";
