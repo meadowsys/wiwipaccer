@@ -6,7 +6,7 @@ use ::std::io::Read as _;
 #[inline]
 pub async fn metadata(path: n::global::Path) -> Result<fs::Metadata> {
 	let f = || fs::metadata(path.into_inner())
-		.map_err(|e| Error(ErrorInner::FSError(e)));
+		.map_err(Error::FSError);
 	spawn_blocking(f).await
 }
 
@@ -23,12 +23,12 @@ pub async fn is_file(path: n::global::Path) -> Result<bool> {
 // TODO: can probably be optimised (one less meta call?) if rewritten by hand?
 pub async fn read_to_string(path: n::global::FilePath) -> Result<String> {
 	let f = || fs::read(path.into_inner())
-		.map_err(|e| Error(ErrorInner::FSError(e)));
+		.map_err(Error::FSError);
 	let bytes = spawn_blocking(f).await?;
 
 	match std::str::from_utf8(&bytes) {
 		Ok(_) => { Ok(unsafe { String::from_utf8_unchecked(bytes) }) }
-		Err(source) => { Err(Error(ErrorInner::Utf8Error { source, bytes })) }
+		Err(source) => { Err(Error::Utf8Error { source, bytes }) }
 	}
 }
 
@@ -37,7 +37,7 @@ pub async fn read_dir(path: n::global::DirPath) -> Result<ReadDir> {
 	tokio::fs::read_dir(path.into_inner())
 		.await
 		.map(ReadDir)
-		.map_err(|e| Error(ErrorInner::FSError(e)))
+		.map_err(Error::FSError)
 }
 
 #[inline]
@@ -48,7 +48,7 @@ where
 {
 	match ::tokio::task::spawn_blocking(f).await {
 		Ok(r) => { r }
-		Err(e) => { Err(Error(ErrorInner::BackgroundTaskFailed(e))) }
+		Err(e) => { Err(Error::BackgroundTaskFailed(e)) }
 	}
 }
 
@@ -60,6 +60,6 @@ impl ReadDir {
 	pub async fn next(&mut self) -> Result<Option<tokio::fs::DirEntry>> {
 		self.0.next_entry()
 			.await
-			.map_err(|e| Error(ErrorInner::FSError(e)))
+			.map_err(Error::FSError)
 	}
 }

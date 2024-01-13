@@ -99,7 +99,7 @@ impl<'h> WithVersion<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "version dir".into();
-			Err(Error(ErrorInner::PathIsNotDir { path, path_name }))
+			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 
@@ -119,7 +119,7 @@ impl<'h> WithVersion<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "version manifest".into();
-			Err(Error(ErrorInner::PathIsNotDir { path, path_name }))
+			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 

@@ -1,7 +1,7 @@
 pub mod error;
 
 use crate::nom as n;
-use crate::util::{ fs, into_err, path_builder, ron };
+use crate::util::{ fs, path_builder, ron };
 use error::*;
 use ::serde::{ Deserialize, Serialize };
 
@@ -45,21 +45,19 @@ impl Version {
 		let version_dir = match p.version_dir().await {
 			Ok(p) => { p }
 			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
-			Err(e) => { return Err(into_err(e)) }
+			Err(e) => { return Err(e.into()) }
 		};
 
 		let meta_path = match p.version_manifest().await {
 			Ok(p) => { p }
 			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
-			Err(e) => { return Err(into_err(e)) }
+			Err(e) => { return Err(e.into()) }
 		};
 
 		let meta_file = fs::read_to_string(n::global::FilePath::new(meta_path.into_inner()))
-			.await
-			.map_err(into_err)?;
+			.await?;
 
-		let meta_file = ron::from_str(&meta_file)
-			.map_err(into_err)?;
+		let meta_file = ron::from_str(&meta_file)?;
 
 		let versions = match meta_file {
 			MetaFile::Version1 { versions } => {

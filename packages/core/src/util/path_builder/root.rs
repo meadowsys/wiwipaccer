@@ -34,7 +34,7 @@ impl<'h> Root<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "root dir".into();
-			Err(Error(ErrorInner::PathIsNotDir { path, path_name }))
+			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 
@@ -53,7 +53,7 @@ impl<'h> Root<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "root manifest".into();
-			Err(Error(ErrorInner::PathIsNotFile { path, path_name }))
+			Err(Error::PathIsNotFile { path, path_name })
 		}
 	}
 
@@ -74,7 +74,7 @@ impl<'h> Root<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "textures path".into();
-			Err(Error(ErrorInner::PathIsNotFile { path, path_name }))
+			Err(Error::PathIsNotFile { path, path_name })
 		}
 	}
 

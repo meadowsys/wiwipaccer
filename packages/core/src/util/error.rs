@@ -2,13 +2,8 @@ use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[repr(transparent)]
 #[derive(Debug, Error)]
-#[error(transparent)]
-pub struct Error(pub(crate) ErrorInner);
-
-#[derive(Debug, Error)]
-pub(crate) enum ErrorInner {
+pub enum Error {
 	#[error("background task failed:\n{0}")]
 	BackgroundTaskFailed(#[source] tokio::task::JoinError),
 
@@ -42,15 +37,7 @@ pub(crate) enum ErrorInner {
 impl Error {
 	#[inline]
 	pub fn is_wrong_type_error(&self) -> bool {
-		use ErrorInner::*;
-		matches!(self.0, PathIsNotDir { .. } | PathIsNotFile { .. })
-	}
-}
-
-impl crate::util::IntoError for Error {
-	type Inner = ErrorInner;
-	#[inline]
-	fn with_inner(inner: Self::Inner) -> Self {
-		Error(inner)
+		use Error::*;
+		matches!(self, PathIsNotDir { .. } | PathIsNotFile { .. })
 	}
 }

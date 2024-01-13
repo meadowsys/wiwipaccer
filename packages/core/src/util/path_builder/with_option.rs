@@ -80,7 +80,7 @@ impl<'h> WithOption<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "option dir".into();
-			Err(Error(ErrorInner::PathIsNotDir { path, path_name }))
+			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 
@@ -100,7 +100,7 @@ impl<'h> WithOption<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "option manifest".into();
-			Err(Error(ErrorInner::PathIsNotDir { path, path_name }))
+			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 

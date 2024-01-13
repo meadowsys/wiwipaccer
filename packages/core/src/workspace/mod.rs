@@ -4,7 +4,6 @@
 pub mod error;
 
 use crate::nom as n;
-use crate::util::into_err;
 use error::*;
 use super::pack;
 use ::async_trait::async_trait;
@@ -73,15 +72,14 @@ impl Workspace {
 
 	pub async fn add_pack(&mut self, dir: n::global::DirPath) -> Result<()> {
 		if !Utf8Path::new(dir.ref_inner()).is_absolute() {
-			return Err(Error(ErrorInner::AbsolutePathOnly(dir.into_inner())))
+			return Err(Error::AbsolutePathOnly(dir.into_inner()))
 		}
 
 		let packs = &self.packs;
 		let resolver = DependencyResolver { packs };
 
 		let pack = pack::Pack::new(dir, resolver)
-			.await
-			.map_err(into_err)?;
+			.await?;
 		let id = pack.pack_id().clone();
 
 		self.packs.mut_inner().insert(id.clone(), pack);

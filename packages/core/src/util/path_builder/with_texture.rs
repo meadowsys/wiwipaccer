@@ -61,7 +61,7 @@ impl<'h> WithTexture<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "texture dir".into();
-			Err(Error(ErrorInner::PathIsNotDir { path, path_name }))
+			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 
@@ -81,7 +81,7 @@ impl<'h> WithTexture<'h> {
 		} else {
 			let path = path.into_inner();
 			let path_name = "texture manifest".into();
-			Err(Error(ErrorInner::PathIsNotFile { path, path_name }))
+			Err(Error::PathIsNotFile { path, path_name })
 		}
 	}
 

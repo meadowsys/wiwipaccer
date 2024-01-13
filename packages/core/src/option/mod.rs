@@ -4,7 +4,7 @@
 pub mod error;
 
 use crate::nom as n;
-use crate::util::{ fs, into_err, path_builder, ron };
+use crate::util::{ fs, path_builder, ron };
 use crate::version;
 use error::*;
 use ::camino::Utf8PathBuf;
@@ -46,21 +46,19 @@ impl TextureOption {
 		let option_dir = match p.option_dir().await {
 			Ok(p) => { p }
 			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
-			Err(e) => { return Err(into_err(e)) }
+			Err(e) => { return Err(e.into()) }
 		};
 
 		let meta_path = match p.texture_manifest().await {
 			Ok(p) => { p }
 			Err(e) if e.is_wrong_type_error() => { return Ok(None) }
-			Err(e) => { return Err(into_err(e)) }
+			Err(e) => { return Err(e.into()) }
 		};
 
 		let meta_file = fs::read_to_string(n::global::FilePath::new(meta_path.into_inner()))
-			.await
-			.map_err(into_err)?;
+			.await?;
 
-		let meta_file = ron::from_str(&meta_file)
-			.map_err(into_err)?;
+		let meta_file = ron::from_str(&meta_file)?;
 
 		let (name, description) = match meta_file {
 			MetaFile::Version1 { name, description } => {
@@ -72,18 +70,13 @@ impl TextureOption {
 			let mut versions_nom = n::option::Versions::default();
 
 			let mut read_dir = fs::read_dir(n::global::DirPath::new(option_dir.clone().into_inner()))
-				.await
-				.map_err(into_err)?;
+				.await?;
 			let versions = versions_nom.mut_inner();
 
-			while let Some(file) = {
-				read_dir.next()
-					.await
-					.map_err(into_err)?
-			} {
+			while let Some(file) = read_dir.next().await? {
 				let version_id = file.file_name();
 				let version_id = version_id.to_str()
-					.ok_or_else(|| Error(ErrorInner::NonUtf8Path))?;
+					.ok_or_else(|| Error::NonUtf8Path)?;
 				let version_id = n::version::ID::new(version_id.into());
 
 				let version = version::Version::new(
@@ -91,7 +84,7 @@ impl TextureOption {
 					texture_id.clone(),
 					option_id.clone(),
 					version_id.clone()
-				).await.map_err(into_err)?;
+				).await?;
 
 				if let Some(version) = version {
 					versions.insert(version_id, version);
