@@ -4,6 +4,6 @@
 		<br>
 		soon&trade;
 		<br>
-		<u-button @click="invoke_open_dialog">open project</u-button>
+		<u-button @click="invoke_open_workspace_dialog">open workspace</u-button>
 	</div>
 </template>

@@ -4,16 +4,16 @@ use ::rfd::AsyncFileDialog;
 use ::tauri::{ AppHandle, Runtime };
 
 #[tauri::command]
-pub async fn open_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()> {
+pub async fn open_workspace_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()> {
 	string_error(|| async {
-		let folder = AsyncFileDialog::new()
+		let path = AsyncFileDialog::new()
 			.pick_folder()
-			.await;
-		let path = folder.unwrap();
+			.await
+			.expect("failed to pick workspace folder");
 		let path = if let Some(path) = path.path().to_str() {
 			path.into()
 		} else {
-			return Err(Error(ErrorInner::NonUtf8Path))
+			return Err(Error::NonUtf8Path)
 		};
 
 		let _window = window::open(&handle, OpenOpts::Workspace { path }).await;

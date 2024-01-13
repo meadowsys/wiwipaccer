@@ -3,13 +3,8 @@ use ::thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[repr(transparent)]
 #[derive(Debug, Error)]
-#[error(transparent)]
-pub struct Error(pub(crate) ErrorInner);
-
-#[derive(Debug, Error)]
-pub(crate) enum ErrorInner {
+pub enum Error {
 	#[error(transparent)]
 	SurrealDBError(#[from] surrealdb::Error),
 
@@ -25,11 +20,4 @@ where
 	R: Future<Output = Result<T>>
 {
 	f().await.map_err(|e| e.to_string())
-}
-
-pub(crate) fn into_err<E>(error: E) -> Error
-where
-	E: Into<ErrorInner>
-{
-	Error(error.into())
 }

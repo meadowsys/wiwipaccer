@@ -26,7 +26,7 @@ fn main() {
 			Ok(())
 		})
 		.invoke_handler(tauri::generate_handler![
-			cmds::open_dialog
+			cmds::open_workspace_dialog
 		])
 		.build(tauri::generate_context!())
 		.expect("error running app")
