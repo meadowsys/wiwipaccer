@@ -9,6 +9,9 @@ pub struct Error(pub(crate) ErrorInner);
 
 #[derive(Debug, Error)]
 pub(crate) enum ErrorInner {
+	#[error("only absolute paths are allowed, provided path is relative:\n{0}")]
+	AbsolutePathOnly(String),
+
 	#[error(transparent)]
 	PackError(#[from] crate::pack::error::Error)
 }
