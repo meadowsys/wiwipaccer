@@ -1,5 +1,8 @@
+pub mod locale;
+
 use crate::error::*;
 use ::camino::Utf8PathBuf;
+use ::std::ops::Deref;
 use ::surrealdb::Surreal;
 use ::surrealdb::engine::local::{ Db, SpeeDb };
 use ::surrealdb::opt::Config;
@@ -7,10 +10,19 @@ use ::surrealdb::dbs::Capabilities;
 use ::tauri::{ AppHandle, Runtime };
 #[cfg_attr(debug_assertions, allow(unused_imports))]
 use ::tauri::Manager as _;
+use ::tauri::State;
 use ::tokio::sync::RwLock;
+use ::tokio::sync::RwLockReadGuard;
 
 const APPDATA_ROOTDIR: &str = ".wiwipaccer";
 const APPDATA_DB_PATH: &str = "db";
+
+const SETTINGS_TABLE: &str = "settings";
+
+const NS: &str = "youare";
+const DB: &str = "cute";
+
+pub type DataTauriState<'h> = State<'h, AppDB>;
 
 pub struct AppDB {
 	inner: RwLock<Option<Inner>>
@@ -50,9 +62,14 @@ impl AppDB {
 			.capabilities(capabilities);
 		let surreal = Surreal::new::<SpeeDb>((appdata_path.as_str(), cfg))
 			.await?;
+		surreal.use_ns(NS).use_db(DB).await?;
 
 		let inner = RwLock::new(Some(Inner { surreal }));
 		Ok(Self { inner })
+	}
+
+	async fn surreal(&self) -> SurrealLock {
+		SurrealLock::new(self.inner.read().await)
 	}
 
 	/// takes inner out, and drops it. DO NOT use self after calling this method,
@@ -66,5 +83,24 @@ impl AppDB {
 impl Drop for Inner {
 	fn drop(&mut self) {
 		println!("dropping db");
+	}
+}
+
+#[repr(transparent)]
+struct SurrealLock<'h> {
+	lock: RwLockReadGuard<'h, Option<Inner>>
+}
+
+impl<'h> SurrealLock<'h> {
+	fn new(lock: RwLockReadGuard<'h, Option<Inner>>) -> Self {
+		Self { lock }
+	}
+}
+
+impl<'h> Deref for SurrealLock<'h> {
+	type Target = Surreal<Db>;
+	#[inline]
+	fn deref(&self) -> &Self::Target {
+		&self.lock.as_ref().unwrap().surreal
 	}
 }

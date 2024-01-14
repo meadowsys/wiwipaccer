@@ -6203,6 +6203,7 @@ dependencies = [
  "hex",
  "mimalloc",
  "rfd",
+ "serde",
  "serde_json",
  "surrealdb",
  "tauri",

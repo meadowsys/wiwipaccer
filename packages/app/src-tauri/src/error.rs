@@ -14,10 +14,9 @@ pub enum Error {
 
 pub type ResultStringErr<T> = std::result::Result<T, String>;
 #[inline]
-pub async fn string_error<F, T, R>(f: F) -> ResultStringErr<T>
+pub async fn string_error<F, T>(future: F) -> ResultStringErr<T>
 where
-	F: FnOnce() -> R,
-	R: Future<Output = Result<T>>
+	F: Future<Output = Result<T>>
 {
-	f().await.map_err(|e| e.to_string())
+	future.await.map_err(|e| e.to_string())
 }
