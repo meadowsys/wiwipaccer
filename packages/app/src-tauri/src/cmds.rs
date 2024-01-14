@@ -18,12 +18,21 @@ async fn open_workspace_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultString
 	string_error(|| async {
 		let path = AsyncFileDialog::new()
 			.pick_folder()
-			.await
-			.expect("failed to pick workspace folder");
-		let path = if let Some(path) = path.path().to_str() {
-			path.into()
-		} else {
-			return Err(Error::NonUtf8Path)
+			.await;
+
+		let path = match path {
+			Some(p) => { p }
+			None => {
+				// cancelled?
+				return Ok(())
+			}
+		};
+
+		let path = path.path().to_str().map(str::to_string);
+
+		let path = match path {
+			Some(p) => { p }
+			None => { return Err(Error::NonUtf8Path) }
 		};
 
 		let _window = window::open(&handle, OpenOpts::Workspace { path }).await;
