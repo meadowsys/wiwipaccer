@@ -1,7 +1,11 @@
 <template>
-	<nuxt-layout>
-		<nuxt-page />
-	</nuxt-layout>
+	<div class="h-full p-4">
+		<div class="h-full overflow-scroll p-2">
+			<nuxt-layout>
+				<nuxt-page />
+			</nuxt-layout>
+		</div>
+	</div>
 </template>
 
 <style>
