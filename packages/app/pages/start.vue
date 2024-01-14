@@ -8,6 +8,12 @@
 		<br><br>
 		<u-button @click="dutch">dutch</u-button>
 		<u-button @click="english">english</u-button>
+		<br><br>
+
+		<u-input v-model="langs" placeholder="cheese"/>
+		<u-button @click="write">write</u-button>
+		<u-button @click="read">read</u-button>
+		<div>{{ result }}</div>
 	</div>
 </template>
 
@@ -21,5 +27,19 @@
 	}
 	function english() {
 		i18n.set_locales(["en"]);
+	}
+
+	const langs = ref("");
+	const result = ref("");
+
+	function write() {
+		const l = langs.value.split(" ");
+		invoke_write_locale_setting(l)
+			.then(() => result.value = `written: ${l.join(", ")}`);
+	}
+
+	function read() {
+		invoke_read_locale_setting()
+			.then(l => result.value = `read: ${l.join(", ")}`)
 	}
 </script>
