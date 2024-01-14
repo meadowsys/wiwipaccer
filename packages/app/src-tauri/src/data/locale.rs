@@ -10,6 +10,7 @@ pub struct LocaleSetting {
 const LOCALE_RECORD_ID: (&str, &str) = (super::SETTINGS_TABLE, "app-locale");
 
 impl LocaleSetting {
+	#[inline]
 	pub fn new(locales: Vec<String>) -> Self {
 		Self { locales }
 	}
@@ -36,12 +37,14 @@ impl LocaleSetting {
 		Ok(locale.unwrap())
 	}
 
+	#[inline]
 	pub fn into_inner(self) -> Vec<String> {
 		self.locales
 	}
 }
 
 impl Default for LocaleSetting {
+	#[inline]
 	fn default() -> Self {
 		let locales = vec!["en".into()];
 		Self { locales }
