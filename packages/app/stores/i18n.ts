@@ -1,6 +1,8 @@
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 import type { FluentVariable } from "@fluent/bundle";
 
+const en = "en";
+
 export type LocaleMap = {
 	locale: string;
 	map: Record<string, FluentBundle>;
@@ -10,6 +12,8 @@ export const use_i18n = defineStore("i18n-strings", () => {
 	const loaded_locales = ref<Array<LocaleMap>>([]);
 
 	async function set_locales(locales: Array<string>) {
+		if (!locales.includes(en)) locales = [...locales, en];
+
 		const all_files = (await $fetch("/i18n/files.txt") as string)
 			.trim()
 			.split("\n")
