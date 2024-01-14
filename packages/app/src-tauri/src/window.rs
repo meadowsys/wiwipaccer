@@ -36,7 +36,6 @@ pub async fn open<R: Runtime>(handle: &AppHandle<R>, opts: OpenOpts) -> Window<R
 		.unwrap_or_else(unminimise_and_focus)
 }
 
-#[inline]
 async fn common_builder<R: Runtime>(
 	handle: &AppHandle<R>,
 	label: String,
@@ -84,6 +83,7 @@ fn build_window<R: Runtime>(builder: WindowBuilder<R>) -> Window<R> {
 		.expect("window failed to build")
 }
 
+#[inline]
 fn unminimise_and_focus<R: Runtime>(window: Window<R>) -> Window<R> {
 	window.unminimize().expect("couldn't unminimise window");
 	window.set_focus().expect("couldn't focus window");
