@@ -98,47 +98,14 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 		.collect::<Vec<_>>();
 
 	Ok(quote! {
-		pub mod mc_versions {
-			pub struct MCVersion {
-				inner: Inner
-			}
+		pub const LATEST_RELEASE: MCVersion = #release;
+		pub const LATEST_SNAPSHOT: MCVersion = #snapshot;
 
-			pub struct Inner {
-				pub name: &'static str,
-				pub release_type: ReleaseType,
-				pub pack_format: PackFormat
-			}
+		pub const MAX_VERSION: u8 = #max_version;
 
-			pub enum ReleaseType {
-				Snapshot,
-				Release,
-				OldBeta,
-				OldAlpha
-			}
-
-			pub enum PackFormat {
-				Verified(u8),
-				Unverified(u8),
-				Unknown,
-				None
-			}
-
-			impl ::std::ops::Deref for MCVersion {
-				type Target = Inner;
-				fn deref(&self) -> &Self::Target {
-					&self.inner
-				}
-			}
-
-			pub const LATEST_RELEASE: MCVersion = #release;
-			pub const LATEST_SNAPSHOT: MCVersion = #snapshot;
-
-			pub const MAX_VERSION: u8 = #max_version;
-
-			pub const MC_VERSIONS: &[MCVersion] = &[
-				#( #versions ),*
-			];
-		}
+		pub const MC_VERSIONS: &[MCVersion] = &[
+			#( #versions ),*
+		];
 	})
 }
 
