@@ -3,7 +3,7 @@ use crate::window::{ self, OpenOpts };
 use crate::data::DataTauriState;
 use crate::data::locale::LocaleSetting;
 use ::rfd::AsyncFileDialog;
-use ::tauri::{ AppHandle, Runtime };
+use ::tauri::{ AppHandle, Manager as _, Runtime };
 
 // dunno why i did this lol
 #[inline]
@@ -47,13 +47,22 @@ async fn open_workspace_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultString
 
 #[tauri::command]
 async fn read_locale_setting(db: DataTauriState<'_>) -> ResultStringErr<Vec<String>> {
-	string_error(LocaleSetting::read_or_default(&db))
-		.await
-		.map(LocaleSetting::into_inner)
+	string_error(async {
+		LocaleSetting::read_or_default(&db)
+			.await
+			.map(LocaleSetting::into_inner)
+	}).await
 }
 
 #[tauri::command]
-async fn write_locale_setting(locales: Vec<String>, db: DataTauriState<'_>) -> ResultStringErr<()> {
-	string_error(LocaleSetting::new(locales).write(&db)).await?;
-	Ok(())
+async fn write_locale_setting<R: Runtime>(
+	handle: AppHandle<R>,
+	locales: Vec<String>,
+	db: DataTauriState<'_>
+) -> ResultStringErr<()> {
+	string_error(async {
+		let locales = LocaleSetting::new(locales).write(&db).await?;
+		handle.emit("refresh-locales", locales.into_inner())?;
+		Ok(())
+	}).await
 }

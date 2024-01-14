@@ -12,5 +12,13 @@
 </style>
 
 <script setup lang="ts">
-	use_i18n().set_locales(["en"]);
+	const i18n = use_i18n();
+	const locales = await invoke_read_locale_setting();
+	i18n.set_locales(locales);
+
+	const unlisten_refresh_locales = await listen_refresh_locales(
+		locales => i18n.set_locales(locales.payload)
+	);
+
+	onUnmounted(unlisten_refresh_locales);
 </script>

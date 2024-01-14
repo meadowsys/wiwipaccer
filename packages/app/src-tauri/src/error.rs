@@ -5,11 +5,14 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Error)]
 pub enum Error {
-	#[error(transparent)]
-	SurrealDBError(#[from] surrealdb::Error),
-
 	#[error("non UTF-8 paths are not supported")]
-	NonUtf8Path
+	NonUtf8Path,
+
+	#[error(transparent)]
+	SurrealDBError(#[from] ::surrealdb::Error),
+
+	#[error(transparent)]
+	TauriError(#[from] ::tauri::Error)
 }
 
 pub type ResultStringErr<T> = std::result::Result<T, String>;
