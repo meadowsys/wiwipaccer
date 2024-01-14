@@ -1,83 +1,77 @@
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 import type { FluentVariable } from "@fluent/bundle";
 
-export type Locale = string;
-export type Path = string;
-export type I18nStore = {
-	[k: Locale]: {
-		[k: Path]: FluentBundle
-	}
+export type LocaleMap = {
+	locale: string;
+	map: Record<string, FluentBundle>;
 };
 
 export const use_i18n = defineStore("i18n-strings", () => {
-	const current_locale = ref("en");
+	const loaded_locales = ref<Array<LocaleMap>>([]);
 
-	const locales = ref<I18nStore>({});
-	const loaded_locales = ref<Array<string>>([]);
-
-	async function fetch_all(locale: string) {
-		let all_files = (await $fetch("/i18n/files.txt") as string)
+	async function set_locales(locales: Array<string>) {
+		const all_files = (await $fetch("/i18n/files.txt") as string)
 			.trim()
 			.split("\n")
 			.map(l => l.trim());
 
-		let fetched_optional = await Promise.all(all_files.map(async (path) => {
-			try {
-				return [path, await (await $fetch(`/i18n/${locale}/${path}.ftl`) as Blob).text()] as const
-			} catch (e) {
-				// probably doesn't exist
+		const locale_bundles = await Promise.all(locales.map(async locale => {
+			const loaded_files = (await Promise.all(all_files.map(async file => {
+				try {
+					const resource_blob = await $fetch(`/i18n/${locale}/${file}.ftl`) as Blob;
+					const resource_str = await resource_blob.text();
+					return [{ file, resource_str }];
+				} catch (_) {
+					// probably doesn't exist
+					return []
+				}
+			}))).flat();
+
+			const bundles = {
+				locale,
+				map: {}
+			} as LocaleMap;
+
+			for (const { file, resource_str } of loaded_files) {
+				const bundle = new FluentBundle(locale);
+				const resource = new FluentResource(resource_str);
+				// TODO: do something with errors
+				const errors = bundle.addResource(resource);
+				bundles.map[file] = bundle;
 			}
+
+			return bundles;
 		}));
 
-		let bundles = fetched_optional
-			.filter((l): l is [string, string] => Boolean(l))
-			.map(([path, res_str]) => {
-				let resource = new FluentResource(res_str);
-				let bundle = new FluentBundle(locale);
-				bundle.addResource(resource);
-				return [path, bundle] as const;
-			});
-
-		if (!locales.value[locale]) locales.value[locale] = {};
-		for (const [path, bundle] of bundles) {
-			locales.value[locale][path] = bundle;
-		}
-
-		loaded_locales.value.push(locale);
+		loaded_locales.value = locale_bundles;
 	}
 
-	async function set_locale(locale: string) {
-		if (!loaded_locales.value.includes(locale)) {
-			await fetch_all(locale);
-		}
+	function t(key: string, opts?: Record<string, FluentVariable>): ComputedRef<string> {
+		const splitkey = key.split(".");
+		if (splitkey.length < 2) return computed(() => key);
 
-		current_locale.value = locale;
-	}
-
-	function t(key: string, opts?: Record<string, FluentVariable>) {
-		let splitkey = key.split(".");
-		if (splitkey.length < 2) return key;
-
-		let k = splitkey.pop()!;
-		let p = splitkey.join("/");
+		const k = splitkey.pop()!;
+		const p = splitkey.join("/");
 
 		return computed(() => {
-			let bundle = locales.value[current_locale.value]?.[p];
-			let message = bundle?.getMessage(k);
+			for (const locale of loaded_locales.value) {
+				const bundle = locale.map[p];
+				const message = bundle?.getMessage(k);
 
-			if (message && message.value) return bundle.formatPattern(message.value, opts);
-			else return key;
+				if (message && message.value) {
+					return bundle.formatPattern(message.value, opts);
+				}
+			}
+
+			return key;
 		});
 	}
 
 	return {
-		current_locale: readonly(current_locale),
-		loaded_locales: readonly(loaded_locales),
-		force_refresh: fetch_all,
-		force_refresh_current: () => fetch_all(current_locale.value),
-		set_locale,
+		loaded_locales: computed(() => loaded_locales.value.map(l => l.locale)),
+		set_locales,
 		t
 	};
 });
 
-export const useT = () => use_i18n().t;
+export const use_t = () => use_i18n().t;

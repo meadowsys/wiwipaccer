@@ -1,0 +1,2 @@
+hallo = dutch
+soon = straks™
