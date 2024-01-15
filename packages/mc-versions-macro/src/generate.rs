@@ -65,13 +65,33 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 
 	let Manifest { latest, versions } = manifest;
 
-	let release = versions.iter().find(|v| v.id == latest.release);
-	let snapshot = versions.iter().find(|v| v.id == latest.snapshot);
+	let mut versions = versions.into_iter()
+		.map(|v| {
+			(::chrono::DateTime::parse_from_rfc3339(&v.release_time).unwrap(), v)
+		})
+		.collect::<Vec<_>>();
+
+	versions.sort_by_key(|v| v.0);
+	let mut versions = versions.into_iter()
+		.zip(1..)
+		.map(|((d, v), n)| (d, v, n))
+		.collect::<Vec<_>>();
+	versions.reverse();
+
+	let mut max_version = 0u8;
+	let versions = versions.into_iter()
+		.map(|(_, v, n)| (gen_release(&v, n, &version_validation, &mut max_version), v))
+		.collect::<Vec<_>>();
+
+	let release = versions.iter()
+		.find(|(_, v)| v.id == latest.release)
+		.map(|(ts, _)| ts);
+	let snapshot = versions.iter()
+		.find(|(_, v)| v.id == latest.snapshot)
+		.map(|(ts, _)| ts);
 
 	let (release, snapshot) = match (release, snapshot) {
 		(Some(release), Some(snapshot)) => {
-			let release = gen_release(release.clone(), &version_validation, &mut 0);
-			let snapshot = gen_release(snapshot.clone(), &version_validation, &mut 0);
 			Ok((release, snapshot))
 		}
 		(Some(_), None) => { Err(quote! {
@@ -85,17 +105,7 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 		}) }
 	}?;
 
-	let mut versions = versions.into_iter()
-		.map(|v| {
-			(::chrono::DateTime::parse_from_rfc3339(&v.release_time).unwrap(), v)
-		})
-		.collect::<Vec<_>>();
-	versions.sort_unstable_by_key(|v| std::cmp::Reverse(v.0));
-
-	let mut max_version = 0u8;
-	let versions = versions.into_iter()
-		.map(|(_, v)| gen_release(v, &version_validation, &mut max_version))
-		.collect::<Vec<_>>();
+	let versions = versions.iter().map(|(ts, _)| ts);
 
 	Ok(quote! {
 		pub const LATEST_RELEASE: MCVersion = #release;
@@ -110,26 +120,28 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 }
 
 fn gen_release(
-	Version { id: name, r#type, .. }: Version,
+	Version { id: name, r#type, .. }: &Version,
+	n: usize,
 	version_validation: &[(String, PackFormat)],
 	max_version: &mut u8
 ) -> TokenStream {
 	let release_type = gen_release_type(r#type);
-	let pack_format = gen_pack_format(&name, version_validation, max_version);
+	let pack_format = gen_pack_format(name, version_validation, max_version);
 
 	quote! {
 		MCVersion {
 			inner: Inner {
 				name: #name,
 				release_type: #release_type,
-				pack_format: #pack_format
+				pack_format: #pack_format,
+				n: #n
 			}
 		}
 	}
 }
 
-fn gen_release_type(release_type: String) -> TokenStream {
-	match &*release_type {
+fn gen_release_type(release_type: &str) -> TokenStream {
+	match release_type {
 		"snapshot" => { quote! { ReleaseType::Snapshot } }
 		"release" => { quote! { ReleaseType::Release } }
 		"old_beta" => { quote! { ReleaseType::OldBeta } }
