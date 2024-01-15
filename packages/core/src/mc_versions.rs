@@ -5,7 +5,13 @@ pub struct MCVersion {
 pub struct Inner {
 	pub name: &'static str,
 	pub release_type: ReleaseType,
-	pub pack_format: PackFormat
+	pub pack_format: PackFormat,
+
+	/// release ordering
+	///
+	/// eg. this release is the n'th release ever released\
+	/// eg. "1.18.2 is the 12th release" (do not rely on this its just an example)
+	pub n: usize
 }
 
 pub enum ReleaseType {
