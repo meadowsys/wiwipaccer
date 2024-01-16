@@ -112,7 +112,7 @@ impl<'h> pack::DependencyResolver for DependencyResolver<'h> {
 			None => { return Ok(pack::DependencyResult::NotFound) }
 		};
 
-		if let Some(version) = pack.optional_version().ref_inner() {
+		if let Some(version) = pack.version().ref_inner() {
 			if !version_req.matches(version) {
 				return Ok(pack::DependencyResult::VersionNotSatisfied(version.clone()))
 			}

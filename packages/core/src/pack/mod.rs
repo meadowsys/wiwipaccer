@@ -165,47 +165,12 @@ impl Pack {
 
 impl Pack {
 	#[inline]
-	pub fn name(&self) -> &n::pack::Name {
-		&self.name
-	}
-
-	#[inline]
-	pub fn root_dir(&self) -> &n::global::RootDirPath {
-		&self.root_dir
-	}
-
-	#[inline]
 	pub fn pack_id(&self) -> &n::pack::ID {
 		&self.pack_id
 	}
 
 	#[inline]
-	pub fn optional_description(&self) -> &n::pack::Description {
-		&self.description
-	}
-
-	#[inline]
-	pub fn unwrap_description(&self) -> n::pack::DescriptionUnwrapped {
-		let description = self.description
-			.clone()
-			.into_inner()
-			.unwrap_or_else(|| "no description provided".into());
-
-		n::pack::DescriptionUnwrapped::new(description)
-	}
-
-	#[inline]
-	pub fn optional_version(&self) -> &n::pack::Version {
+	pub fn version(&self) -> &n::pack::Version {
 		&self.version
-	}
-
-	#[inline]
-	pub fn dependencies(&self) -> &n::pack::Dependencies {
-		&self.dependencies
-	}
-
-	#[inline]
-	pub fn has_dependencies(&self) -> bool {
-		!self.dependencies.ref_inner().is_empty()
 	}
 }
