@@ -99,8 +99,12 @@ impl<'h> SurrealLock<'h> {
 
 impl<'h> Deref for SurrealLock<'h> {
 	type Target = Surreal<Db>;
+
 	#[inline]
 	fn deref(&self) -> &Self::Target {
-		&self.lock.as_ref().unwrap().surreal
+		match *self.lock {
+			Some(ref inner) => { &inner.surreal }
+			None => { unreachable!() }
+		}
 	}
 }
