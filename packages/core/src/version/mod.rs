@@ -1,21 +1,23 @@
 pub mod error;
 
+use crate::mc_versions::{ MC_VERSIONS, MCVersion };
 use crate::nom as n;
 use crate::util::{ fs, path_builder, ron };
 use error::*;
 use ::serde::{ Deserialize, Serialize };
+use ::std::mem;
 
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "meta_version")]
 enum MetaFile {
 	#[serde(rename = "1")]
 	Version1 {
-		versions: Vec<PackVersionSpecifier>
+		versions: Vec<PackVersionSpec>
 	}
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-enum PackVersionSpecifier {
+enum PackVersionSpec {
 	PackVersion(u8),
 	MCVersion(String),
 	MCVersionRange(String, String)
@@ -23,7 +25,7 @@ enum PackVersionSpecifier {
 
 #[derive(Debug)]
 pub struct Version {
-	versions: Vec<PackVersionSpecifier>,
+	versions: Vec<PackVersionSpec>,
 	texture_id: n::texture::ID,
 	option_id: n::option::ID,
 	version_id: n::version::ID,
@@ -66,5 +68,43 @@ impl Version {
 		};
 
 		Ok(Some(Self { versions, texture_id, option_id, version_id, root_dir }))
+	}
+}
+
+impl PackVersionSpec {
+	pub fn satisfies(&self, mc_version: &'static MCVersion) -> Result<bool> {
+		match self {
+			PackVersionSpec::PackVersion(s) => {
+				let res = mc_version.pack_format
+					.get_version()
+					.map(|v| v == *s)
+					.unwrap_or_else(|| false);
+				Ok(res)
+			}
+
+			PackVersionSpec::MCVersionRange(s_from, s_to) => {
+				let mut s_from = MC_VERSIONS.iter()
+					.find(|v| v.name == s_from)
+					.ok_or_else(|| Error::UnknownMCVersions(s_from.into()))?;
+
+				let mut s_to = MC_VERSIONS.iter()
+					.find(|v| v.name == s_to)
+					.ok_or_else(|| Error::UnknownMCVersions(s_to.into()))?;
+
+				if s_from.n > s_to.n {
+					mem::swap(&mut s_from, &mut s_to);
+				}
+
+				Ok(s_from.n <= mc_version.n && mc_version.n <= s_to.n)
+			}
+
+			PackVersionSpec::MCVersion(s) => {
+				let s = MC_VERSIONS.iter()
+					.find(|v| v.name == s)
+					.ok_or_else(|| Error::UnknownMCVersions(s.into()))?;
+
+				Ok(s.n == mc_version.n)
+			}
+		}
 	}
 }

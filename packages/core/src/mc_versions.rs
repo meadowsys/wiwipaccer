@@ -35,4 +35,15 @@ impl ::std::ops::Deref for MCVersion {
 	}
 }
 
+impl PackFormat {
+	#[inline]
+	pub fn get_version(&self) -> Option<u8> {
+		use PackFormat::*;
+		match self {
+			Verified(v) | Unverified(v) => { Some(*v) }
+			Unknown | None => { Option::None }
+		}
+	}
+}
+
 ::mc_versions_macro::inject_generated_mc_versions!();
