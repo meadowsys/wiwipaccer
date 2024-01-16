@@ -108,3 +108,15 @@ impl PackVersionSpec {
 		}
 	}
 }
+
+pub struct FrontendData<'h> {
+	versions: &'h [PackVersionSpec],
+	version_id: &'h n::version::ID
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(version: &'h Version) -> Self {
+		let Version { versions, version_id, .. } = version;
+		Self { versions, version_id }
+	}
+}

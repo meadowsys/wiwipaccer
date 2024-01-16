@@ -125,3 +125,23 @@ impl<'h> pack::DependencyResolver for DependencyResolver<'h> {
 
 #[async_trait]
 impl<'h> pack::Dependency for Dependency<'h> {}
+
+pub struct FrontendData<'h> {
+	name: &'h n::workspace::Name,
+	packs: HashMap<&'h n::pack::ID, pack::FrontendData<'h>>,
+	pack_ids: &'h n::workspace::PackIDs
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(workspace: &'h Workspace) -> Self {
+		let Workspace { name, packs, pack_ids } = workspace;
+
+		let packs = packs
+			.ref_inner()
+			.iter()
+			.map(|(k, v)| (k, pack::FrontendData::new(v)))
+			.collect();
+
+		Self { name, packs, pack_ids }
+	}
+}

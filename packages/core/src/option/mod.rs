@@ -8,6 +8,7 @@ use crate::util::{ fs, path_builder, ron };
 use crate::version;
 use error::*;
 use ::camino::Utf8PathBuf;
+use ::hashbrown::HashMap;
 use ::serde::{ Deserialize, Serialize };
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -95,5 +96,26 @@ impl TextureOption {
 		};
 
 		Ok(Some(Self { name, description, texture_id, option_id, root_dir, versions }))
+	}
+}
+
+pub struct FrontendData<'h> {
+	name: &'h n::option::Name,
+	description: &'h n::option::Description,
+	option_id: &'h n::option::ID,
+	versions: HashMap<&'h n::version::ID, version::FrontendData<'h>>
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(option: &'h TextureOption) -> Self {
+		let TextureOption { name, description, option_id, versions, .. } = option;
+
+		let versions = versions
+			.ref_inner()
+			.iter()
+			.map(|(k, v)| (k, version::FrontendData::new(v)))
+			.collect();
+
+		Self { name, description, option_id, versions }
 	}
 }

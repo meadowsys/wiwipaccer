@@ -174,3 +174,26 @@ impl Pack {
 		&self.version
 	}
 }
+
+pub struct FrontendData<'h> {
+	name: &'h n::pack::Name,
+	description: &'h n::pack::Description,
+	pack_id: &'h n::pack::ID,
+	version: &'h n::pack::Version,
+	dependencies: &'h n::pack::Dependencies,
+	textures: HashMap<&'h n::texture::ID, texture::FrontendData<'h>>
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(pack: &'h Pack) -> Self {
+		let Pack { name, description, pack_id, version, dependencies, textures, ..  } = pack;
+
+		let textures = textures
+			.ref_inner()
+			.iter()
+			.map(|(k, v)| (k, texture::FrontendData::new(v)))
+			.collect();
+
+		Self { name, description, pack_id, version, dependencies, textures }
+	}
+}
