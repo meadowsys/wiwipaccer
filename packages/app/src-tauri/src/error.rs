@@ -12,7 +12,10 @@ pub enum Error {
 	SurrealDBError(#[from] ::surrealdb::Error),
 
 	#[error(transparent)]
-	TauriError(#[from] ::tauri::Error)
+	TauriError(#[from] ::tauri::Error),
+
+	#[error(transparent)]
+	WorkspaceError(#[from] ::wiwipaccer_core::workspace::error::Error)
 }
 
 pub type ResultStringErr<T> = std::result::Result<T, String>;

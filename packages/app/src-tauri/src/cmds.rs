@@ -61,7 +61,8 @@ async fn write_locale_setting<R: Runtime>(
 	db: DataTauriState<'_>
 ) -> ResultStringErr<()> {
 	string_error(async {
-		let locales = LocaleSetting::new(locales).write(&db).await?;
+		let locales = LocaleSetting::new(locales);
+		locales.write(&db).await?;
 		handle.emit("refresh-locales", locales.into_inner())?;
 		Ok(())
 	}).await

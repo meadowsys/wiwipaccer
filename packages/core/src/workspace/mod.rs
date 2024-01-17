@@ -38,13 +38,17 @@ impl Workspace {
 		Self { name, packs, pack_ids }
 	}
 
-	pub async fn from_config(config: &str) -> Result<Self> {
-		let new = match ron::from_str(config)? {
-			WorkspaceConfig::Version1 { name, packs } => {
-				let mut new = Self::new(n::workspace::Name::new(name.into_inner()));
+	pub async fn from_config_str(config: &str) -> Result<Self> {
+		Self::from_config(&ron::from_str(config)?).await
+	}
 
-				for dir in packs.into_inner() {
-					let dir = n::global::DirPath::new(dir.into_inner());
+	pub async fn from_config(config: &WorkspaceConfig) -> Result<Self> {
+		let new = match config {
+			WorkspaceConfig::Version1 { name, packs } => {
+				let mut new = Self::new(n::workspace::Name::new(name.ref_inner().into()));
+
+				for dir in packs.ref_inner() {
+					let dir = n::global::DirPath::new(dir.ref_inner().into());
 					new.add_pack(dir).await?;
 				}
 
@@ -55,11 +59,10 @@ impl Workspace {
 		Ok(new)
 	}
 
-	pub fn into_config(self) -> WorkspaceConfig {
+	pub fn to_config(&self) -> WorkspaceConfig {
 		let Self { name, packs, pack_ids } = self;
 
-		let name = n::workspace::Name::new(name.into_inner());
-
+		let name = n::workspace::Name::new(name.ref_inner().into());
 		let packs = pack_ids.ref_inner()
 			.iter()
 			.map(|id| packs.ref_inner().get(id).expect("invalid state"))
@@ -125,6 +128,16 @@ impl<'h> pack::DependencyResolver for DependencyResolver<'h> {
 
 #[async_trait]
 impl<'h> pack::Dependency for Dependency<'h> {}
+
+impl WorkspaceConfig {
+	#[inline]
+	pub fn name(&self) -> &n::workspace::Name {
+		use WorkspaceConfig::*;
+		match self {
+			Version1 { name, .. } => { name }
+		}
+	}
+}
 
 pub struct FrontendData<'h> {
 	name: &'h n::workspace::Name,

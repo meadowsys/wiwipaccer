@@ -2,10 +2,11 @@ use crate::error::*;
 use super::AppDB;
 use ::serde::{ Deserialize, Serialize };
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct LocaleSetting {
-	locales: Vec<String>
+	locales: DBType
 }
+type DBType = Vec<String>;
 
 const LOCALE_RECORD_ID: (&str, &str) = (super::SETTINGS_TABLE, "app-locale");
 
@@ -17,24 +18,26 @@ impl LocaleSetting {
 
 	pub async fn read_or_default(db: &AppDB) -> Result<Self> {
 		let surreal = db.surreal().await;
-		let locale: Option<Self> = surreal.select(LOCALE_RECORD_ID).await?;
+		let locales: Option<DBType> = surreal.select(LOCALE_RECORD_ID).await?;
 
-		if let Some(locale) = locale {
-			Ok(locale)
+		let locales = if let Some(locales) = locales {
+			locales
 		} else {
-			let locale: Option<Self> = surreal.create(LOCALE_RECORD_ID)
+			let locales: Option<DBType> = surreal.create(LOCALE_RECORD_ID)
 				.content(Self::default())
 				.await?;
-			Ok(locale.unwrap())
-		}
+			locales.unwrap()
+		};
+
+		Ok(Self { locales })
 	}
 
-	pub async fn write(self, db: &AppDB) -> Result<Self> {
+	pub async fn write(&self, db: &AppDB) -> Result<()> {
 		let surreal = db.surreal().await;
-		let locale: Option<Self> = surreal.update(LOCALE_RECORD_ID)
+		let _: Option<DBType> = surreal.update(LOCALE_RECORD_ID)
 			.content(self)
 			.await?;
-		Ok(locale.unwrap())
+		Ok(())
 	}
 
 	#[inline]

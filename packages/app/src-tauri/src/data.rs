@@ -1,4 +1,5 @@
 pub mod locale;
+pub mod workspaces;
 
 use crate::error::*;
 use ::camino::Utf8PathBuf;

@@ -6200,6 +6200,7 @@ name = "wiwipaccer"
 version = "0.0.0"
 dependencies = [
  "camino",
+ "hashbrown 0.14.3",
  "hex",
  "mimalloc",
  "rfd",
@@ -6210,6 +6211,7 @@ dependencies = [
  "tauri-build",
  "thiserror",
  "tokio",
+ "wiwipaccer-core",
 ]
 
 [[package]]
