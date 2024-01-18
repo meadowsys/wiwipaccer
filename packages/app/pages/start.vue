@@ -3,8 +3,6 @@
 		a start page / welcome page i guess
 		<br>
 		{{ soon }}
-		<br>
-		<u-button @click="invoke_open_workspace_dialog">open workspace</u-button>
 		<br><br>
 
 		<u-input v-model="langs" placeholder="cheese"/>

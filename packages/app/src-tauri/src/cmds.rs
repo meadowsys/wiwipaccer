@@ -13,7 +13,6 @@ pub fn command_handler<R: Runtime>()
 {
 	tauri::generate_handler![
 		get_frontend_data_for,
-		open_workspace_dialog,
 		read_locale_setting,
 		write_locale_setting
 	]
@@ -30,34 +29,6 @@ async fn get_frontend_data_for(name: String, workspaces: WorkspacesTauriState<'_
 		drop(lock);
 
 		Ok(frontend_data)
-	}).await
-}
-
-#[tauri::command]
-async fn open_workspace_dialog<R: Runtime>(handle: AppHandle<R>) -> ResultStringErr<()> {
-	string_error(async {
-		let path = AsyncFileDialog::new()
-			.pick_folder()
-			.await;
-
-		let path = match path {
-			Some(p) => { p }
-			None => {
-				// cancelled?
-				return Ok(())
-			}
-		};
-
-		let path = path.path().to_str().map(str::to_string);
-
-		let path = match path {
-			Some(p) => { p }
-			None => { return Err(Error::NonUtf8Path) }
-		};
-
-		let _window = window::open(&handle, OpenOpts::Workspace { path }).await;
-
-		Ok(())
 	}).await
 }
 
