@@ -1,12 +1,8 @@
 pub mod locale;
+pub mod workspace;
 
 use crate::error::*;
-use crate::window::{ self, OpenOpts };
-use crate::data::DataTauriState;
-use crate::data::locale::LocaleSetting;
 use crate::workspaces::WorkspacesTauriState;
-use ::rfd::AsyncFileDialog;
-use ::tauri::{ AppHandle, Manager as _, Runtime };
 
 #[macro_export]
 macro_rules! command_handler {
@@ -17,7 +13,12 @@ macro_rules! command_handler {
 			locale::read_locale_setting,
 			locale::write_locale_setting,
 
-			get_frontend_data_for,
+			workspace::list_existing_workspaces,
+			workspace::check_workspace_name_is_available,
+			workspace::create_new_workspace,
+			workspace::open_workspace,
+
+			get_frontend_data_for
 		]
 	}}
 }

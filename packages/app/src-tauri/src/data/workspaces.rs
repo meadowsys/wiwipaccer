@@ -16,7 +16,7 @@ impl SavedWorkspace {
 		Self { config }
 	}
 
-	pub async fn read_and_load(db: &AppDB, name: &str) -> Result<Option<Self>> {
+	pub async fn read(db: &AppDB, name: &str) -> Result<Option<Self>> {
 		let surreal = db.surreal().await;
 		let config: Option<Self> = surreal.select((WORKSPACE_TABLE, name)).await?;
 
@@ -40,6 +40,11 @@ impl SavedWorkspace {
 		};
 
 		Ok(())
+	}
+
+	pub async fn list(db: &AppDB) -> Result<Vec<Self>> {
+		let surreal = db.surreal().await;
+		Ok(surreal.select(WORKSPACE_TABLE).await?)
 	}
 
 	#[inline]

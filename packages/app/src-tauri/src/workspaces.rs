@@ -47,7 +47,7 @@ impl Workspaces {
 			return Ok(workspace)
 		}
 
-		let saved = SavedWorkspace::read_and_load(&self.db, name).await?;
+		let saved = SavedWorkspace::read(&self.db, name).await?;
 
 		let workspace = if let Some(saved) = saved {
 			let config = saved.into_inner();
@@ -61,8 +61,8 @@ impl Workspaces {
 		let cloned = Arc::clone(&workspace);
 		let mut write = self.workspaces.write().await;
 
-		debug_assert!(!write.contains_key(name));
-		write.insert(name.into(), cloned);
+		let result = write.insert(name.into(), cloned);
+		debug_assert!(result.is_none());
 		drop(write);
 
 		Ok(workspace)
