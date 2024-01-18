@@ -31,7 +31,7 @@ fn main() {
 
 			Ok(())
 		})
-		.invoke_handler(cmds::command_handler())
+		.invoke_handler(cmds::command_handler!())
 		.build(tauri::generate_context!())
 		.expect("error running app")
 		.run(|app, event| {
