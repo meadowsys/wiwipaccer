@@ -139,6 +139,7 @@ impl WorkspaceConfig {
 	}
 }
 
+#[derive(Serialize)]
 pub struct FrontendData<'h> {
 	name: &'h n::workspace::Name,
 	packs: HashMap<&'h n::pack::ID, pack::FrontendData<'h>>,

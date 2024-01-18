@@ -109,6 +109,7 @@ impl PackVersionSpec {
 	}
 }
 
+#[derive(Serialize)]
 pub struct FrontendData<'h> {
 	versions: &'h [PackVersionSpec],
 	version_id: &'h n::version::ID

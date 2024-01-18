@@ -96,6 +96,7 @@ impl Texture {
 	}
 }
 
+#[derive(Serialize)]
 pub struct FrontendData<'h> {
 	name: &'h n::texture::Name,
 	description: &'h n::texture::Description,

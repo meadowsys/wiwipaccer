@@ -99,6 +99,7 @@ impl TextureOption {
 	}
 }
 
+#[derive(Serialize)]
 pub struct FrontendData<'h> {
 	name: &'h n::option::Name,
 	description: &'h n::option::Description,

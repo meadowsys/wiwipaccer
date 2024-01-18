@@ -175,6 +175,7 @@ impl Pack {
 	}
 }
 
+#[derive(Serialize)]
 pub struct FrontendData<'h> {
 	name: &'h n::pack::Name,
 	description: &'h n::pack::Description,
