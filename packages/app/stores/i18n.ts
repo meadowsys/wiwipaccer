@@ -11,7 +11,7 @@ export type LocaleMap = {
 export const use_i18n = defineStore("i18n-strings", () => {
 	const loaded_locales = ref<Array<LocaleMap>>([]);
 
-	async function set_locales(locales: Array<string>) {
+	async function _set_locales(locales: Array<string>) {
 		if (!locales.includes(en)) locales = [...locales, en];
 
 		const all_files = (await $fetch("/i18n/files.txt") as string)
@@ -73,7 +73,7 @@ export const use_i18n = defineStore("i18n-strings", () => {
 
 	return {
 		loaded_locales: computed(() => loaded_locales.value.map(l => l.locale)),
-		set_locales,
+		_set_locales,
 		t
 	};
 });

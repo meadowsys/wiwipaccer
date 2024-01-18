@@ -7,7 +7,7 @@ use ::tauri::State;
 use ::tokio::sync::RwLock;
 use ::tokio::sync::Mutex;
 use ::wiwipaccer_core::nom as n;
-use ::wiwipaccer_core::workspace::Workspace;
+use ::wiwipaccer_core::workspace::{ self, Workspace};
 
 /// - [`RwLock`]: most of the time will be reading (fetch a workspace etc), write
 ///   access for workspace creation / opening purposes (opening a new window)
@@ -18,7 +18,7 @@ use ::wiwipaccer_core::workspace::Workspace;
 /// - [`WorkspaceWrapper`]: wraps a workspace access methods so it can control a few
 ///   things, ex. enforcing saving stuff to DB or renaming in DB when certain functions
 ///   are called
-pub struct WiwipaccerWorkspaces {
+pub struct Workspaces {
 	db: AppDB,
 	workspaces: RwLock<HashMap<String, Arc<Mutex<WorkspaceWrapper>>>>
 }
@@ -28,9 +28,9 @@ pub struct WorkspaceWrapper {
 	workspace: Workspace
 }
 
-pub type WiwipaccerWorkspacesTauriState<'h> = State<'h, WiwipaccerWorkspaces>;
+pub type WorkspacesTauriState<'h> = State<'h, Workspaces>;
 
-impl WiwipaccerWorkspaces {
+impl Workspaces {
 	#[inline]
 	pub fn new(db: &AppDB) -> Self {
 		let db = db.clone();
@@ -66,5 +66,12 @@ impl WiwipaccerWorkspaces {
 		drop(write);
 
 		Ok(workspace)
+	}
+}
+
+impl WorkspaceWrapper {
+	#[inline]
+	pub fn frontend_data(&self) -> workspace::FrontendData {
+		workspace::FrontendData::new(&self.workspace)
 	}
 }

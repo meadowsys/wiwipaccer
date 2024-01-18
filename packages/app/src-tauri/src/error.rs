@@ -9,6 +9,9 @@ pub enum Error {
 	NonUtf8Path,
 
 	#[error(transparent)]
+	SerdeJsonError(#[from] ::serde_json::Error),
+
+	#[error(transparent)]
 	SurrealDBError(#[from] ::surrealdb::Error),
 
 	#[error(transparent)]

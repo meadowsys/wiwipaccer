@@ -2,6 +2,7 @@ use crate::error::*;
 use crate::window::{ self, OpenOpts };
 use crate::data::DataTauriState;
 use crate::data::locale::LocaleSetting;
+use crate::workspaces::WorkspacesTauriState;
 use ::rfd::AsyncFileDialog;
 use ::tauri::{ AppHandle, Manager as _, Runtime };
 
@@ -11,10 +12,25 @@ pub fn command_handler<R: Runtime>()
 	-> impl Fn(tauri::ipc::Invoke<R>) -> bool + Send + Sync + 'static
 {
 	tauri::generate_handler![
+		get_frontend_data_for,
 		open_workspace_dialog,
 		read_locale_setting,
 		write_locale_setting
 	]
+}
+
+#[tauri::command]
+async fn get_frontend_data_for(name: String, workspaces: WorkspacesTauriState<'_>) -> ResultStringErr<::serde_json::Value> {
+	string_error(async {
+		let workspace = workspaces.create_or_open_or_get(&name).await?;
+
+		let lock = workspace.lock().await;
+		let frontend_data = lock.frontend_data();
+		let frontend_data = ::serde_json::to_value(frontend_data)?;
+		drop(lock);
+
+		Ok(frontend_data)
+	}).await
 }
 
 #[tauri::command]
