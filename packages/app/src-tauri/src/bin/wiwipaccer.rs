@@ -19,9 +19,12 @@ fn main() {
 		.setup(|app| {
 			let handle = app.handle();
 
-			let appdb_state = async_runtime::block_on(data::AppDB::new(handle))
+			let appdb = async_runtime::block_on(data::AppDB::new(handle))
 				.expect("failed to create db");
-			app.manage(appdb_state);
+			let workspaces = workspaces::WiwipaccerWorkspaces::new(&appdb);
+
+			app.manage(appdb);
+			app.manage(workspaces);
 
 			let window_future = window::open(handle, OpenOpts::Start);
 			let _window = async_runtime::block_on(window_future);

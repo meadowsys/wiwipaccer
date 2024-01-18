@@ -4,6 +4,7 @@ pub mod workspaces;
 use crate::error::*;
 use ::camino::Utf8PathBuf;
 use ::std::ops::Deref;
+use ::std::sync::Arc;
 use ::surrealdb::Surreal;
 use ::surrealdb::engine::local::{ Db, SpeeDb };
 use ::surrealdb::opt::Config;
@@ -25,8 +26,11 @@ const DB: &str = "cute";
 
 pub type DataTauriState<'h> = State<'h, AppDB>;
 
+/// - [`Arc`]: allows owning reference to the same inner instance
+/// - [`RwLock`]: allow write for creation purpose, but otherwise its only read
+/// - [`Option`]: allow to take it out on app quit, so it can be dropped properly
 pub struct AppDB {
-	inner: RwLock<Option<Inner>>
+	inner: Arc<RwLock<Option<Inner>>>
 }
 
 struct Inner {
@@ -65,7 +69,7 @@ impl AppDB {
 			.await?;
 		surreal.use_ns(NS).use_db(DB).await?;
 
-		let inner = RwLock::new(Some(Inner { surreal }));
+		let inner = Arc::new(RwLock::new(Some(Inner { surreal })));
 		Ok(Self { inner })
 	}
 
@@ -78,6 +82,14 @@ impl AppDB {
 	pub fn drop_db(&self) {
 		let inner = self.inner.blocking_write().take();
 		drop(inner);
+	}
+}
+
+impl Clone for AppDB {
+	#[inline]
+	fn clone(&self) -> Self {
+		let inner = Arc::clone(&self.inner);
+		Self { inner }
 	}
 }
 
