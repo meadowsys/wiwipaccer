@@ -12,7 +12,7 @@ const WORKSPACE_URL: &str = "workspace";
 pub enum OpenOpts {
 	Start,
 	Workspace {
-		path: String
+		name: String
 	}
 }
 
@@ -25,8 +25,8 @@ pub async fn open<R: Runtime>(handle: &AppHandle<R>, opts: OpenOpts) -> Window<R
 		Start => {
 			(START_LABEL.into(), START_URL.into())
 		}
-		Workspace { path } => {
-			(encode_workspace_label(path), WORKSPACE_URL.into())
+		Workspace { name } => {
+			(encode_workspace_label(name), WORKSPACE_URL.into())
 		}
 	};
 
@@ -62,19 +62,13 @@ async fn common_builder<R: Runtime>(
 }
 
 #[inline]
-pub fn encode_workspace_label(path: String) -> String {
-	format!("{WORKSPACE_LABEL_PREFIX}{}", hex::encode(path))
+pub fn encode_workspace_label(name: String) -> String {
+	format!("{WORKSPACE_LABEL_PREFIX}{name}")
 }
 
 #[inline]
-pub fn decode_workspace_label(label: String) -> Option<String> {
-	if let Some(path_hex) = label.strip_prefix(WORKSPACE_LABEL_PREFIX) {
-		let path = hex::decode(path_hex).ok()?;
-		let path = String::from_utf8(path).ok()?;
-		Some(path)
-	} else {
-		None
-	}
+pub fn decode_workspace_label(label: &str) -> Option<&str> {
+	label.strip_prefix(WORKSPACE_LABEL_PREFIX)
 }
 
 #[inline]
