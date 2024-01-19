@@ -14,6 +14,8 @@ export default defineNuxtConfig({
 	},
 	builder: "vite",
 	modules: [
-		"@pinia/nuxt"
+		"@pinia/nuxt",
+		"@unocss/nuxt",
+		"@vueuse/nuxt"
 	]
 });
