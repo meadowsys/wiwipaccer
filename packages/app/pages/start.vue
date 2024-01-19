@@ -5,9 +5,9 @@
 		{{ soon }}
 		<br><br>
 
-		<u-input v-model="langs" placeholder="cheese"/>
+		<!-- <u-input v-model="langs" placeholder="cheese"/>
 		<u-button @click="write">write</u-button>
-		<u-button @click="read">read</u-button>
+		<u-button @click="read">read</u-button> -->
 		<div>{{ result }}</div>
 	</div>
 </template>

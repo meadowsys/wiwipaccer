@@ -2,7 +2,7 @@
 	<div v-if="false" class="h-full p-4 bg-white dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 select-none cursor-default">
 		<!-- todo: switch `flex-row` below to `flex-row-col` when on windows/linux -->
 		<div class="h-8 select-none flex-row flex" data-tauri-drag-region>
-			<u-icon
+			<!-- <u-icon
 				name="i-ph-x-circle-fill"
 				@click="close_window"
 				class="
@@ -19,7 +19,7 @@
 					bg-gray-300 hover:bg-yellow-400 active:bg-yellow-600
 					dark:bg-gray-800 dark:hover:bg-yellow-400
 				"
-			/>
+			/> -->
 			<!-- it don't wanna work h -->
 			<!-- <u-icon name="i-ph-plus-circle-fill" @click="maximise_window" class="h-6 w-4 mr-2 hover:bg-green-400" /> -->
 		</div>

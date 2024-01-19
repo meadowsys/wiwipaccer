@@ -7,15 +7,13 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	ssr: false,
 	vite: {
-		server: { strictPort: true }
+		server: { strictPort: true },
+		optimizeDeps: {
+			entries: "@tauri-apps/api"
+		}
 	},
 	builder: "vite",
 	modules: [
-		"@nuxt/ui",
 		"@pinia/nuxt"
-	],
-	ui: {
-		global: true,
-		icons: ["ph"]
-	}
+	]
 });
