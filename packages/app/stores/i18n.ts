@@ -1,5 +1,4 @@
-import { FluentBundle, FluentResource } from "@fluent/bundle";
-import type { FluentVariable } from "@fluent/bundle";
+import { FluentBundle, FluentResource, type FluentVariable } from "@fluent/bundle";
 
 const en = "en";
 
