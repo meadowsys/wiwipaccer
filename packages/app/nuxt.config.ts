@@ -9,7 +9,9 @@ export default defineNuxtConfig({
 	vite: {
 		server: { strictPort: true },
 		optimizeDeps: {
-			entries: "@tauri-apps/api"
+			entries: [
+				"@tauri-apps/api/window"
+			]
 		}
 	},
 	builder: "vite",
