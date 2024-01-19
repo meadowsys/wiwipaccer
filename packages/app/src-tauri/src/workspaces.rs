@@ -47,6 +47,9 @@ impl Workspaces {
 			return Ok(workspace)
 		}
 
+		// necessary to prevent deadlock
+		drop(read);
+
 		let saved = SavedWorkspace::read(&self.db, name).await?;
 
 		let workspace = if let Some(saved) = saved {
@@ -55,6 +58,7 @@ impl Workspaces {
 			Arc::new(Mutex::new(WorkspaceWrapper { workspace }))
 		} else {
 			let workspace = Workspace::new(n::workspace::Name::new(name.into()));
+			SavedWorkspace::new(workspace.to_config()).write(&self.db).await?;
 			Arc::new(Mutex::new(WorkspaceWrapper { workspace }))
 		};
 
