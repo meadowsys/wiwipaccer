@@ -10,7 +10,7 @@ use ::surrealdb::engine::local::{ Db, SpeeDb };
 use ::surrealdb::opt::Config;
 use ::surrealdb::dbs::Capabilities;
 use ::tauri::{ AppHandle, Runtime };
-#[cfg_attr(debug_assertions, allow(unused_imports))]
+#[cfg(not(debug_assertions))]
 use ::tauri::Manager as _;
 use ::tauri::State;
 use ::tokio::sync::RwLock;
