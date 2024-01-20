@@ -2,4 +2,4 @@ mod error;
 mod meta;
 mod rt;
 
-pub use error::Error;
+pub use self::error::Error;

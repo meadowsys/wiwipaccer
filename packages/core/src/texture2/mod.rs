@@ -2,4 +2,12 @@ mod error;
 mod meta;
 mod rt;
 
-pub use error::Error;
+pub use self::error::Error;
+
+::nominal::nominal_mod! {
+	mod nm {
+		nominal!(pub Name, inner: String);
+		nominal!(pub Description, inner: Option<String>);
+		nominal!(pub Default, inner: Option<String>);
+	}
+}
