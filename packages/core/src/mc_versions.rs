@@ -33,12 +33,10 @@ pub enum ReleaseType {
 pub enum PackFormat {
 	#[serde(rename = "verified")]
 	Verified(u8),
-	#[serde(rename = "unverified")]
-	Unverified(u8),
+	#[serde(rename = "none")]
+	None,
 	#[serde(rename = "unknown")]
 	Unknown,
-	#[serde(rename = "none")]
-	None
 }
 
 impl ::std::ops::Deref for MCVersion {
@@ -72,7 +70,7 @@ impl PackFormat {
 	pub fn get_version(&self) -> Option<u8> {
 		use PackFormat::*;
 		match self {
-			Verified(v) | Unverified(v) => { Some(*v) }
+			Verified(v) => { Some(*v) }
 			Unknown | None => { Option::None }
 		}
 	}
