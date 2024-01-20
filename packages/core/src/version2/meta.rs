@@ -1,3 +1,5 @@
+use crate::util::ron;
+use super::error::*;
 use ::serde::{ Deserialize, Serialize };
 
 #[derive(Serialize, Deserialize)]
@@ -14,4 +16,9 @@ pub(super) enum PackVersionSpecMeta {
 	PackVersion(u8),
 	MCVersion(String),
 	MCVersionRange(String, String)
+}
+
+#[inline]
+pub(super) fn deserialise_version(s: &str) -> Result<VersionMeta> {
+	Ok(ron::from_str(s)?)
 }

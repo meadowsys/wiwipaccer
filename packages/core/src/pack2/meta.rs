@@ -1,3 +1,5 @@
+use crate::util::ron;
+use super::error::*;
 use super::nm;
 use ::serde::{ Deserialize, Serialize };
 
@@ -12,4 +14,9 @@ pub(super) enum PackMeta {
 		version: nm::Version,
 		dependencies: nm::Dependencies
 	}
+}
+
+#[inline]
+pub(super) fn deserialise_pack(s: &str) -> Result<PackMeta> {
+	Ok(ron::from_str(s)?)
 }

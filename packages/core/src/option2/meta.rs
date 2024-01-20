@@ -1,3 +1,5 @@
+use crate::util::ron;
+use super::error::*;
 use super::nm;
 use ::serde::{ Deserialize, Serialize };
 
@@ -9,4 +11,9 @@ pub(super) enum OptionMeta {
 		name: nm::Name,
 		description: nm::Description
 	}
+}
+
+#[inline]
+pub(super) fn deserialise_option(s: &str) -> Result<OptionMeta> {
+	Ok(ron::from_str(s)?)
 }

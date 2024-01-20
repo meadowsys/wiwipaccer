@@ -1,3 +1,5 @@
+use crate::util::ron;
+use super::error::*;
 use super::nm;
 use ::serde::{ Deserialize, Serialize };
 
@@ -9,4 +11,9 @@ pub(super) enum WorkspaceMeta {
 		name: nm::Name,
 		packs: nm::Packs
 	}
+}
+
+#[inline]
+pub(super) fn deserialise_workspace(s: &str) -> Result<WorkspaceMeta> {
+	Ok(ron::from_str(s)?)
 }
