@@ -1,8 +1,9 @@
 use crate::nom as n;
-use ::camino::Utf8PathBuf;
 use super::super::error::*;
 use super::super::fs;
 use super::WithOption;
+use ::camino::Utf8PathBuf;
+use ::std::ops::Deref;
 
 const VERSION_META_FILENAME: &str = "version.wiwimeta";
 
@@ -14,79 +15,9 @@ pub struct WithVersion<'h> {
 impl<'h> WithVersion<'h> {
 	#[inline]
 	pub(super) fn _version_dir(&self) -> Utf8PathBuf {
-		let mut path = self.prev._option_dir();
+		let mut path = self._option_dir();
 		path.push(self.version_id.ref_inner());
 		path
-	}
-
-	#[inline]
-	pub async fn root_dir(&self) -> Result<n::global::RootDirPath> {
-		self.prev.root_dir().await
-	}
-
-	#[inline]
-	pub unsafe fn root_dir_unchecked(&self) -> n::global::RootDirPath {
-		self.prev.root_dir_unchecked()
-	}
-
-	#[inline]
-	pub async fn root_manifest(&self) -> Result<n::global::RootManifestPath> {
-		self.prev.root_manifest().await
-	}
-
-	#[inline]
-	pub unsafe fn root_manifest_unchecked(&self) -> n::global::RootManifestPath {
-		self.prev.root_manifest_unchecked()
-	}
-
-	#[inline]
-	pub async fn textures_path(&self) -> Result<n::global::TexturesPath> {
-		self.prev.textures_path().await
-	}
-
-	#[inline]
-	pub unsafe fn textures_path_unchecked(&self) -> n::global::TexturesPath {
-		self.prev.textures_path_unchecked()
-	}
-
-	#[inline]
-	pub async fn texture_dir(&self) -> Result<n::global::TextureDirPath> {
-		self.prev.texture_dir().await
-	}
-
-	#[inline]
-	pub unsafe fn texture_dir_unchecked(&self) -> n::global::TextureDirPath {
-		self.prev.texture_dir_unchecked()
-	}
-
-	#[inline]
-	pub async fn texture_manifest(&self) -> Result<n::global::TextureManifestPath> {
-		self.prev.texture_manifest().await
-	}
-
-	#[inline]
-	pub unsafe fn texture_manifest_unchecked(&self) -> n::global::TextureManifestPath {
-		self.prev.texture_manifest_unchecked()
-	}
-
-	#[inline]
-	pub async fn option_dir(&self) -> Result<n::global::OptionDirPath> {
-		self.prev.option_dir().await
-	}
-
-	#[inline]
-	pub unsafe fn option_dir_unchecked(&self) -> n::global::OptionDirPath {
-		self.prev.option_dir_unchecked()
-	}
-
-	#[inline]
-	pub async fn option_manifest(&self) -> Result<n::global::OptionManifestPath> {
-		self.prev.option_manifest().await
-	}
-
-	#[inline]
-	pub unsafe fn option_manifest_unchecked(&self) -> n::global::OptionManifestPath {
-		self.prev.option_manifest_unchecked()
 	}
 
 	#[inline]
@@ -128,5 +59,14 @@ impl<'h> WithVersion<'h> {
 		let mut path = self._version_dir();
 		path.push(VERSION_META_FILENAME);
 		n::global::VersionManifestPath::new(path.into_string())
+	}
+}
+
+impl<'h> Deref for WithVersion<'h> {
+	type Target = WithOption<'h>;
+
+	#[inline]
+	fn deref(&self) -> &Self::Target {
+		&self.prev
 	}
 }

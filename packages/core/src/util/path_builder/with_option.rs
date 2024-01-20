@@ -1,9 +1,10 @@
 use crate::nom as n;
-use ::camino::Utf8PathBuf;
 use super::super::error::*;
 use super::super::fs;
 use super::WithTexture;
 use super::WithVersion;
+use ::camino::Utf8PathBuf;
+use ::std::ops::Deref;
 
 const OPTION_META_FILENAME: &str = "option.wiwimeta";
 
@@ -15,59 +16,9 @@ pub struct WithOption<'h> {
 impl<'h> WithOption<'h> {
 	#[inline]
 	pub(super) fn _option_dir(&self) -> Utf8PathBuf {
-		let mut path = self.prev._texture_dir();
+		let mut path = self._texture_dir();
 		path.push(self.option_id.ref_inner());
 		path
-	}
-
-	#[inline]
-	pub async fn root_dir(&self) -> Result<n::global::RootDirPath> {
-		self.prev.root_dir().await
-	}
-
-	#[inline]
-	pub unsafe fn root_dir_unchecked(&self) -> n::global::RootDirPath {
-		self.prev.root_dir_unchecked()
-	}
-
-	#[inline]
-	pub async fn root_manifest(&self) -> Result<n::global::RootManifestPath> {
-		self.prev.root_manifest().await
-	}
-
-	#[inline]
-	pub unsafe fn root_manifest_unchecked(&self) -> n::global::RootManifestPath {
-		self.prev.root_manifest_unchecked()
-	}
-
-	#[inline]
-	pub async fn textures_path(&self) -> Result<n::global::TexturesPath> {
-		self.prev.textures_path().await
-	}
-
-	#[inline]
-	pub unsafe fn textures_path_unchecked(&self) -> n::global::TexturesPath {
-		self.prev.textures_path_unchecked()
-	}
-
-	#[inline]
-	pub async fn texture_dir(&self) -> Result<n::global::TextureDirPath> {
-		self.prev.texture_dir().await
-	}
-
-	#[inline]
-	pub unsafe fn texture_dir_unchecked(&self) -> n::global::TextureDirPath {
-		self.prev.texture_dir_unchecked()
-	}
-
-	#[inline]
-	pub async fn texture_manifest(&self) -> Result<n::global::TextureManifestPath> {
-		self.prev.texture_manifest().await
-	}
-
-	#[inline]
-	pub unsafe fn texture_manifest_unchecked(&self) -> n::global::TextureManifestPath {
-		self.prev.texture_manifest_unchecked()
 	}
 
 	#[inline]
@@ -114,5 +65,14 @@ impl<'h> WithOption<'h> {
 	#[inline]
 	pub fn with_version(self, version_id: &'h n::version::ID) -> WithVersion {
 		WithVersion { prev: self, version_id }
+	}
+}
+
+impl<'h> Deref for WithOption<'h> {
+	type Target = WithTexture<'h>;
+
+	#[inline]
+	fn deref(&self) -> &Self::Target {
+		&self.prev
 	}
 }

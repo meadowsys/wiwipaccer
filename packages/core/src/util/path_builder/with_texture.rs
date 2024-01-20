@@ -1,9 +1,10 @@
 use crate::nom as n;
-use ::camino::Utf8PathBuf;
 use super::super::error::*;
 use super::super::fs;
 use super::Root;
 use super::WithOption;
+use ::camino::Utf8PathBuf;
+use ::std::ops::Deref;
 
 const TEXTURE_META_FILENAME: &str = "texture.wiwimeta";
 
@@ -15,40 +16,10 @@ pub struct WithTexture<'h> {
 impl<'h> WithTexture<'h> {
 	#[inline]
 	pub(super) fn _texture_dir(&self) -> Utf8PathBuf {
-		let mut path = self.prev._textures_path();
+		let mut path = self._textures_path();
 		path.push(self.texture_id.ref_inner());
 
 		path
-	}
-
-	#[inline]
-	pub async fn root_dir(&self) -> Result<n::global::RootDirPath> {
-		self.prev.root_dir().await
-	}
-
-	#[inline]
-	pub unsafe fn root_dir_unchecked(&self) -> n::global::RootDirPath {
-		self.prev.root_dir_unchecked()
-	}
-
-	#[inline]
-	pub async fn root_manifest(&self) -> Result<n::global::RootManifestPath> {
-		self.prev.root_manifest().await
-	}
-
-	#[inline]
-	pub unsafe fn root_manifest_unchecked(&self) -> n::global::RootManifestPath {
-		self.prev.root_manifest_unchecked()
-	}
-
-	#[inline]
-	pub async fn textures_path(&self) -> Result<n::global::TexturesPath> {
-		self.prev.textures_path().await
-	}
-
-	#[inline]
-	pub unsafe fn textures_path_unchecked(&self) -> n::global::TexturesPath {
-		self.prev.textures_path_unchecked()
 	}
 
 	#[inline]
@@ -95,5 +66,14 @@ impl<'h> WithTexture<'h> {
 	#[inline]
 	pub fn with_option(self, option_id: &'h n::option::ID) -> WithOption {
 		WithOption { prev: self, option_id }
+	}
+}
+
+impl<'h> Deref for WithTexture<'h> {
+	type Target = Root<'h>;
+
+	#[inline]
+	fn deref(&self) -> &Self::Target {
+		&self.prev
 	}
 }
