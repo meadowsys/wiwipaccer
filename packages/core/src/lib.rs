@@ -10,3 +10,9 @@ pub mod texture;
 pub mod util;
 pub mod version;
 pub mod workspace;
+
+pub mod workspace2;
+pub mod pack2;
+pub mod texture2;
+pub mod option2;
+pub mod version2;
