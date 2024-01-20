@@ -17,6 +17,10 @@ pub struct Inner {
 	///
 	/// eg. this release is the n'th release ever released\
 	/// eg. "1.18.2 is the 12th release" (do not rely on this its just an example)
+	///
+	/// Because this number is generated incrementing and creation outside this
+	/// module is impossible (and we don't create any manually in here), this can
+	/// be relied on for a unique value.
 	pub n: usize
 }
 
@@ -43,14 +47,14 @@ pub enum PackFormat {
 }
 
 impl MCVersion {
-	pub fn get_mc_version(version: &str) -> Result<MCVersionRef> {
+	pub fn get(version: &str) -> Result<MCVersionRef> {
 		MC_VERSIONS
 			.iter()
 			.find(|v| v.name == version)
 			.ok_or_else(|| Error::UnknownMCVersion(version.into()))
 	}
 
-	pub fn get_mc_version_range(v_from: &str, v_to: &str) -> Result<MCVersionRefSlice> {
+	pub fn get_range(v_from: &str, v_to: &str) -> Result<MCVersionRefSlice> {
 		let mut v_from = MC_VERSIONS
 			.iter()
 			.position(|v| v.name == v_from)
@@ -75,7 +79,19 @@ impl ::std::ops::Deref for MCVersion {
 	}
 }
 
+impl PartialEq for MCVersion {
+	#[inline]
+	fn eq(&self, other: &Self) -> bool {
+		// this is only okay because of how the MC_VERSIONS const is
+		// generated, (see doc comment for Inner::n)
+		self.n == other.n
+	}
+}
+
+impl Eq for MCVersion {}
+
 impl Serialize for MCVersion {
+	#[inline]
 	fn serialize<S>(&self, serializer: S) -> StdResult<S::Ok, S::Error>
 	where
 		S: Serializer
@@ -85,6 +101,7 @@ impl Serialize for MCVersion {
 }
 
 impl Deserialize<'static> for MCVersion {
+	#[inline]
 	fn deserialize<D>(deserializer: D) -> StdResult<Self, D::Error>
 	where
 		D: Deserializer<'static>
