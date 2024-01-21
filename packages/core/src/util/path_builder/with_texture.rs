@@ -10,61 +10,58 @@ const TEXTURE_META_FILENAME: &str = "texture.wiwimeta";
 
 pub struct WithTexture<'h> {
 	pub(super) prev: Root<'h>,
-	pub(super) texture_id: &'h n::texture::ID
+	pub(super) texture_id: &'h str
 }
 
 impl<'h> WithTexture<'h> {
 	#[inline]
 	pub(super) fn _texture_dir(&self) -> Utf8PathBuf {
 		let mut path = self._textures_path();
-		path.push(self.texture_id.ref_inner());
+		path.push(self.texture_id);
 
 		path
 	}
 
 	#[inline]
-	pub async fn texture_dir(&self) -> Result<n::global::TextureDirPath> {
+	pub async fn texture_dir(&self) -> Result<String> {
 		let path = unsafe { self.texture_dir_unchecked() };
-		let res = fs::is_dir(n::global::Path::new(path.clone().into_inner())).await?;
+		let res = fs::is_dir(n::global::Path::new(path.clone())).await?;
 
 		if res {
 			Ok(path)
 		} else {
-			let path = path.into_inner();
 			let path_name = "texture dir".into();
 			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 
 	#[inline]
-	pub unsafe fn texture_dir_unchecked(&self) -> n::global::TextureDirPath {
-		let path = self._texture_dir();
-		n::global::TextureDirPath::new(path.into_string())
+	pub unsafe fn texture_dir_unchecked(&self) -> String {
+		self._texture_dir().into_string()
 	}
 
 	#[inline]
-	pub async fn texture_manifest(&self) -> Result<n::global::TextureManifestPath> {
+	pub async fn texture_manifest(&self) -> Result<String> {
 		let path = unsafe { self.texture_manifest_unchecked() };
-		let res = fs::is_file(n::global::Path::new(path.clone().into_inner())).await?;
+		let res = fs::is_file(n::global::Path::new(path.clone())).await?;
 
 		if res {
 			Ok(path)
 		} else {
-			let path = path.into_inner();
 			let path_name = "texture manifest".into();
 			Err(Error::PathIsNotFile { path, path_name })
 		}
 	}
 
 	#[inline]
-	pub unsafe fn texture_manifest_unchecked(&self) -> n::global::TextureManifestPath {
+	pub unsafe fn texture_manifest_unchecked(&self) -> String {
 		let mut path = self._texture_dir();
 		path.push(TEXTURE_META_FILENAME);
-		n::global::TextureManifestPath::new(path.into_string())
+		path.into_string()
 	}
 
 	#[inline]
-	pub fn with_option(self, option_id: &'h n::option::ID) -> WithOption {
+	pub fn with_option(self, option_id: &'h str) -> WithOption {
 		WithOption { prev: self, option_id }
 	}
 }

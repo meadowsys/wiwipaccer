@@ -9,56 +9,53 @@ const VERSION_META_FILENAME: &str = "version.wiwimeta";
 
 pub struct WithVersion<'h> {
 	pub(super) prev: WithOption<'h>,
-	pub(super) version_id: &'h n::version::ID
+	pub(super) version_id: &'h str
 }
 
 impl<'h> WithVersion<'h> {
 	#[inline]
 	pub(super) fn _version_dir(&self) -> Utf8PathBuf {
 		let mut path = self._option_dir();
-		path.push(self.version_id.ref_inner());
+		path.push(self.version_id);
 		path
 	}
 
 	#[inline]
-	pub async fn version_dir(&self) -> Result<n::global::VersionDirPath> {
+	pub async fn version_dir(&self) -> Result<String> {
 		let path = unsafe { self.version_dir_unchecked() };
-		let res = fs::is_dir(n::global::Path::new(path.clone().into_inner())).await?;
+		let res = fs::is_dir(n::global::Path::new(path.clone())).await?;
 
 		if res {
 			Ok(path)
 		} else {
-			let path = path.into_inner();
 			let path_name = "version dir".into();
 			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 
 	#[inline]
-	pub unsafe fn version_dir_unchecked(&self) -> n::global::VersionDirPath {
-		let path = self._version_dir();
-		n::global::VersionDirPath::new(path.into_string())
+	pub unsafe fn version_dir_unchecked(&self) -> String {
+		self._version_dir().into_string()
 	}
 
 	#[inline]
-	pub async fn version_manifest(&self) -> Result<n::global::VersionManifestPath> {
+	pub async fn version_manifest(&self) -> Result<String> {
 		let path = unsafe { self.version_manifest_unchecked() };
-		let res = fs::is_file(n::global::Path::new(path.clone().into_inner())).await?;
+		let res = fs::is_file(n::global::Path::new(path.clone())).await?;
 
 		if res {
 			Ok(path)
 		} else {
-			let path = path.into_inner();
 			let path_name = "version manifest".into();
 			Err(Error::PathIsNotDir { path, path_name })
 		}
 	}
 
 	#[inline]
-	pub unsafe fn version_manifest_unchecked(&self) -> n::global::VersionManifestPath {
+	pub unsafe fn version_manifest_unchecked(&self) -> String {
 		let mut path = self._version_dir();
 		path.push(VERSION_META_FILENAME);
-		n::global::VersionManifestPath::new(path.into_string())
+		path.into_string()
 	}
 }
 
