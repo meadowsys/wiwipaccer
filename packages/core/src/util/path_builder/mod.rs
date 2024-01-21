@@ -10,6 +10,6 @@ pub use with_option::WithOption;
 pub use with_version::WithVersion;
 
 #[inline]
-pub fn path_builder(root_dir: &str) -> Root {
+pub fn path_builder2(root_dir: &str) -> Root {
 	Root { root_dir }
 }

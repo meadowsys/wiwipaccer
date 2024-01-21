@@ -22,7 +22,7 @@ impl<'h> WithOption<'h> {
 	}
 
 	#[inline]
-	pub async fn option_dir(&self) -> Result<String> {
+	pub async fn option_dir2(&self) -> Result<String> {
 		let path = unsafe { self.option_dir_unchecked() };
 		let res = fs::is_dir2(path.clone()).await?;
 
@@ -35,13 +35,13 @@ impl<'h> WithOption<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn option_dir_unchecked(&self) -> String {
+	pub unsafe fn option_dir_unchecked2(&self) -> String {
 		let path = self._option_dir();
 		path.into_string()
 	}
 
 	#[inline]
-	pub async fn option_manifest(&self) -> Result<String> {
+	pub async fn option_manifest2(&self) -> Result<String> {
 		let path = unsafe { self.option_manifest_unchecked() };
 		let res = fs::is_file2(path.clone()).await?;
 
@@ -54,14 +54,14 @@ impl<'h> WithOption<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn option_manifest_unchecked(&self) -> String {
+	pub unsafe fn option_manifest_unchecked2(&self) -> String {
 		let mut path = self._option_dir();
 		path.push(OPTION_META_FILENAME);
 		path.into_string()
 	}
 
 	#[inline]
-	pub fn with_version(self, version_id: &'h str) -> WithVersion {
+	pub fn with_version2(self, version_id: &'h str) -> WithVersion {
 		WithVersion { prev: self, version_id }
 	}
 }

@@ -23,7 +23,7 @@ impl<'h> WithTexture<'h> {
 	}
 
 	#[inline]
-	pub async fn texture_dir(&self) -> Result<String> {
+	pub async fn texture_dir2(&self) -> Result<String> {
 		let path = unsafe { self.texture_dir_unchecked() };
 		let res = fs::is_dir2(path.clone()).await?;
 
@@ -36,12 +36,12 @@ impl<'h> WithTexture<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn texture_dir_unchecked(&self) -> String {
+	pub unsafe fn texture_dir_unchecked2(&self) -> String {
 		self._texture_dir().into_string()
 	}
 
 	#[inline]
-	pub async fn texture_manifest(&self) -> Result<String> {
+	pub async fn texture_manifest2(&self) -> Result<String> {
 		let path = unsafe { self.texture_manifest_unchecked() };
 		let res = fs::is_file2(path.clone()).await?;
 
@@ -54,14 +54,14 @@ impl<'h> WithTexture<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn texture_manifest_unchecked(&self) -> String {
+	pub unsafe fn texture_manifest_unchecked2(&self) -> String {
 		let mut path = self._texture_dir();
 		path.push(TEXTURE_META_FILENAME);
 		path.into_string()
 	}
 
 	#[inline]
-	pub fn with_option(self, option_id: &'h str) -> WithOption {
+	pub fn with_option2(self, option_id: &'h str) -> WithOption {
 		WithOption { prev: self, option_id }
 	}
 }

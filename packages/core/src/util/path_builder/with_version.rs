@@ -21,7 +21,7 @@ impl<'h> WithVersion<'h> {
 	}
 
 	#[inline]
-	pub async fn version_dir(&self) -> Result<String> {
+	pub async fn version_dir2(&self) -> Result<String> {
 		let path = unsafe { self.version_dir_unchecked() };
 		let res = fs::is_dir2(path.clone()).await?;
 
@@ -34,12 +34,12 @@ impl<'h> WithVersion<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn version_dir_unchecked(&self) -> String {
+	pub unsafe fn version_dir_unchecked2(&self) -> String {
 		self._version_dir().into_string()
 	}
 
 	#[inline]
-	pub async fn version_manifest(&self) -> Result<String> {
+	pub async fn version_manifest2(&self) -> Result<String> {
 		let path = unsafe { self.version_manifest_unchecked() };
 		let res = fs::is_file2(path.clone()).await?;
 
@@ -52,7 +52,7 @@ impl<'h> WithVersion<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn version_manifest_unchecked(&self) -> String {
+	pub unsafe fn version_manifest_unchecked2(&self) -> String {
 		let mut path = self._version_dir();
 		path.push(VERSION_META_FILENAME);
 		path.into_string()

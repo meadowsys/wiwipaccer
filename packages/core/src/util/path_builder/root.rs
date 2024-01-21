@@ -25,7 +25,7 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
-	pub async fn root_dir(&self) -> Result<String> {
+	pub async fn root_dir2(&self) -> Result<String> {
 		let path = unsafe { self.root_dir_unchecked() };
 		let res = fs::is_dir2(path.clone()).await?;
 
@@ -38,12 +38,12 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn root_dir_unchecked(&self) -> String {
+	pub unsafe fn root_dir_unchecked2(&self) -> String {
 		self.root_dir.into()
 	}
 
 	#[inline]
-	pub async fn root_manifest(&self) -> Result<String> {
+	pub async fn root_manifest2(&self) -> Result<String> {
 		let path = unsafe { self.root_manifest_unchecked() };
 		let res = fs::is_file2(path.clone()).await?;
 
@@ -56,14 +56,14 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn root_manifest_unchecked(&self) -> String {
+	pub unsafe fn root_manifest_unchecked2(&self) -> String {
 		let mut path = self._root_dir();
 		path.push(PACK_META_FILENAME);
 		path.into_string()
 	}
 
 	#[inline]
-	pub async fn textures_path(&self) -> Result<String> {
+	pub async fn textures_path2(&self) -> Result<String> {
 		let path = unsafe { self.textures_path_unchecked() };
 		let res = fs::is_dir2(path.clone()).await?;
 
@@ -76,12 +76,12 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
-	pub unsafe fn textures_path_unchecked(&self) -> String {
+	pub unsafe fn textures_path_unchecked2(&self) -> String {
 		self._textures_path().into_string()
 	}
 
 	#[inline]
-	pub fn with_texture(self, texture_id: &'h str) -> WithTexture {
+	pub fn with_texture2(self, texture_id: &'h str) -> WithTexture {
 		WithTexture { prev: self, texture_id }
 	}
 }
