@@ -26,7 +26,7 @@ impl<'h> Root<'h> {
 
 	#[inline]
 	pub async fn root_dir2(&self) -> Result<String> {
-		let path = unsafe { self.root_dir_unchecked() };
+		let path = unsafe { self.root_dir_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
@@ -44,7 +44,7 @@ impl<'h> Root<'h> {
 
 	#[inline]
 	pub async fn root_manifest2(&self) -> Result<String> {
-		let path = unsafe { self.root_manifest_unchecked() };
+		let path = unsafe { self.root_manifest_unchecked2() };
 		let res = fs::is_file2(path.clone()).await?;
 
 		if res {
@@ -64,7 +64,7 @@ impl<'h> Root<'h> {
 
 	#[inline]
 	pub async fn textures_path2(&self) -> Result<String> {
-		let path = unsafe { self.textures_path_unchecked() };
+		let path = unsafe { self.textures_path_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {

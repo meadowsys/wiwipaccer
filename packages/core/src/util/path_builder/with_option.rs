@@ -23,7 +23,7 @@ impl<'h> WithOption<'h> {
 
 	#[inline]
 	pub async fn option_dir2(&self) -> Result<String> {
-		let path = unsafe { self.option_dir_unchecked() };
+		let path = unsafe { self.option_dir_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
@@ -42,7 +42,7 @@ impl<'h> WithOption<'h> {
 
 	#[inline]
 	pub async fn option_manifest2(&self) -> Result<String> {
-		let path = unsafe { self.option_manifest_unchecked() };
+		let path = unsafe { self.option_manifest_unchecked2() };
 		let res = fs::is_file2(path.clone()).await?;
 
 		if res {

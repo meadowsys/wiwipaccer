@@ -22,7 +22,7 @@ impl<'h> WithVersion<'h> {
 
 	#[inline]
 	pub async fn version_dir2(&self) -> Result<String> {
-		let path = unsafe { self.version_dir_unchecked() };
+		let path = unsafe { self.version_dir_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
@@ -40,7 +40,7 @@ impl<'h> WithVersion<'h> {
 
 	#[inline]
 	pub async fn version_manifest2(&self) -> Result<String> {
-		let path = unsafe { self.version_manifest_unchecked() };
+		let path = unsafe { self.version_manifest_unchecked2() };
 		let res = fs::is_file2(path.clone()).await?;
 
 		if res {

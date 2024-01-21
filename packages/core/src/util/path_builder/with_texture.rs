@@ -24,7 +24,7 @@ impl<'h> WithTexture<'h> {
 
 	#[inline]
 	pub async fn texture_dir2(&self) -> Result<String> {
-		let path = unsafe { self.texture_dir_unchecked() };
+		let path = unsafe { self.texture_dir_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
@@ -42,7 +42,7 @@ impl<'h> WithTexture<'h> {
 
 	#[inline]
 	pub async fn texture_manifest2(&self) -> Result<String> {
-		let path = unsafe { self.texture_manifest_unchecked() };
+		let path = unsafe { self.texture_manifest_unchecked2() };
 		let res = fs::is_file2(path.clone()).await?;
 
 		if res {
