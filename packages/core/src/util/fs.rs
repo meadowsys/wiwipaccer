@@ -4,25 +4,25 @@ use ::std::fs;
 use ::std::io::Read as _;
 
 #[inline]
-pub async fn metadata(path: n::global::Path) -> Result<fs::Metadata> {
-	let f = || fs::metadata(path.into_inner())
+pub async fn metadata(path: String) -> Result<fs::Metadata> {
+	let f = || fs::metadata(path)
 		.map_err(Error::FSError);
 	spawn_blocking(f).await
 }
 
 #[inline]
-pub async fn is_dir(path: n::global::Path) -> Result<bool> {
+pub async fn is_dir(path: String) -> Result<bool> {
 	Ok(metadata(path).await?.is_dir())
 }
 
 #[inline]
-pub async fn is_file(path: n::global::Path) -> Result<bool> {
+pub async fn is_file(path: String) -> Result<bool> {
 	Ok(metadata(path).await?.is_file())
 }
 
 // TODO: can probably be optimised (one less meta call?) if rewritten by hand?
-pub async fn read_to_string(path: n::global::FilePath) -> Result<String> {
-	let f = || fs::read(path.into_inner())
+pub async fn read_to_string(path: String) -> Result<String> {
+	let f = || fs::read(path)
 		.map_err(Error::FSError);
 	let bytes = spawn_blocking(f).await?;
 
@@ -33,8 +33,8 @@ pub async fn read_to_string(path: n::global::FilePath) -> Result<String> {
 }
 
 #[inline]
-pub async fn read_dir(path: n::global::DirPath) -> Result<ReadDir> {
-	tokio::fs::read_dir(path.into_inner())
+pub async fn read_dir(path: String) -> Result<ReadDir> {
+	tokio::fs::read_dir(path)
 		.await
 		.map(ReadDir)
 		.map_err(Error::FSError)
