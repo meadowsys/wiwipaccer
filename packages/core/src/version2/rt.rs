@@ -1,3 +1,4 @@
+use super::error::*;
 use crate::mc_versions::{ MC_VERSIONS, MCVersionRef, MCVersionRefSlice };
 use super::nr;
 
@@ -31,5 +32,11 @@ impl PackVersionSpecRuntime {
 				s.iter().any(|s| *s == *mc_version)
 			}
 		}
+	}
+}
+
+impl VersionRuntime {
+	pub(crate) async fn new() -> Result<Self> {
+		todo!()
 	}
 }

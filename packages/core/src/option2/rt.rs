@@ -1,3 +1,4 @@
+use super::error::*;
 use super::nr;
 
 pub struct OptionRuntime {
@@ -5,4 +6,10 @@ pub struct OptionRuntime {
 	description: nr::Description,
 	id: nr::ID,
 	versions: nr::Versions
+}
+
+impl OptionRuntime {
+	pub(crate) async fn new() -> Result<Self> {
+		todo!()
+	}
 }
