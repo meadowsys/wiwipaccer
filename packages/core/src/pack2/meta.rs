@@ -10,7 +10,7 @@ pub(super) enum PackMeta {
 	Version1 {
 		name: nm::Name,
 		description: nm::Description,
-		pack_id: nm::ID,
+		id: nm::ID,
 		version: nm::Version,
 		dependencies: nm::Dependencies
 	}
