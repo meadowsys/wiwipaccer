@@ -1,4 +1,4 @@
-// use crate::nom as n;
+use crate::nom as n;
 use ::camino::Utf8PathBuf;
 use super::super::error::*;
 use super::super::fs;
@@ -25,6 +25,11 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
+	pub async fn root_dir(&self) -> Result<n::global::RootDirPath> {
+		self.root_dir2().await.map(n::global::RootDirPath::new)
+	}
+
+	#[inline]
 	pub async fn root_dir2(&self) -> Result<String> {
 		let path = unsafe { self.root_dir_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
@@ -38,8 +43,18 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
+	pub unsafe fn root_dir_unchecked(&self) -> n::global::RootDirPath {
+		n::global::RootDirPath::new(self.root_dir_unchecked2())
+	}
+
+	#[inline]
 	pub unsafe fn root_dir_unchecked2(&self) -> String {
 		self.root_dir.into()
+	}
+
+	#[inline]
+	pub async fn root_manifest(&self) -> Result<n::global::RootManifestPath> {
+		self.root_manifest2().await.map(n::global::RootManifestPath::new)
 	}
 
 	#[inline]
@@ -56,10 +71,20 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
+	pub unsafe fn root_manifest_unchecked(&self) -> n::global::RootManifestPath {
+		n::global::RootManifestPath::new(self.root_manifest_unchecked2())
+	}
+
+	#[inline]
 	pub unsafe fn root_manifest_unchecked2(&self) -> String {
 		let mut path = self._root_dir();
 		path.push(PACK_META_FILENAME);
 		path.into_string()
+	}
+
+	#[inline]
+	pub async fn textures_path(&self) -> Result<n::global::TexturesPath> {
+		self.textures_path2().await.map(n::global::TexturesPath::new)
 	}
 
 	#[inline]
@@ -76,8 +101,18 @@ impl<'h> Root<'h> {
 	}
 
 	#[inline]
+	pub unsafe fn textures_path_unchecked(&self) -> n::global::TexturesPath {
+		n::global::TexturesPath::new(self.textures_path_unchecked2())
+	}
+
+	#[inline]
 	pub unsafe fn textures_path_unchecked2(&self) -> String {
 		self._textures_path().into_string()
+	}
+
+	#[inline]
+	pub fn with_texture(self, texture_id: &'h n::texture::ID) -> WithTexture {
+		self.with_texture2(texture_id.ref_inner())
 	}
 
 	#[inline]

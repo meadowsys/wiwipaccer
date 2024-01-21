@@ -1,4 +1,4 @@
-// use crate::nom as n;
+use crate::nom as n;
 use super::super::error::*;
 use super::super::fs;
 use super::Root;
@@ -23,6 +23,11 @@ impl<'h> WithTexture<'h> {
 	}
 
 	#[inline]
+	pub async fn texture_dir(&self) -> Result<n::global::TextureDirPath> {
+		self.texture_dir2().await.map(n::global::TextureDirPath::new)
+	}
+
+	#[inline]
 	pub async fn texture_dir2(&self) -> Result<String> {
 		let path = unsafe { self.texture_dir_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
@@ -36,8 +41,18 @@ impl<'h> WithTexture<'h> {
 	}
 
 	#[inline]
+	pub unsafe fn texture_dir_unchecked(&self) -> n::global::TextureDirPath {
+		n::global::TextureDirPath::new(self.texture_dir_unchecked2())
+	}
+
+	#[inline]
 	pub unsafe fn texture_dir_unchecked2(&self) -> String {
 		self._texture_dir().into_string()
+	}
+
+	#[inline]
+	pub async fn texture_manifest(&self) -> Result<n::global::TextureManifestPath> {
+		self.texture_manifest2().await.map(n::global::TextureManifestPath::new)
 	}
 
 	#[inline]
@@ -54,10 +69,20 @@ impl<'h> WithTexture<'h> {
 	}
 
 	#[inline]
+	pub unsafe fn texture_manifest_unchecked(&self) -> n::global::TextureManifestPath {
+		n::global::TextureManifestPath::new(self.texture_manifest_unchecked2())
+	}
+
+	#[inline]
 	pub unsafe fn texture_manifest_unchecked2(&self) -> String {
 		let mut path = self._texture_dir();
 		path.push(TEXTURE_META_FILENAME);
 		path.into_string()
+	}
+
+	#[inline]
+	pub fn with_option(self, option_id: &'h n::option::ID) -> WithOption {
+		self.with_option2(option_id.ref_inner())
 	}
 
 	#[inline]

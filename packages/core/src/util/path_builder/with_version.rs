@@ -1,4 +1,4 @@
-// use crate::nom as n;
+use crate::nom as n;
 use super::super::error::*;
 use super::super::fs;
 use super::WithOption;
@@ -21,6 +21,11 @@ impl<'h> WithVersion<'h> {
 	}
 
 	#[inline]
+	pub async fn version_dir(&self) -> Result<n::global::VersionDirPath> {
+		self.version_dir2().await.map(n::global::VersionDirPath::new)
+	}
+
+	#[inline]
 	pub async fn version_dir2(&self) -> Result<String> {
 		let path = unsafe { self.version_dir_unchecked2() };
 		let res = fs::is_dir2(path.clone()).await?;
@@ -34,8 +39,18 @@ impl<'h> WithVersion<'h> {
 	}
 
 	#[inline]
+	pub unsafe fn version_dir_unchecked(&self) -> n::global::VersionDirPath {
+		n::global::VersionDirPath::new(self.version_dir_unchecked2())
+	}
+
+	#[inline]
 	pub unsafe fn version_dir_unchecked2(&self) -> String {
 		self._version_dir().into_string()
+	}
+
+	#[inline]
+	pub async fn version_manifest(&self) -> Result<n::global::VersionManifestPath> {
+		self.version_manifest2().await.map(n::global::VersionManifestPath::new)
 	}
 
 	#[inline]
@@ -49,6 +64,11 @@ impl<'h> WithVersion<'h> {
 			let path_name = "version manifest".into();
 			Err(Error::PathIsNotDir { path, path_name })
 		}
+	}
+
+	#[inline]
+	pub unsafe fn version_manifest_unchecked(&self) -> n::global::VersionManifestPath {
+		n::global::VersionManifestPath::new(self.version_manifest_unchecked2())
 	}
 
 	#[inline]
