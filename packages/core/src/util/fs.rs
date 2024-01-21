@@ -4,24 +4,44 @@ use ::std::fs;
 use ::std::io::Read as _;
 
 #[inline]
-pub async fn metadata(path: String) -> Result<fs::Metadata> {
+pub async fn metadata(path: n::global::Path) -> Result<fs::Metadata> {
+	metadata2(path.into_inner()).await
+}
+
+#[inline]
+pub async fn metadata2(path: String) -> Result<fs::Metadata> {
 	let f = || fs::metadata(path)
 		.map_err(Error::FSError);
 	spawn_blocking(f).await
 }
 
 #[inline]
-pub async fn is_dir(path: String) -> Result<bool> {
-	Ok(metadata(path).await?.is_dir())
+pub async fn is_dir(path: n::global::Path) -> Result<bool> {
+	is_dir2(path.into_inner()).await
 }
 
 #[inline]
-pub async fn is_file(path: String) -> Result<bool> {
-	Ok(metadata(path).await?.is_file())
+pub async fn is_dir2(path: String) -> Result<bool> {
+	Ok(metadata2(path).await?.is_dir())
+}
+
+#[inline]
+pub async fn is_file(path: n::global::Path) -> Result<bool> {
+	is_file2(path.into_inner()).await
+}
+
+#[inline]
+pub async fn is_file2(path: String) -> Result<bool> {
+	Ok(metadata2(path).await?.is_file())
+}
+
+#[inline]
+pub async fn read_to_string(path: n::global::FilePath) -> Result<String> {
+	read_to_string2(path.into_inner()).await
 }
 
 // TODO: can probably be optimised (one less meta call?) if rewritten by hand?
-pub async fn read_to_string(path: String) -> Result<String> {
+pub async fn read_to_string2(path: String) -> Result<String> {
 	let f = || fs::read(path)
 		.map_err(Error::FSError);
 	let bytes = spawn_blocking(f).await?;
@@ -33,7 +53,12 @@ pub async fn read_to_string(path: String) -> Result<String> {
 }
 
 #[inline]
-pub async fn read_dir(path: String) -> Result<ReadDir> {
+pub async fn read_dir(path: n::global::DirPath) -> Result<ReadDir> {
+	read_dir2(path.into_inner()).await
+}
+
+#[inline]
+pub async fn read_dir2(path: String) -> Result<ReadDir> {
 	tokio::fs::read_dir(path)
 		.await
 		.map(ReadDir)
