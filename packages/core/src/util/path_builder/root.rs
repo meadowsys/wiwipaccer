@@ -1,4 +1,4 @@
-use crate::nom as n;
+// use crate::nom as n;
 use ::camino::Utf8PathBuf;
 use super::super::error::*;
 use super::super::fs;
@@ -27,7 +27,7 @@ impl<'h> Root<'h> {
 	#[inline]
 	pub async fn root_dir(&self) -> Result<String> {
 		let path = unsafe { self.root_dir_unchecked() };
-		let res = fs::is_dir(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
 			Ok(path)
@@ -45,7 +45,7 @@ impl<'h> Root<'h> {
 	#[inline]
 	pub async fn root_manifest(&self) -> Result<String> {
 		let path = unsafe { self.root_manifest_unchecked() };
-		let res = fs::is_file(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_file2(path.clone()).await?;
 
 		if res {
 			Ok(path)
@@ -65,7 +65,7 @@ impl<'h> Root<'h> {
 	#[inline]
 	pub async fn textures_path(&self) -> Result<String> {
 		let path = unsafe { self.textures_path_unchecked() };
-		let res = fs::is_dir(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
 			Ok(path)

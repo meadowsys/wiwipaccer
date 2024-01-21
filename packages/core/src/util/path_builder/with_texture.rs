@@ -1,4 +1,4 @@
-use crate::nom as n;
+// use crate::nom as n;
 use super::super::error::*;
 use super::super::fs;
 use super::Root;
@@ -25,7 +25,7 @@ impl<'h> WithTexture<'h> {
 	#[inline]
 	pub async fn texture_dir(&self) -> Result<String> {
 		let path = unsafe { self.texture_dir_unchecked() };
-		let res = fs::is_dir(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
 			Ok(path)
@@ -43,7 +43,7 @@ impl<'h> WithTexture<'h> {
 	#[inline]
 	pub async fn texture_manifest(&self) -> Result<String> {
 		let path = unsafe { self.texture_manifest_unchecked() };
-		let res = fs::is_file(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_file2(path.clone()).await?;
 
 		if res {
 			Ok(path)

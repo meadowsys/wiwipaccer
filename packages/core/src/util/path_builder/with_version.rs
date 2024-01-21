@@ -1,4 +1,4 @@
-use crate::nom as n;
+// use crate::nom as n;
 use super::super::error::*;
 use super::super::fs;
 use super::WithOption;
@@ -23,7 +23,7 @@ impl<'h> WithVersion<'h> {
 	#[inline]
 	pub async fn version_dir(&self) -> Result<String> {
 		let path = unsafe { self.version_dir_unchecked() };
-		let res = fs::is_dir(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
 			Ok(path)
@@ -41,7 +41,7 @@ impl<'h> WithVersion<'h> {
 	#[inline]
 	pub async fn version_manifest(&self) -> Result<String> {
 		let path = unsafe { self.version_manifest_unchecked() };
-		let res = fs::is_file(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_file2(path.clone()).await?;
 
 		if res {
 			Ok(path)

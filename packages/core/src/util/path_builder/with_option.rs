@@ -1,4 +1,4 @@
-use crate::nom as n;
+// use crate::nom as n;
 use super::super::error::*;
 use super::super::fs;
 use super::WithTexture;
@@ -24,7 +24,7 @@ impl<'h> WithOption<'h> {
 	#[inline]
 	pub async fn option_dir(&self) -> Result<String> {
 		let path = unsafe { self.option_dir_unchecked() };
-		let res = fs::is_dir(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_dir2(path.clone()).await?;
 
 		if res {
 			Ok(path)
@@ -43,7 +43,7 @@ impl<'h> WithOption<'h> {
 	#[inline]
 	pub async fn option_manifest(&self) -> Result<String> {
 		let path = unsafe { self.option_manifest_unchecked() };
-		let res = fs::is_file(n::global::Path::new(path.clone())).await?;
+		let res = fs::is_file2(path.clone()).await?;
 
 		if res {
 			Ok(path)
