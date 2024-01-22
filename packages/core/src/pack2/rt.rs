@@ -83,3 +83,79 @@ impl PackRuntime {
 		Ok(Self { name, description, id, dir, version, dependencies, textures })
 	}
 }
+
+#[inline]
+fn process_version(version: nm::Version) -> Result<nr::Version> {
+	version
+		.map_nom_some::<Dummy, _, _>(|v| ::semver::Version::parse(&v))
+		.map_nom(Option::transpose)
+		.transpose()
+		.map_err(Into::into)
+}
+
+#[inline]
+async fn process_deps<R, D>(deps: nm::Dependencies, dep_resolver: &R)
+	-> Result<HashMap<nr::ID, (D, ::semver::VersionReq)>>
+where
+	R: DependencyResolver<Dependency = D>
+{
+	let deps = deps
+		.into_inner()
+		.unwrap_or_default();
+
+	let mut satisfied = HashMap::with_capacity(deps.len());
+	let mut not_satisfied = Vec::with_capacity(deps.len());
+
+	for (id, req) in deps {
+		let id = nr::ID::new(id.into_inner());
+		let req = ::semver::VersionReq::parse(req.ref_inner())?;
+
+		let dep = {
+			use DependencyResult::*;
+			match dep_resolver.dependency(&id, &req).await? {
+				Found(d) => { d }
+				NotFound => {
+					not_satisfied.push((id, req, None));
+					continue
+				}
+				VersionNotSatisfied(v) => {
+					not_satisfied.push((id, req, Some(v)));
+					continue
+				}
+			}
+		};
+
+		satisfied.insert(id, (dep, req));
+	}
+
+	if !not_satisfied.is_empty() {
+		return Err(Error::DepsNotSatisfied(not_satisfied))
+	}
+
+	Ok(satisfied)
+}
+
+#[inline]
+async fn read_textures(p: &Root<'_>) -> Result<nr::Textures> {
+	let textures_dir = p.textures_path2().await?;
+	let mut textures_nom = nr::Textures::default();
+	let textures = textures_nom.mut_inner();
+
+	let mut read_dir = fs::read_dir2(textures_dir).await?;
+
+	while let Some(file) = read_dir.next().await? {
+		let id = file.file_name();
+		let id = id.to_str()
+			.ok_or_else(|| Error::NonUtf8Path)?;
+		let id = texture2::nr::ID::new(id.into());
+
+		// TODO
+		let texture = texture2::TextureRuntime::new().await?;
+
+		if let Some(t) = texture {
+			textures.insert(id, t);
+		}
+	}
+
+	Ok(textures_nom)
+}
