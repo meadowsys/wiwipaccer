@@ -102,35 +102,12 @@ impl<T, M> Nominal<T, M> {
 	}
 
 	#[inline]
-	pub fn try_map_nom<F, T2, M2, E>(self, f: F) -> Result<Nominal<T2, M2>, E>
-	where
-		F: FnOnce(T) -> Result<T2, E>
-	{
-		match f(self.0) {
-			Ok(val) => { Ok(Nominal(val, PhantomData)) }
-			Err(e) => { Err(e) }
-		}
-	}
-
-	#[inline]
 	pub async fn async_map_nom<F, Fu, T2, M2>(self, f: F) -> Nominal<T2, M2>
 	where
 		F: FnOnce(T) -> Fu,
 		Fu: Future<Output = T2>
 	{
 		Nominal(f(self.0).await, PhantomData)
-	}
-
-	#[inline]
-	pub async fn try_async_map_nom<F, Fu, T2, M2, E>(self, f: F) -> Result<Nominal<T2, M2>, E>
-	where
-		F: FnOnce(T) -> Fu,
-		Fu: Future<Output = Result<T2, E>>
-	{
-		match f(self.0).await {
-			Ok(val) => { Ok(Nominal(val, PhantomData)) }
-			Err(e) => { Err(e) }
-		}
 	}
 }
 
