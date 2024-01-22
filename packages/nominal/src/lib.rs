@@ -137,10 +137,7 @@ impl<T, M> Nominal<T, M> {
 impl<T, M, E> Nominal<Result<T, E>, M> {
 	#[inline]
 	pub fn transpose(self) -> Result<Nominal<T, M>, E> {
-		match self.0 {
-			Ok(val) => { Ok(Nominal(val, PhantomData)) }
-			Err(e) => { Err(e) }
-		}
+		self.0.map(|val| Nominal(val, PhantomData))
 	}
 }
 
