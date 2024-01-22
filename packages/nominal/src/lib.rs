@@ -116,12 +116,36 @@ impl<T, M, E> Nominal<Result<T, E>, M> {
 	pub fn transpose(self) -> Result<Nominal<T, M>, E> {
 		self.0.map(|val| Nominal(val, PhantomData))
 	}
+
+	#[inline]
+	pub fn map_nom_ok<T2, M2, F>(self, f: F) -> Nominal<Result<T2, E>, M2>
+	where
+		F: FnOnce(T) -> T2
+	{
+		Nominal(self.0.map(f), PhantomData)
+	}
+
+	#[inline]
+	pub fn map_nom_err<M2, E2, F>(self, f: F) -> Nominal<Result<T, E2>, M2>
+	where
+		F: FnOnce(E) -> E2
+	{
+		Nominal(self.0.map_err(f), PhantomData)
+	}
 }
 
 impl<T, M> Nominal<Option<T>, M> {
 	#[inline]
 	pub fn transpose(self) -> Option<Nominal<T, M>> {
 		self.0.map(|val| Nominal(val, PhantomData))
+	}
+
+	#[inline]
+	pub fn map_nom_some<T2, M2, F>(self, f: F) -> Nominal<Option<T2>, M2>
+	where
+		F: FnOnce(T) -> T2
+	{
+		Nominal(self.0.map(f), PhantomData)
 	}
 }
 
