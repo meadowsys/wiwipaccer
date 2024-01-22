@@ -1,7 +1,8 @@
 use crate::texture2;
 use crate::util::{ fs, path_builder2 };
+use crate::util::path_builder::Root;
 use super::error::*;
-use super::{ meta, nr };
+use super::{ meta, nm, nr };
 use ::async_trait::async_trait;
 use ::hashbrown::HashMap;
 use ::nominal::Dummy;
@@ -67,77 +68,17 @@ impl PackRuntime {
 		let description = description.transmute_nom();
 		let id = id.transmute_nom();
 		let dir = nr::Dir::new(dir);
-		let version = version
-			.map_nom_some::<Dummy, _, _>(|v| ::semver::Version::parse(&v))
-			.map_nom(Option::transpose)
-			.transpose()?;
-
-		let dependencies = {
-			let dependencies = dependencies
-				.into_inner()
-				.unwrap_or_default();
-			let mut satisfied = HashMap::with_capacity(dependencies.len());
-			let mut not_satisfied = Vec::with_capacity(dependencies.len());
-
-			for (id, req) in dependencies {
-				let id = nr::ID::new(id.into_inner());
-				let req = ::semver::VersionReq::parse(req.ref_inner())?;
-
-				let dep = {
-					use DependencyResult::*;
-					match dep_resolver.dependency(&id, &req).await? {
-						Found(d) => { d }
-						NotFound => {
-							not_satisfied.push((id, req, None));
-							continue
-						}
-						VersionNotSatisfied(v) => {
-							not_satisfied.push((id, req, Some(v)));
-							continue
-						}
-					}
-				};
-
-				satisfied.insert(id, (dep, req));
-			}
-
-			if !not_satisfied.is_empty() {
-				return Err(Error::DepsNotSatisfied(not_satisfied))
-			}
-
-			satisfied
-		};
+		let version = process_version(version)?;
+		let dependencies = process_deps(dependencies, &dep_resolver).await?;
 
 		// TODO: do something with dependencies in hashmap when actual logic is in
-
+		// I think we'll need to pass to read_textures to process it
 		let dependencies = dependencies.into_iter()
 			.map(|(id, (_, req))| (id, req))
 			.collect();
 		let dependencies = nr::Dependencies::new(dependencies);
 
-		let textures = {
-			let textures_dir = p.textures_path2().await?;
-			let mut textures_nom = nr::Textures::default();
-			let textures = textures_nom.mut_inner();
-
-			let mut read_dir = fs::read_dir2(textures_dir.clone()).await?;
-
-			while let Some(file) = read_dir.next().await? {
-				let id = file.file_name();
-				let id = id.to_str()
-					.ok_or_else(|| Error::NonUtf8Path)?;
-				let id = texture2::nr::ID::new(id.into());
-
-				// TODO
-				let texture = texture2::TextureRuntime::new().await?;
-
-				if let Some(t) = texture {
-					textures.insert(id, t);
-				}
-			}
-
-			textures_nom
-		};
+		let textures = read_textures(&p).await?;
 
 		Ok(Self { name, description, id, dir, version, dependencies, textures })
 	}
