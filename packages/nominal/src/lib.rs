@@ -11,14 +11,15 @@
 #![allow(clippy::partialeq_ne_impl)]
 
 #[cfg(feature = "serde")]
-use serde::{
+use ::serde::{
 	de::{ Deserialize, Deserializer },
 	ser::{ Serialize, Serializer }
 };
-use std::cmp::Ordering;
-use std::fmt::{ self, Debug, Display, Formatter };
-use std::hash::{ Hash, Hasher };
-use std::marker::PhantomData;
+use ::std::cmp::Ordering;
+use ::std::fmt::{ self, Debug, Display, Formatter };
+use ::std::hash::{ Hash, Hasher };
+use ::std::marker::PhantomData;
+use ::std::future::Future;
 
 #[macro_export]
 macro_rules! nominal {
@@ -82,6 +83,71 @@ impl<T, M> Nominal<T, M> {
 	#[inline]
 	pub fn mut_inner(&mut self) -> &mut T {
 		&mut self.0
+	}
+
+	/// Consumes and rewraps self to another nominal type, where the two inner types
+	/// are the same of course. Can be type inferred, so may lose a bit of explicitness,
+	/// but it still explicitly calls a conversion, so should be clear still? :thinking:
+	#[inline]
+	pub fn transmute_nom<M2>(self) -> Nominal<T, M2> {
+		Nominal(self.0, PhantomData)
+	}
+
+	#[inline]
+	pub fn map_nom<F, T2, M2>(self, f: F) -> Nominal<T2, M2>
+	where
+		F: FnOnce(T) -> T2
+	{
+		Nominal(f(self.0), PhantomData)
+	}
+
+	#[inline]
+	pub fn try_map_nom<F, T2, M2, E>(self, f: F) -> Result<Nominal<T2, M2>, E>
+	where
+		F: FnOnce(T) -> Result<T2, E>
+	{
+		match f(self.0) {
+			Ok(val) => { Ok(Nominal(val, PhantomData)) }
+			Err(e) => { Err(e) }
+		}
+	}
+
+	#[inline]
+	pub async fn async_map_nom<F, Fu, T2, M2>(self, f: F) -> Nominal<T2, M2>
+	where
+		F: FnOnce(T) -> Fu,
+		Fu: Future<Output = T2>
+	{
+		Nominal(f(self.0).await, PhantomData)
+	}
+
+	#[inline]
+	pub async fn try_async_map_nom<F, Fu, T2, M2, E>(self, f: F) -> Result<Nominal<T2, M2>, E>
+	where
+		F: FnOnce(T) -> Fu,
+		Fu: Future<Output = Result<T2, E>>
+	{
+		match f(self.0).await {
+			Ok(val) => { Ok(Nominal(val, PhantomData)) }
+			Err(e) => { Err(e) }
+		}
+	}
+}
+
+impl<T, M, E> Nominal<Result<T, E>, M> {
+	#[inline]
+	pub fn transpose(self) -> Result<Nominal<T, M>, E> {
+		match self.0 {
+			Ok(val) => { Ok(Nominal(val, PhantomData)) }
+			Err(e) => { Err(e) }
+		}
+	}
+}
+
+impl<T, M> Nominal<Option<T>, M> {
+	#[inline]
+	pub fn transpose(self) -> Option<Nominal<T, M>> {
+		self.0.map(|val| Nominal(val, PhantomData))
 	}
 }
 
