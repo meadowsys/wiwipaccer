@@ -54,6 +54,10 @@ macro_rules! nominal_mod {
 #[repr(transparent)]
 pub struct Nominal<T, M>(T, PhantomData<M>);
 
+/// Dummy marker type for when it doesn't matter what the marker type is
+/// (for example, in the middle of longer function chains)
+pub struct Dummy;
+
 impl<T, M> Nominal<T, M> {
 	/// Wraps a value into a Nominal struct
 	#[inline]
@@ -94,7 +98,7 @@ impl<T, M> Nominal<T, M> {
 	}
 
 	#[inline]
-	pub fn map_nom<F, T2, M2>(self, f: F) -> Nominal<T2, M2>
+	pub fn map_nom<M2, T2, F>(self, f: F) -> Nominal<T2, M2>
 	where
 		F: FnOnce(T) -> T2
 	{
@@ -102,7 +106,7 @@ impl<T, M> Nominal<T, M> {
 	}
 
 	#[inline]
-	pub async fn async_map_nom<F, Fu, T2, M2>(self, f: F) -> Nominal<T2, M2>
+	pub async fn async_map_nom<M2, T2, F, Fu>(self, f: F) -> Nominal<T2, M2>
 	where
 		F: FnOnce(T) -> Fu,
 		Fu: Future<Output = T2>
@@ -118,7 +122,7 @@ impl<T, M, E> Nominal<Result<T, E>, M> {
 	}
 
 	#[inline]
-	pub fn map_nom_ok<T2, M2, F>(self, f: F) -> Nominal<Result<T2, E>, M2>
+	pub fn map_nom_ok<M2, T2, F>(self, f: F) -> Nominal<Result<T2, E>, M2>
 	where
 		F: FnOnce(T) -> T2
 	{
@@ -141,7 +145,7 @@ impl<T, M> Nominal<Option<T>, M> {
 	}
 
 	#[inline]
-	pub fn map_nom_some<T2, M2, F>(self, f: F) -> Nominal<Option<T2>, M2>
+	pub fn map_nom_some<M2, T2, F>(self, f: F) -> Nominal<Option<T2>, M2>
 	where
 		F: FnOnce(T) -> T2
 	{
