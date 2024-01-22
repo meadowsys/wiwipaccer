@@ -6,4 +6,4 @@ pub mod fs;
 pub mod path_builder;
 pub mod ron;
 
-pub use path_builder::path_builder;
+pub use path_builder::{ path_builder, path_builder2 };
