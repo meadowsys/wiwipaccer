@@ -10,7 +10,7 @@ pub struct TextureRuntime {
 }
 
 impl TextureRuntime {
-	pub(crate) async fn new() -> Result<Self> {
+	pub(crate) async fn new() -> Result<Option<Self>> {
 		todo!()
 	}
 }

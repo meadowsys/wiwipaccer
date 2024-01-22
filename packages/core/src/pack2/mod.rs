@@ -12,7 +12,7 @@ use ::hashbrown::HashMap;
 		nominal!(pub Name, inner: String);
 		nominal!(pub Description, inner: Option<String>);
 		nominal!(pub ID, inner: String);
-		nominal!(pub Version, inner: String);
+		nominal!(pub Version, inner: Option<String>);
 		nominal!(pub VersionReq, inner: String);
 		nominal!(pub Dependencies, inner: Option<HashMap<ID, VersionReq>>);
 	}
@@ -21,7 +21,7 @@ use ::hashbrown::HashMap;
 		nominal!(pub Description, inner: Option<String>);
 		nominal!(pub ID, inner: String);
 		nominal!(pub Dir, inner: String);
-		nominal!(pub Version, inner: ::semver::Version);
+		nominal!(pub Version, inner: Option<::semver::Version>);
 		nominal!(pub Dependencies, inner: HashMap<ID, ::semver::VersionReq>);
 		nominal!(pub Textures, inner: HashMap<texture2::nr::ID, texture2::TextureRuntime>);
 	}
