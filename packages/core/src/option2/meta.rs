@@ -5,7 +5,7 @@ use ::serde::{ Deserialize, Serialize };
 
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "meta_version")]
-pub(super) enum OptionMeta {
+enum OptionMeta {
 	#[serde(rename = "1")]
 	Version1 {
 		name: nm::Name,
@@ -13,7 +13,16 @@ pub(super) enum OptionMeta {
 	}
 }
 
-#[inline]
-pub(super) fn deserialise_option(s: &str) -> Result<OptionMeta> {
-	Ok(ron::from_str(s)?)
+pub(super) struct OptionUnversioned {
+	pub(super) name: nm::Name,
+	pub(super) description: nm::Description
+}
+
+pub(super) fn deserialise_option(s: &str) -> Result<OptionUnversioned> {
+	use OptionMeta::*;
+	Ok(match ron::from_str(s)? {
+		Version1 { name, description } => {
+			OptionUnversioned { name, description }
+		}
+	})
 }

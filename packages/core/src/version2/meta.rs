@@ -4,7 +4,7 @@ use ::serde::{ Deserialize, Serialize };
 
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "meta_version")]
-pub(super) enum VersionMeta {
+enum VersionMeta {
 	#[serde(rename = "1")]
 	Version1 {
 		versions: Vec<PackVersionSpecMeta>
@@ -18,7 +18,15 @@ pub(super) enum PackVersionSpecMeta {
 	MCVersionRange(String, String)
 }
 
-#[inline]
-pub(super) fn deserialise_version(s: &str) -> Result<VersionMeta> {
-	Ok(ron::from_str(s)?)
+pub(super) struct VersionUnversioned {
+	pub(super) versions: Vec<PackVersionSpecMeta>
+}
+
+pub(super) fn deserialise_version(s: &str) -> Result<VersionUnversioned> {
+	use VersionMeta::*;
+	Ok(match ron::from_str(s)? {
+		Version1 { versions } => {
+			VersionUnversioned { versions }
+		}
+	})
 }
