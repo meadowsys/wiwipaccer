@@ -27,9 +27,7 @@ pub trait DependencyResolver {
 }
 
 #[async_trait]
-pub trait Dependency {
-	fn wef(&self);
-}
+pub trait Dependency {}
 
 pub enum DependencyResult<D> {
 	/// Found and satisfies version requirement
