@@ -3,6 +3,17 @@ use super::fs;
 use ::camino::Utf8PathBuf;
 use ::std::ops::Deref;
 
+// -- consts --
+
+const ROOT_META_FILENAME: &str = "pack.wiwimeta";
+
+const TEXTURE_ENTRIES_DIR: &str = "textures";
+const TEXTURE_META_FILENAME: &str = "texture.wiwimeta";
+
+const OPTION_META_FILENAME: &str = "option.wiwimeta";
+
+const VERSION_META_FILENAME: &str = "version.wiwimeta";
+
 // -- structs --
 
 // lol, not really necessary at all, but eh lel
@@ -87,5 +98,73 @@ impl<'h> Deref for WithVersionID<'h> {
 }
 
 // -- logic impls (private fns) --
+
+impl<'h> WithRootDir<'h> {
+	fn _root_dir(&self) -> Utf8PathBuf {
+		Utf8PathBuf::from(self.root_dir)
+	}
+
+	fn _root_meta_filename(&self) -> Utf8PathBuf {
+		let mut path = self._root_dir();
+		path.push(ROOT_META_FILENAME);
+		path
+	}
+
+	fn _texture_entries_dir(&self) -> Utf8PathBuf {
+		let mut path = self._root_dir();
+		path.push(TEXTURE_ENTRIES_DIR);
+		path
+	}
+}
+
+impl<'h> WithTextureID<'h> {
+	fn _texture_dir(&self) -> Utf8PathBuf {
+		let mut path = self._texture_entries_dir();
+		path.push(self.texture_id);
+		path
+	}
+
+	fn _texture_meta_filename(&self) -> Utf8PathBuf {
+		let mut path = self._texture_dir();
+		path.push(TEXTURE_META_FILENAME);
+		path
+	}
+
+	fn _option_entries_dir(&self) -> Utf8PathBuf {
+		self._texture_dir()
+	}
+}
+
+impl<'h> WithOptionID<'h> {
+	fn _option_dir(&self) -> Utf8PathBuf {
+		let mut path = self._texture_dir();
+		path.push(self.option_id);
+		path
+	}
+
+	fn _option_meta_filename(&self) -> Utf8PathBuf {
+		let mut path = self._option_dir();
+		path.push(OPTION_META_FILENAME);
+		path
+	}
+
+	fn _version_entries_dir(&self) -> Utf8PathBuf {
+		self._option_dir()
+	}
+}
+
+impl<'h> WithVersionID<'h> {
+	fn _version_dir(&self) -> Utf8PathBuf {
+		let mut path = self._option_dir();
+		path.push(self.version_id);
+		path
+	}
+
+	fn _version_meta_filename(&self) -> Utf8PathBuf {
+		let mut path = self._version_dir();
+		path.push(VERSION_META_FILENAME);
+		path
+	}
+}
 
 // -- public interface --
