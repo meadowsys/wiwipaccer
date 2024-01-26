@@ -324,8 +324,8 @@ impl<'h> WithTextureID<'h> {
 	}
 
 	#[inline]
-	pub async fn texture_manifest_checked(&self) -> Result<String> {
-		check_file(
+	pub async fn texture_manifest_silent_fail(&self) -> SilentFailingPath {
+		check_file_silent_fail(
 			"texture manifest",
 			self._texture_manifest()
 		).await
@@ -350,8 +350,8 @@ impl<'h> WithOptionID<'h> {
 	}
 
 	#[inline]
-	pub async fn option_manifest_checked(&self) -> Result<String> {
-		check_file(
+	pub async fn option_manifest_silent_fail(&self) -> SilentFailingPath {
+		check_file_silent_fail(
 			"option manifest",
 			self._option_manifest()
 		).await
@@ -376,8 +376,8 @@ impl<'h> WithVersionID<'h> {
 	}
 
 	#[inline]
-	pub async fn version_manifest_checked(&self) -> Result<String> {
-		check_file(
+	pub async fn version_manifest_silent_fail(&self) -> SilentFailingPath {
+		check_file_silent_fail(
 			"version manifest",
 			self._version_manifest()
 		).await
