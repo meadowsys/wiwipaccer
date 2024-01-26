@@ -2,6 +2,8 @@
 #![allow(dead_code, unused_imports, unused_variables)]
 #![allow(clippy::missing_safety_doc)]
 
+#![feature(try_trait_v2)]
+
 pub mod mc_versions;
 pub mod nom;
 pub mod option;

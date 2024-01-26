@@ -40,4 +40,18 @@ impl Error {
 		use Error::*;
 		matches!(self, PathIsNotDir { .. } | PathIsNotFile { .. })
 	}
+
+	/// returns true if this error is one that should silent fail when silently
+	/// failing is requested. for example, while iterating through entries in a
+	/// dir, silently failing on all entries that aren't files
+	///
+	/// currently returns true if error is one of [`PathIsNotDir`], [`PathIsNotFile`]
+	///
+	/// [`PathIsNotDir`]: Error::PathIsNotDir
+	/// [`PathIsNotFile`]: Error::PathIsNotFile
+	#[inline]
+	pub fn should_silent_fail(&self) -> bool {
+		use Error::*;
+		matches!(self, PathIsNotDir { .. } | PathIsNotFile { .. })
+	}
 }

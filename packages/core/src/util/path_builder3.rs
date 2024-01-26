@@ -2,7 +2,8 @@ use super::error::*;
 use super::fs;
 use ::camino::Utf8PathBuf;
 use ::std::future::Future;
-use ::std::ops::Deref;
+use ::std::ops::ControlFlow::{ self, Break, Continue };
+use ::std::ops::{ Deref, FromResidual, Try };
 
 // -- consts --
 
@@ -257,6 +258,33 @@ async fn check_file(path_name: &str, path: Utf8PathBuf) -> Result<String> {
 	check_path(path_name, fs::is_file2, f_err, path).await
 }
 
+#[inline]
+async fn check_silent_fail<'h, F, Fu>(
+	f: F,
+	path_name: &'h str,
+	path: Utf8PathBuf
+) -> SilentFailingPath
+where
+	F: FnOnce(&'h str, Utf8PathBuf) -> Fu,
+	Fu: Future<Output = Result<String>>
+{
+	match f(path_name, path).await {
+		Ok(p) => { SilentFailingPath::Ok(p) }
+		Err(e) if e.should_silent_fail() => { SilentFailingPath::SilentFail }
+		Err(e) => { SilentFailingPath::Err(e) }
+	}
+}
+
+#[inline]
+async fn check_dir_silent_fail(path_name: &str, path: Utf8PathBuf) -> SilentFailingPath {
+	check_silent_fail(check_dir, path_name, path).await
+}
+
+#[inline]
+async fn check_file_silent_fail(path_name: &str, path: Utf8PathBuf) -> SilentFailingPath {
+	check_silent_fail(check_file, path_name, path).await
+}
+
 // -- public interface --
 
 impl<'h> WithRootDir<'h> {
@@ -352,5 +380,61 @@ impl<'h> WithVersionID<'h> {
 			"version manifest",
 			self._version_manifest()
 		).await
+	}
+}
+
+pub enum SilentFailingPath {
+	Ok(String),
+	SilentFail,
+	Err(Error)
+}
+
+pub struct SilentFailingPathResidual {
+	error: Option<Error>
+}
+
+impl Try for SilentFailingPath {
+	type Output = String;
+	type Residual = SilentFailingPathResidual;
+
+	#[inline]
+	fn from_output(output: Self::Output) -> Self {
+		Self::Ok(output)
+	}
+
+	#[inline]
+	fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
+		use SilentFailingPath::*;
+		match self {
+			Ok(p) => { Continue(p) }
+			SilentFail => {
+				let error = None;
+				Break(SilentFailingPathResidual { error })
+			}
+			Err(error) => {
+				let error = Some(error);
+				Break(SilentFailingPathResidual { error })
+			}
+		}
+	}
+}
+
+impl FromResidual for SilentFailingPath {
+	#[inline]
+	fn from_residual(residual: <Self as Try>::Residual) -> Self {
+		match residual.error {
+			Some(e) => { SilentFailingPath::Err(e) }
+			None => { SilentFailingPath::SilentFail }
+		}
+	}
+}
+
+impl FromResidual<SilentFailingPathResidual> for Result<Option<String>> {
+	#[inline]
+	fn from_residual(residual: SilentFailingPathResidual) -> Self {
+		match residual.error {
+			Some(e) => { Err(e) }
+			None => { Ok(None) }
+		}
 	}
 }
