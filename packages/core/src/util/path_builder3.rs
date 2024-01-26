@@ -6,14 +6,14 @@ use ::std::ops::Deref;
 
 // -- consts --
 
-const ROOT_META_FILENAME: &str = "pack.wiwimeta";
+const ROOT_MANIFEST: &str = "pack.wiwimeta";
 
 const TEXTURE_ENTRIES_DIR: &str = "textures";
-const TEXTURE_META_FILENAME: &str = "texture.wiwimeta";
+const TEXTURE_MANIFEST: &str = "texture.wiwimeta";
 
-const OPTION_META_FILENAME: &str = "option.wiwimeta";
+const OPTION_MANIFEST: &str = "option.wiwimeta";
 
-const VERSION_META_FILENAME: &str = "version.wiwimeta";
+const VERSION_MANIFEST: &str = "version.wiwimeta";
 
 // -- structs --
 
@@ -105,9 +105,9 @@ impl<'h> WithRootDir<'h> {
 		Utf8PathBuf::from(self.root_dir)
 	}
 
-	fn _root_meta_filename(&self) -> Utf8PathBuf {
+	fn _root_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._root_dir();
-		path.push(ROOT_META_FILENAME);
+		path.push(ROOT_MANIFEST);
 		path
 	}
 
@@ -125,9 +125,9 @@ impl<'h> WithTextureID<'h> {
 		path
 	}
 
-	fn _texture_meta_filename(&self) -> Utf8PathBuf {
+	fn _texture_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._texture_dir();
-		path.push(TEXTURE_META_FILENAME);
+		path.push(TEXTURE_MANIFEST);
 		path
 	}
 
@@ -143,9 +143,9 @@ impl<'h> WithOptionID<'h> {
 		path
 	}
 
-	fn _option_meta_filename(&self) -> Utf8PathBuf {
+	fn _option_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._option_dir();
-		path.push(OPTION_META_FILENAME);
+		path.push(OPTION_MANIFEST);
 		path
 	}
 
@@ -161,9 +161,9 @@ impl<'h> WithVersionID<'h> {
 		path
 	}
 
-	fn _version_meta_filename(&self) -> Utf8PathBuf {
+	fn _version_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._version_dir();
-		path.push(VERSION_META_FILENAME);
+		path.push(VERSION_MANIFEST);
 		path
 	}
 }
@@ -215,10 +215,10 @@ impl<'h> WithRootDir<'h> {
 		).await
 	}
 
-	pub async fn root_metafile(&self) -> Result<String> {
+	pub async fn root_manifest(&self) -> Result<String> {
 		check_file(
 			"root manifest",
-			self._root_meta_filename()
+			self._root_manifest()
 		).await
 	}
 
@@ -238,10 +238,10 @@ impl<'h> WithTextureID<'h> {
 		).await
 	}
 
-	pub async fn texture_metafile(&self) -> Result<String> {
+	pub async fn texture_manifest(&self) -> Result<String> {
 		check_file(
 			"texture manifest",
-			self._texture_meta_filename()
+			self._texture_manifest()
 		).await
 	}
 
@@ -261,10 +261,10 @@ impl<'h> WithOptionID<'h> {
 		).await
 	}
 
-	pub async fn option_metafile(&self) -> Result<String> {
+	pub async fn option_manifest(&self) -> Result<String> {
 		check_file(
 			"option manifest",
-			self._option_meta_filename()
+			self._option_manifest()
 		).await
 	}
 
@@ -284,10 +284,10 @@ impl<'h> WithVersionID<'h> {
 		).await
 	}
 
-	pub async fn version_metafile(&self) -> Result<String> {
+	pub async fn version_manifest(&self) -> Result<String> {
 		check_file(
 			"version manifest",
-			self._version_meta_filename()
+			self._version_manifest()
 		).await
 	}
 }
