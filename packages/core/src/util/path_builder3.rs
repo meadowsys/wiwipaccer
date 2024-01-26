@@ -1,6 +1,7 @@
 use super::error::*;
 use super::fs;
 use ::camino::Utf8PathBuf;
+use ::std::future::Future;
 use ::std::ops::Deref;
 
 // -- consts --
@@ -167,4 +168,126 @@ impl<'h> WithVersionID<'h> {
 	}
 }
 
+async fn check_path<F, Fu, Fe>(
+	path_name: &str,
+	f: F,
+	f_err: Fe,
+	path: Utf8PathBuf
+) -> Result<String>
+where
+	F: FnOnce(String) -> Fu,
+	Fu: Future<Output = Result<bool>>,
+	Fe: FnOnce(String, String) -> Error
+{
+	let path = path.into_string();
+	if f(path.clone()).await? {
+		Ok(path)
+	} else {
+		Err(f_err(path, path_name.into()))
+	}
+}
+
+async fn check_dir(path_name: &str, path: Utf8PathBuf) -> Result<String> {
+	check_path(
+		path_name,
+		fs::is_dir2,
+		|path, path_name| Error::PathIsNotDir { path, path_name },
+		path
+	).await
+}
+
+async fn check_file(path_name: &str, path: Utf8PathBuf) -> Result<String> {
+	check_path(
+		path_name,
+		fs::is_file2,
+		|path, path_name| Error::PathIsNotFile { path, path_name },
+		path
+	).await
+}
+
 // -- public interface --
+
+impl<'h> WithRootDir<'h> {
+	pub async fn root_dir(&self) -> Result<String> {
+		check_dir(
+			"root dir",
+			self._root_dir()
+		).await
+	}
+
+	pub async fn root_metafile(&self) -> Result<String> {
+		check_file(
+			"root manifest",
+			self._root_meta_filename()
+		).await
+	}
+
+	pub async fn texture_entries_dir(&self) -> Result<String> {
+		check_dir(
+			"texture entries dir",
+			self._texture_entries_dir()
+		).await
+	}
+}
+
+impl<'h> WithTextureID<'h> {
+	pub async fn texture_dir(&self) -> Result<String> {
+		check_dir(
+			"texture dir",
+			self._texture_dir()
+		).await
+	}
+
+	pub async fn texture_metafile(&self) -> Result<String> {
+		check_file(
+			"texture manifest",
+			self._texture_meta_filename()
+		).await
+	}
+
+	pub async fn option_entries_dir(&self) -> Result<String> {
+		check_dir(
+			"option entries dir",
+			self._option_entries_dir()
+		).await
+	}
+}
+
+impl<'h> WithOptionID<'h> {
+	pub async fn option_dir(&self) -> Result<String> {
+		check_dir(
+			"option dir",
+			self._option_dir()
+		).await
+	}
+
+	pub async fn option_metafile(&self) -> Result<String> {
+		check_file(
+			"option manifest",
+			self._option_meta_filename()
+		).await
+	}
+
+	pub async fn version_entries_dir(&self) -> Result<String> {
+		check_dir(
+			"version entries dir",
+			self._version_entries_dir()
+		).await
+	}
+}
+
+impl<'h> WithVersionID<'h> {
+	pub async fn version_dir(&self) -> Result<String> {
+		check_dir(
+			"version dir",
+			self._version_dir()
+		).await
+	}
+
+	pub async fn version_metafile(&self) -> Result<String> {
+		check_file(
+			"version manifest",
+			self._version_meta_filename()
+		).await
+	}
+}
