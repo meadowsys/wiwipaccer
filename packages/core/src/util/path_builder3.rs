@@ -239,22 +239,22 @@ where
 
 #[inline]
 async fn check_dir(path_name: &str, path: Utf8PathBuf) -> Result<String> {
-	check_path(
-		path_name,
-		fs::is_dir2,
-		|path, path_name| Error::PathIsNotDir { path, path_name },
-		path
-	).await
+	#[inline]
+	fn f_err(path: String, path_name: String) -> Error {
+		Error::PathIsNotDir { path, path_name }
+	}
+
+	check_path(path_name, fs::is_dir2, f_err, path).await
 }
 
 #[inline]
 async fn check_file(path_name: &str, path: Utf8PathBuf) -> Result<String> {
-	check_path(
-		path_name,
-		fs::is_file2,
-		|path, path_name| Error::PathIsNotFile { path, path_name },
-		path
-	).await
+	#[inline]
+	fn f_err(path: String, path_name: String) -> Error {
+		Error::PathIsNotFile { path, path_name }
+	}
+
+	check_path(path_name, fs::is_file2, f_err, path).await
 }
 
 // -- public interface --
