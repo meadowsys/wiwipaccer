@@ -47,29 +47,34 @@ pub struct WithVersionID<'h> {
 
 // -- creation / upgrade fns --
 
+#[inline]
 pub fn create_path_builder3() -> Blank {
 	Blank { __private: () }
 }
 
 impl Blank {
+	#[inline]
 	pub fn with_root_dir(self, root_dir: &str) -> WithRootDir {
 		WithRootDir { root_dir }
 	}
 }
 
 impl<'h> WithRootDir<'h> {
+	#[inline]
 	pub fn with_texture_id(self, texture_id: &'h str) -> WithTextureID {
 		WithTextureID { with_root_dir: self, texture_id }
 	}
 }
 
 impl<'h> WithTextureID<'h> {
+	#[inline]
 	pub fn with_option_id(self, option_id: &'h str) -> WithOptionID {
 		WithOptionID { with_texture_id: self, option_id }
 	}
 }
 
 impl<'h> WithOptionID<'h> {
+	#[inline]
 	pub fn with_version_id(self, version_id: &'h str) -> WithVersionID {
 		WithVersionID { with_option_id: self, version_id }
 	}
@@ -79,6 +84,7 @@ impl<'h> WithOptionID<'h> {
 
 impl<'h> Deref for WithTextureID<'h> {
 	type Target = WithRootDir<'h>;
+	#[inline]
 	fn deref(&self) -> &Self::Target {
 		&self.with_root_dir
 	}
@@ -86,6 +92,7 @@ impl<'h> Deref for WithTextureID<'h> {
 
 impl<'h> Deref for WithOptionID<'h> {
 	type Target = WithTextureID<'h>;
+	#[inline]
 	fn deref(&self) -> &Self::Target {
 		&self.with_texture_id
 	}
@@ -93,6 +100,7 @@ impl<'h> Deref for WithOptionID<'h> {
 
 impl<'h> Deref for WithVersionID<'h> {
 	type Target = WithOptionID<'h>;
+	#[inline]
 	fn deref(&self) -> &Self::Target {
 		&self.with_option_id
 	}
@@ -101,16 +109,19 @@ impl<'h> Deref for WithVersionID<'h> {
 // -- logic impls (private fns) --
 
 impl<'h> WithRootDir<'h> {
+	#[inline]
 	fn _root_dir(&self) -> Utf8PathBuf {
 		Utf8PathBuf::from(self.root_dir)
 	}
 
+	#[inline]
 	fn _root_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._root_dir();
 		path.push(ROOT_MANIFEST);
 		path
 	}
 
+	#[inline]
 	fn _texture_entries_dir(&self) -> Utf8PathBuf {
 		let mut path = self._root_dir();
 		path.push(TEXTURE_ENTRIES_DIR);
@@ -119,48 +130,56 @@ impl<'h> WithRootDir<'h> {
 }
 
 impl<'h> WithTextureID<'h> {
+	#[inline]
 	fn _texture_dir(&self) -> Utf8PathBuf {
 		let mut path = self._texture_entries_dir();
 		path.push(self.texture_id);
 		path
 	}
 
+	#[inline]
 	fn _texture_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._texture_dir();
 		path.push(TEXTURE_MANIFEST);
 		path
 	}
 
+	#[inline]
 	fn _option_entries_dir(&self) -> Utf8PathBuf {
 		self._texture_dir()
 	}
 }
 
 impl<'h> WithOptionID<'h> {
+	#[inline]
 	fn _option_dir(&self) -> Utf8PathBuf {
 		let mut path = self._texture_dir();
 		path.push(self.option_id);
 		path
 	}
 
+	#[inline]
 	fn _option_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._option_dir();
 		path.push(OPTION_MANIFEST);
 		path
 	}
 
+	#[inline]
 	fn _version_entries_dir(&self) -> Utf8PathBuf {
 		self._option_dir()
 	}
 }
 
 impl<'h> WithVersionID<'h> {
+	#[inline]
 	fn _version_dir(&self) -> Utf8PathBuf {
 		let mut path = self._option_dir();
 		path.push(self.version_id);
 		path
 	}
 
+	#[inline]
 	fn _version_manifest(&self) -> Utf8PathBuf {
 		let mut path = self._version_dir();
 		path.push(VERSION_MANIFEST);
@@ -168,6 +187,7 @@ impl<'h> WithVersionID<'h> {
 	}
 }
 
+#[inline]
 async fn check_path<F, Fu, Fe>(
 	path_name: &str,
 	f: F,
@@ -187,6 +207,7 @@ where
 	}
 }
 
+#[inline]
 async fn check_dir(path_name: &str, path: Utf8PathBuf) -> Result<String> {
 	check_path(
 		path_name,
@@ -196,6 +217,7 @@ async fn check_dir(path_name: &str, path: Utf8PathBuf) -> Result<String> {
 	).await
 }
 
+#[inline]
 async fn check_file(path_name: &str, path: Utf8PathBuf) -> Result<String> {
 	check_path(
 		path_name,
@@ -208,6 +230,7 @@ async fn check_file(path_name: &str, path: Utf8PathBuf) -> Result<String> {
 // -- public interface --
 
 impl<'h> WithRootDir<'h> {
+	#[inline]
 	pub async fn root_dir(&self) -> Result<String> {
 		check_dir(
 			"root dir",
@@ -215,6 +238,7 @@ impl<'h> WithRootDir<'h> {
 		).await
 	}
 
+	#[inline]
 	pub async fn root_manifest(&self) -> Result<String> {
 		check_file(
 			"root manifest",
@@ -222,6 +246,7 @@ impl<'h> WithRootDir<'h> {
 		).await
 	}
 
+	#[inline]
 	pub async fn texture_entries_dir(&self) -> Result<String> {
 		check_dir(
 			"texture entries dir",
@@ -231,6 +256,7 @@ impl<'h> WithRootDir<'h> {
 }
 
 impl<'h> WithTextureID<'h> {
+	#[inline]
 	pub async fn texture_dir(&self) -> Result<String> {
 		check_dir(
 			"texture dir",
@@ -238,6 +264,7 @@ impl<'h> WithTextureID<'h> {
 		).await
 	}
 
+	#[inline]
 	pub async fn texture_manifest(&self) -> Result<String> {
 		check_file(
 			"texture manifest",
@@ -245,6 +272,7 @@ impl<'h> WithTextureID<'h> {
 		).await
 	}
 
+	#[inline]
 	pub async fn option_entries_dir(&self) -> Result<String> {
 		check_dir(
 			"option entries dir",
@@ -254,6 +282,7 @@ impl<'h> WithTextureID<'h> {
 }
 
 impl<'h> WithOptionID<'h> {
+	#[inline]
 	pub async fn option_dir(&self) -> Result<String> {
 		check_dir(
 			"option dir",
@@ -261,6 +290,7 @@ impl<'h> WithOptionID<'h> {
 		).await
 	}
 
+	#[inline]
 	pub async fn option_manifest(&self) -> Result<String> {
 		check_file(
 			"option manifest",
@@ -268,6 +298,7 @@ impl<'h> WithOptionID<'h> {
 		).await
 	}
 
+	#[inline]
 	pub async fn version_entries_dir(&self) -> Result<String> {
 		check_dir(
 			"version entries dir",
@@ -277,6 +308,7 @@ impl<'h> WithOptionID<'h> {
 }
 
 impl<'h> WithVersionID<'h> {
+	#[inline]
 	pub async fn version_dir(&self) -> Result<String> {
 		check_dir(
 			"version dir",
@@ -284,6 +316,7 @@ impl<'h> WithVersionID<'h> {
 		).await
 	}
 
+	#[inline]
 	pub async fn version_manifest(&self) -> Result<String> {
 		check_file(
 			"version manifest",
