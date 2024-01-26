@@ -289,7 +289,7 @@ async fn check_file_silent_fail(path_name: &str, path: Utf8PathBuf) -> SilentFai
 
 impl<'h> WithRootDir<'h> {
 	#[inline]
-	pub async fn checked_root_dir(&self) -> Result<String> {
+	pub async fn root_dir_checked(&self) -> Result<String> {
 		check_dir(
 			"root dir",
 			self._root_dir()
@@ -297,7 +297,7 @@ impl<'h> WithRootDir<'h> {
 	}
 
 	#[inline]
-	pub async fn checked_root_manifest(&self) -> Result<String> {
+	pub async fn root_manifest_checked(&self) -> Result<String> {
 		check_file(
 			"root manifest",
 			self._root_manifest()
@@ -305,7 +305,7 @@ impl<'h> WithRootDir<'h> {
 	}
 
 	#[inline]
-	pub async fn checked_texture_entries_dir(&self) -> Result<String> {
+	pub async fn texture_entries_dir_checked(&self) -> Result<String> {
 		check_dir(
 			"texture entries dir",
 			self._texture_entries_dir()
@@ -315,7 +315,7 @@ impl<'h> WithRootDir<'h> {
 
 impl<'h> WithTextureID<'h> {
 	#[inline]
-	pub async fn checked_texture_dir(&self) -> Result<String> {
+	pub async fn texture_dir_checked(&self) -> Result<String> {
 		check_dir(
 			"texture dir",
 			self._texture_dir()
@@ -323,7 +323,7 @@ impl<'h> WithTextureID<'h> {
 	}
 
 	#[inline]
-	pub async fn checked_texture_manifest(&self) -> Result<String> {
+	pub async fn texture_manifest_checked(&self) -> Result<String> {
 		check_file(
 			"texture manifest",
 			self._texture_manifest()
@@ -331,7 +331,7 @@ impl<'h> WithTextureID<'h> {
 	}
 
 	#[inline]
-	pub async fn checked_option_entries_dir(&self) -> Result<String> {
+	pub async fn option_entries_dir_checked(&self) -> Result<String> {
 		check_dir(
 			"option entries dir",
 			self._option_entries_dir()
@@ -341,7 +341,7 @@ impl<'h> WithTextureID<'h> {
 
 impl<'h> WithOptionID<'h> {
 	#[inline]
-	pub async fn checked_option_dir(&self) -> Result<String> {
+	pub async fn option_dir_checked(&self) -> Result<String> {
 		check_dir(
 			"option dir",
 			self._option_dir()
@@ -349,7 +349,7 @@ impl<'h> WithOptionID<'h> {
 	}
 
 	#[inline]
-	pub async fn checked_option_manifest(&self) -> Result<String> {
+	pub async fn option_manifest_checked(&self) -> Result<String> {
 		check_file(
 			"option manifest",
 			self._option_manifest()
@@ -357,7 +357,7 @@ impl<'h> WithOptionID<'h> {
 	}
 
 	#[inline]
-	pub async fn checked_version_entries_dir(&self) -> Result<String> {
+	pub async fn version_entries_dir_checked(&self) -> Result<String> {
 		check_dir(
 			"version entries dir",
 			self._version_entries_dir()
@@ -367,7 +367,7 @@ impl<'h> WithOptionID<'h> {
 
 impl<'h> WithVersionID<'h> {
 	#[inline]
-	pub async fn checked_version_dir(&self) -> Result<String> {
+	pub async fn version_dir_checked(&self) -> Result<String> {
 		check_dir(
 			"version dir",
 			self._version_dir()
@@ -375,7 +375,7 @@ impl<'h> WithVersionID<'h> {
 	}
 
 	#[inline]
-	pub async fn checked_version_manifest(&self) -> Result<String> {
+	pub async fn version_manifest_checked(&self) -> Result<String> {
 		check_file(
 			"version manifest",
 			self._version_manifest()
