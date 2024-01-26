@@ -315,8 +315,8 @@ impl<'h> WithRootDir<'h> {
 
 impl<'h> WithTextureID<'h> {
 	#[inline]
-	pub async fn texture_dir_checked(&self) -> Result<String> {
-		check_dir(
+	pub async fn texture_dir_silent_fail(&self) -> SilentFailingPath {
+		check_dir_silent_fail(
 			"texture dir",
 			self._texture_dir()
 		).await
@@ -341,8 +341,8 @@ impl<'h> WithTextureID<'h> {
 
 impl<'h> WithOptionID<'h> {
 	#[inline]
-	pub async fn option_dir_checked(&self) -> Result<String> {
-		check_dir(
+	pub async fn option_dir_silent_fail(&self) -> SilentFailingPath {
+		check_dir_silent_fail(
 			"option dir",
 			self._option_dir()
 		).await
@@ -367,8 +367,8 @@ impl<'h> WithOptionID<'h> {
 
 impl<'h> WithVersionID<'h> {
 	#[inline]
-	pub async fn version_dir_checked(&self) -> Result<String> {
-		check_dir(
+	pub async fn version_dir_silent_fail(&self) -> SilentFailingPath {
+		check_dir_silent_fail(
 			"version dir",
 			self._version_dir()
 		).await
