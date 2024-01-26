@@ -80,6 +80,36 @@ impl<'h> WithOptionID<'h> {
 	}
 }
 
+// // -- meta fns --
+
+impl<'h> WithRootDir<'h> {
+	#[inline]
+	pub fn root_dir(&self) -> &str {
+		self.root_dir
+	}
+}
+
+impl<'h> WithTextureID<'h> {
+	#[inline]
+	pub fn texture_id(&self) -> &str {
+		self.texture_id
+	}
+}
+
+impl<'h> WithOptionID<'h> {
+	#[inline]
+	pub fn option_id(&self) -> &str {
+		self.option_id
+	}
+}
+
+impl<'h> WithVersionID<'h> {
+	#[inline]
+	pub fn version_id(&self) -> &str {
+		self.version_id
+	}
+}
+
 // -- deref impls --
 
 impl<'h> Deref for WithTextureID<'h> {
