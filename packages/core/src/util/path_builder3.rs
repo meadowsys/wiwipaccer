@@ -4,6 +4,7 @@ use ::camino::Utf8PathBuf;
 use ::std::future::Future;
 use ::std::ops::ControlFlow::{ self, Break, Continue };
 use ::std::ops::{ Deref, FromResidual, Try };
+use ::std::result::Result as StdResult;
 
 // -- consts --
 
@@ -429,11 +430,14 @@ impl FromResidual for SilentFailingPath {
 	}
 }
 
-impl FromResidual<SilentFailingPathResidual> for Result<Option<String>> {
+impl<T, E> FromResidual<SilentFailingPathResidual> for StdResult<Option<T>, E>
+where
+	Error: Into<E>
+{
 	#[inline]
 	fn from_residual(residual: SilentFailingPathResidual) -> Self {
 		match residual.error {
-			Some(e) => { Err(e) }
+			Some(e) => { Err(e.into()) }
 			None => { Ok(None) }
 		}
 	}
