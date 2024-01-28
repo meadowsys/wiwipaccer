@@ -1,5 +1,5 @@
 use crate::texture2::{ self, TextureRuntime };
-use crate::util::{ fs, create_path_builder3 };
+use crate::util::{ create_path_builder3, fs };
 use crate::util::path_builder3::WithRootDir;
 use super::error::*;
 use super::{ meta, nm, nr };
@@ -145,15 +145,13 @@ async fn read_textures(p: &WithRootDir<'_>) -> Result<nr::Textures> {
 	let mut read_dir = fs::read_dir2(textures_dir).await?;
 
 	while let Some(file) = read_dir.next().await? {
-		let texture_id = file.file_name();
-		let texture_id = texture_id.to_str()
-			.ok_or_else(|| Error::NonUtf8Path)?;
-		let texture_id = texture2::nr::ID::new(texture_id.into());
-		let p = p.clone().with_texture_id(texture_id.ref_inner());
+		let file_name = file.file_name();
+		let p = p.clone().with_texture_id_osstr(&file_name)?;
 
 		// TODO
 		if let Some(t) = TextureRuntime::new(&p).await? {
-			textures.insert(texture_id, t);
+			let id = texture2::nr::ID::new(p.texture_id_ref().into());
+			textures.insert(id, t);
 		}
 	}
 
