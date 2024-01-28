@@ -1,6 +1,6 @@
-use crate::texture2;
-use crate::util::{ fs, path_builder2 };
-use crate::util::path_builder::Root;
+use crate::texture2::{ self, TextureRuntime };
+use crate::util::{ fs, create_path_builder3 };
+use crate::util::path_builder3::WithRootDir;
 use super::error::*;
 use super::{ meta, nm, nr };
 use ::async_trait::async_trait;
@@ -51,9 +51,10 @@ impl PackRuntime {
 		R: DependencyResolver<Dependency = D>,
 		D: Dependency
 	{
-		let p = path_builder2(dir);
-		let dir = p.root_dir2().await?;
-		let meta_path = p.root_manifest2().await?;
+		let p = create_path_builder3()
+			.with_root_dir(dir);
+		let dir = p.root_dir_checked().await?;
+		let meta_path = p.root_manifest_checked().await?;
 
 		let meta_file = fs::read_to_string2(meta_path).await?;
 		let meta::PackUnversioned {
@@ -136,8 +137,8 @@ where
 }
 
 #[inline]
-async fn read_textures(p: &Root<'_>) -> Result<nr::Textures> {
-	let textures_dir = p.textures_path2().await?;
+async fn read_textures(p: &WithRootDir<'_>) -> Result<nr::Textures> {
+	let textures_dir = p.texture_entries_dir_checked().await?;
 	let mut textures_nom = nr::Textures::default();
 	let textures = textures_nom.mut_inner();
 
@@ -150,9 +151,7 @@ async fn read_textures(p: &Root<'_>) -> Result<nr::Textures> {
 		let id = texture2::nr::ID::new(id.into());
 
 		// TODO
-		let texture = texture2::TextureRuntime::new().await?;
-
-		if let Some(t) = texture {
+		if let Some(t) = TextureRuntime::new().await? {
 			textures.insert(id, t);
 		}
 	}
