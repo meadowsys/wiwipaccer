@@ -104,6 +104,36 @@ impl<'h> WithOptionID<'h> {
 	}
 }
 
+// -- inner getter fns --
+
+impl<'h> WithRootDir<'h> {
+	#[inline]
+	pub fn root_dir_ref(&self) -> &str {
+		self.root_dir
+	}
+}
+
+impl<'h> WithTextureID<'h> {
+	#[inline]
+	pub fn texture_id_ref(&self) -> &str {
+		self.texture_id
+	}
+}
+
+impl<'h> WithOptionID<'h> {
+	#[inline]
+	pub fn option_id_ref(&self) -> &str {
+		self.option_id
+	}
+}
+
+impl<'h> WithVersionID<'h> {
+	#[inline]
+	pub fn version_id_ref(&self) -> &str {
+		self.version_id
+	}
+}
+
 // -- deref impls --
 
 impl<'h> Deref for WithTextureID<'h> {
