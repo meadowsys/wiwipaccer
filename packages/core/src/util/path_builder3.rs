@@ -1,7 +1,9 @@
 use super::error::*;
 use super::fs;
 use ::camino::Utf8PathBuf;
+use ::std::convert::Infallible;
 use ::std::future::Future;
+use ::std::ffi::OsStr;
 use ::std::ops::ControlFlow::{ self, Break, Continue };
 use ::std::ops::{ Deref, FromResidual, Try };
 use ::std::result::Result as StdResult;
@@ -59,12 +61,22 @@ impl Blank {
 	pub fn with_root_dir(self, root_dir: &str) -> WithRootDir {
 		WithRootDir { root_dir }
 	}
+
+	#[inline]
+	pub fn with_root_dir_osstr(self, root_dir: &OsStr) -> Result<WithRootDir> {
+		Ok(self.with_root_dir(osstr_to_str(root_dir)?))
+	}
 }
 
 impl<'h> WithRootDir<'h> {
 	#[inline]
 	pub fn with_texture_id(self, texture_id: &'h str) -> WithTextureID {
 		WithTextureID { with_root_dir: self, texture_id }
+	}
+
+	#[inline]
+	pub fn with_texture_id_osstr(self, texture_id: &'h OsStr) -> Result<WithTextureID> {
+		Ok(self.with_texture_id(osstr_to_str(texture_id)?))
 	}
 }
 
@@ -73,12 +85,22 @@ impl<'h> WithTextureID<'h> {
 	pub fn with_option_id(self, option_id: &'h str) -> WithOptionID {
 		WithOptionID { with_texture_id: self, option_id }
 	}
+
+	#[inline]
+	pub fn with_option_id_osstr(self, option_id: &'h OsStr) -> Result<WithOptionID> {
+		Ok(self.with_option_id(osstr_to_str(option_id)?))
+	}
 }
 
 impl<'h> WithOptionID<'h> {
 	#[inline]
 	pub fn with_version_id(self, version_id: &'h str) -> WithVersionID {
 		WithVersionID { with_option_id: self, version_id }
+	}
+
+	#[inline]
+	pub fn with_version_id_osstr(self, version_id: &'h OsStr) -> Result<WithVersionID> {
+		Ok(self.with_version_id(osstr_to_str(version_id)?))
 	}
 }
 
@@ -254,6 +276,11 @@ async fn check_dir_silent_fail(path_name: &str, path: Utf8PathBuf) -> SilentFail
 #[inline]
 async fn check_file_silent_fail(path_name: &str, path: Utf8PathBuf) -> SilentFailingPath {
 	check_silent_fail(check_file, path_name, path).await
+}
+
+#[inline]
+pub fn osstr_to_str(s: &OsStr) -> Result<&str> {
+	s.to_str().ok_or_else(|| Error::NonUtf8Path)
 }
 
 // -- public interface --

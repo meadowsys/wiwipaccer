@@ -10,6 +10,9 @@ pub enum Error {
 	#[error("FS error:\n{0}")]
 	FSError(#[source] std::io::Error),
 
+	#[error("non UTF-8 paths are not supported")]
+	NonUtf8Path,
+
 	#[error("provided path for {path_name} is not a dir: {path}")]
 	PathIsNotDir {
 		path: String,
