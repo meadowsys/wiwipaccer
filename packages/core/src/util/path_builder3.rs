@@ -354,6 +354,8 @@ impl<'h> WithVersionID<'h> {
 	}
 }
 
+// -- SilentFailingPath custom result type --
+
 pub enum SilentFailingPath {
 	Ok(String),
 	SilentFail,
@@ -410,5 +412,13 @@ where
 			Some(e) => { Err(e.into()) }
 			None => { Ok(None) }
 		}
+	}
+}
+
+impl FromResidual<StdResult<Infallible, Error>> for SilentFailingPathResidual {
+	#[inline]
+	fn from_residual(residual: StdResult<Infallible, Error>) -> Self {
+		// hmmmmmm... residual.into_err() when
+		Self { error: Some(unsafe { residual.unwrap_err_unchecked() }) }
 	}
 }
