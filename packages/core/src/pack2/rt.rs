@@ -74,6 +74,8 @@ impl PackRuntime {
 
 		// TODO: do something with dependencies in hashmap when actual logic is in
 		// I think we'll need to pass to read_textures to process it
+		// a texture can extend a texture on a dependency, give it more options
+		// (or maybe modify existing options??)
 		let dependencies = dependencies.into_iter()
 			.map(|(id, (_, req))| (id, req))
 			.collect();
@@ -81,7 +83,15 @@ impl PackRuntime {
 
 		let textures = read_textures(&p).await?;
 
-		Ok(Self { name, description, id, dir, version, dependencies, textures })
+		Ok(Self {
+			name,
+			description,
+			id,
+			dir,
+			version,
+			dependencies,
+			textures
+		})
 	}
 }
 
@@ -138,11 +148,11 @@ where
 
 #[inline]
 async fn read_textures(p: &WithRootDir<'_>) -> Result<nr::Textures> {
-	let textures_dir = p.texture_entries_dir_checked().await?;
+	let texture_entries_dir = p.texture_entries_dir_checked().await?;
 	let mut textures_nom = nr::Textures::default();
 	let textures = textures_nom.mut_inner();
 
-	let mut read_dir = fs::read_dir2(textures_dir).await?;
+	let mut read_dir = fs::read_dir2(texture_entries_dir).await?;
 
 	while let Some(file) = read_dir.next().await? {
 		let file_name = file.file_name();

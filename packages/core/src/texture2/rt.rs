@@ -1,4 +1,4 @@
-use crate::option2;
+use crate::option2::{ self, OptionRuntime };
 use crate::util::fs;
 use crate::util::path_builder3::WithTextureID;
 use super::{ meta, nm, nr };
@@ -23,27 +23,12 @@ impl TextureRuntime {
 			default
 		} = meta::deserialise_texture(&meta_file)?;
 
-		// let name = name.transmute_nom();
-		// let description = description.transmute_nom();
-		// let default = default
-		// 	.map_nom_some(option2::nr::ID::new);
-
-		let option_entries = p.option_entries_dir_checked().await?;
-		let mut read_dir = fs::read_dir2(option_entries).await?;
-
-		while let Some(file) = read_dir.next().await? {
-			let option_id = file.file_name();
-			let option_id = option_id.to_str()
-				.ok_or_else(|| Error::NonUtf8Path)?;
-			let option_id = option2::nr::ID::new(option_id.into());
-
-			// TODO
-			let option = option2::OptionRuntime::new().await?;
-
-			// if let Some(option) = option {
-			// 	// TODO something
-			// }
-		}
+		let name = name.transmute_nom();
+		let description = description.transmute_nom();
+		let id = nr::ID::new(p.texture_id_ref().into());
+		let default = default
+			.map_nom_some(option2::nr::ID::new);
+		let options = read_options(p).await?;
 
 		// read option dir first,
 		//
@@ -56,6 +41,32 @@ impl TextureRuntime {
 		// TODO consider making nonexistent default a warning
 		// orrrrr maybe even add like, a strictness option that controls this
 
-		todo!()
+		Ok(Some(Self {
+			name,
+			description,
+			id,
+			default,
+			options
+		}))
 	}
+}
+
+async fn read_options(p: &WithTextureID<'_>) -> Result<nr::Options> {
+	let option_entries_dir = p.option_entries_dir_checked().await?;
+	let mut options_nom = nr::Options::default();
+	let options = options_nom.mut_inner();
+	let mut read_dir = fs::read_dir2(option_entries_dir).await?;
+
+	while let Some(file) = read_dir.next().await? {
+		let file_name = file.file_name();
+		let p = p.clone().with_option_id_osstr(&file_name)?;
+
+		// TODO
+		if let Some(o) = OptionRuntime::new().await? {
+			let id = option2::nr::ID::new(p.option_id_ref().into());
+			options.insert(id, o);
+		}
+	}
+
+	Ok(options_nom)
 }

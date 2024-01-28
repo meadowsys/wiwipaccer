@@ -9,7 +9,7 @@ pub struct OptionRuntime {
 }
 
 impl OptionRuntime {
-	pub(crate) async fn new() -> Result<Self> {
+	pub(crate) async fn new() -> Result<Option<Self>> {
 		todo!()
 	}
 }
