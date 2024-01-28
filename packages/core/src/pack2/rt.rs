@@ -145,14 +145,15 @@ async fn read_textures(p: &WithRootDir<'_>) -> Result<nr::Textures> {
 	let mut read_dir = fs::read_dir2(textures_dir).await?;
 
 	while let Some(file) = read_dir.next().await? {
-		let id = file.file_name();
-		let id = id.to_str()
+		let texture_id = file.file_name();
+		let texture_id = texture_id.to_str()
 			.ok_or_else(|| Error::NonUtf8Path)?;
-		let id = texture2::nr::ID::new(id.into());
+		let texture_id = texture2::nr::ID::new(texture_id.into());
+		let p = p.clone().with_texture_id(texture_id.ref_inner());
 
 		// TODO
-		if let Some(t) = TextureRuntime::new().await? {
-			textures.insert(id, t);
+		if let Some(t) = TextureRuntime::new(&p).await? {
+			textures.insert(texture_id, t);
 		}
 	}
 

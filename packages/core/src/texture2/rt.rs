@@ -13,11 +13,7 @@ pub struct TextureRuntime {
 }
 
 impl TextureRuntime {
-	pub(crate) async fn new() -> Result<Option<Self>> {
-		todo!()
-	}
-
-	pub(crate) async fn new2(p: &WithTextureID<'_>) -> Result<Option<Self>> {
+	pub(crate) async fn new(p: &WithTextureID<'_>) -> Result<Option<Self>> {
 		let dir = p.texture_dir_silent_fail().await?;
 		let meta_path = p.texture_manifest_silent_fail().await?;
 		let meta_file = fs::read_to_string2(meta_path).await?;
