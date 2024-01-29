@@ -30,16 +30,6 @@ let validator = z.object({
 let manifest_url = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 let manifest = await fetch(manifest_url).then(r => r.text());
 let json = validator.parse(JSON.parse(manifest));
-json.versions.sort((a, b) => Date.parse(a.releaseTime) - Date.parse(b.releaseTime));
-
-let formatted = `
-{ "latest":
-  { "release": ${ JSON.stringify(json.latest.release) }
-  , "snapshot": ${ JSON.stringify(json.latest.snapshot) }
-  }
-, "versions":
-  [ ${ json.versions.map(v => JSON.stringify(v)).join("\n  , ") }
-  ]
-}`.trim() + "\n";
+let formatted = JSON.stringify(json, undefined, "\t") + "\n";
 
 await Bun.write("./packages/mc-versions-macro/src/version_manifest_v2.json", formatted);
