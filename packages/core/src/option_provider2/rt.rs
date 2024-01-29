@@ -2,7 +2,7 @@ use super::error::*;
 use crate::mc_versions::{ MC_VERSIONS, MCVersionRef, MCVersionRefSlice };
 use super::nr;
 
-pub struct VersionRuntime {
+pub struct OptionProviderRuntime {
 	id: nr::ID,
 	versions: Vec<PackVersionSpecRuntime>
 }
@@ -35,7 +35,7 @@ impl PackVersionSpecRuntime {
 	}
 }
 
-impl VersionRuntime {
+impl OptionProviderRuntime {
 	pub(crate) async fn new() -> Result<Option<Self>> {
 		todo!()
 	}

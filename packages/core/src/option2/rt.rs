@@ -1,6 +1,6 @@
 use crate::util::fs;
 use crate::util::path_builder3::WithOptionID;
-use crate::version2::{ self, VersionRuntime };
+use crate::option_provider2::{ self, OptionProviderRuntime };
 use super::error::*;
 use super::{ meta, nr };
 
@@ -8,7 +8,7 @@ pub struct OptionRuntime {
 	name: nr::Name,
 	description: nr::Description,
 	id: nr::ID,
-	versions: nr::Versions
+	versions: nr::OptionProviders
 }
 
 impl OptionRuntime {
@@ -36,19 +36,19 @@ impl OptionRuntime {
 	}
 }
 
-async fn read_versions(p: &WithOptionID<'_>) -> Result<nr::Versions> {
-	let version_entries_dir = p.version_entries_dir_checked().await?;
-	let mut versions_nom = nr::Versions::default();
+async fn read_versions(p: &WithOptionID<'_>) -> Result<nr::OptionProviders> {
+	let version_entries_dir = p.option_provider_entries_dir_checked().await?;
+	let mut versions_nom = nr::OptionProviders::default();
 	let versions = versions_nom.mut_inner();
 	let mut read_dir = fs::read_dir2(version_entries_dir).await?;
 
 	while let Some(file) = read_dir.next().await? {
 		let file_name = file.file_name();
-		let p = p.clone().with_version_id_osstr(&file_name)?;
+		let p = p.clone().with_option_provider_id_osstr(&file_name)?;
 
 		// TODO
-		if let Some(v) = VersionRuntime::new().await? {
-			let id = version2::nr::ID::new(p.version_id_ref().into());
+		if let Some(v) = OptionProviderRuntime::new().await? {
+			let id = option_provider2::nr::ID::new(p.option_provider_id_ref().into());
 			versions.insert(id, v);
 		}
 	}

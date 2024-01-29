@@ -17,7 +17,7 @@ const TEXTURE_MANIFEST: &str = "texture.wiwimeta";
 
 const OPTION_MANIFEST: &str = "option.wiwimeta";
 
-const VERSION_MANIFEST: &str = "version.wiwimeta";
+const OPTION_PROVIDER_MANIFEST: &str = "option-provider.wiwimeta";
 
 // -- structs --
 
@@ -44,9 +44,9 @@ pub struct WithOptionID<'h> {
 }
 
 #[derive(Clone, Debug)]
-pub struct WithVersionID<'h> {
+pub struct WithOptionProviderID<'h> {
 	with_option_id: WithOptionID<'h>,
-	version_id: &'h str
+	option_provider_id: &'h str
 }
 
 // -- creation / upgrade fns --
@@ -94,13 +94,13 @@ impl<'h> WithTextureID<'h> {
 
 impl<'h> WithOptionID<'h> {
 	#[inline]
-	pub fn with_version_id(self, version_id: &'h str) -> WithVersionID {
-		WithVersionID { with_option_id: self, version_id }
+	pub fn with_option_provider_id(self, option_provider_id: &'h str) -> WithOptionProviderID {
+		WithOptionProviderID { with_option_id: self, option_provider_id }
 	}
 
 	#[inline]
-	pub fn with_version_id_osstr(self, version_id: &'h OsStr) -> Result<WithVersionID> {
-		Ok(self.with_version_id(osstr_to_str(version_id)?))
+	pub fn with_option_provider_id_osstr(self, option_provider_id: &'h OsStr) -> Result<WithOptionProviderID> {
+		Ok(self.with_option_provider_id(osstr_to_str(option_provider_id)?))
 	}
 }
 
@@ -127,10 +127,10 @@ impl<'h> WithOptionID<'h> {
 	}
 }
 
-impl<'h> WithVersionID<'h> {
+impl<'h> WithOptionProviderID<'h> {
 	#[inline]
-	pub fn version_id_ref(&self) -> &str {
-		self.version_id
+	pub fn option_provider_id_ref(&self) -> &str {
+		self.option_provider_id
 	}
 }
 
@@ -152,7 +152,7 @@ impl<'h> Deref for WithOptionID<'h> {
 	}
 }
 
-impl<'h> Deref for WithVersionID<'h> {
+impl<'h> Deref for WithOptionProviderID<'h> {
 	type Target = WithOptionID<'h>;
 	#[inline]
 	fn deref(&self) -> &Self::Target {
@@ -220,23 +220,23 @@ impl<'h> WithOptionID<'h> {
 	}
 
 	#[inline]
-	fn _version_entries_dir(&self) -> Utf8PathBuf {
+	fn _option_provider_entries_dir(&self) -> Utf8PathBuf {
 		self._option_dir()
 	}
 }
 
-impl<'h> WithVersionID<'h> {
+impl<'h> WithOptionProviderID<'h> {
 	#[inline]
-	fn _version_dir(&self) -> Utf8PathBuf {
+	fn _option_provider_dir(&self) -> Utf8PathBuf {
 		let mut path = self._option_dir();
-		path.push(self.version_id);
+		path.push(self.option_provider_id);
 		path
 	}
 
 	#[inline]
-	fn _version_manifest(&self) -> Utf8PathBuf {
-		let mut path = self._version_dir();
-		path.push(VERSION_MANIFEST);
+	fn _option_provider_manifest(&self) -> Utf8PathBuf {
+		let mut path = self._option_provider_dir();
+		path.push(OPTION_PROVIDER_MANIFEST);
 		path
 	}
 }
@@ -385,28 +385,28 @@ impl<'h> WithOptionID<'h> {
 	}
 
 	#[inline]
-	pub async fn version_entries_dir_checked(&self) -> Result<String> {
+	pub async fn option_provider_entries_dir_checked(&self) -> Result<String> {
 		check_dir(
-			"version entries dir",
-			self._version_entries_dir()
+			"option provider entries dir",
+			self._option_provider_entries_dir()
 		).await
 	}
 }
 
-impl<'h> WithVersionID<'h> {
+impl<'h> WithOptionProviderID<'h> {
 	#[inline]
-	pub async fn version_dir_silent_fail(&self) -> SilentFailingPath {
+	pub async fn option_provider_dir_silent_fail(&self) -> SilentFailingPath {
 		check_dir_silent_fail(
-			"version dir",
-			self._version_dir()
+			"option provider dir",
+			self._option_provider_dir()
 		).await
 	}
 
 	#[inline]
-	pub async fn version_manifest_silent_fail(&self) -> SilentFailingPath {
+	pub async fn option_provider_manifest_silent_fail(&self) -> SilentFailingPath {
 		check_file_silent_fail(
-			"version manifest",
-			self._version_manifest()
+			"option provider manifest",
+			self._option_provider_manifest()
 		).await
 	}
 }

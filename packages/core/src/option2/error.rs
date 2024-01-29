@@ -9,5 +9,5 @@ pub enum Error {
 	UtilError(#[from] crate::util::error::Error),
 
 	#[error(transparent)]
-	VersionError(#[from] crate::version2::Error)
+	OptionProviderError(#[from] crate::option_provider2::Error)
 }
