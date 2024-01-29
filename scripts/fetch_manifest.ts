@@ -1,3 +1,5 @@
+#!/usr/bin/env bun
+
 import { z } from "zod";
 
 // a bit unnecessary, since the proc macro will parse/check this too

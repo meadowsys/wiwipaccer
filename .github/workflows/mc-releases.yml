@@ -28,7 +28,7 @@ jobs:
     - name: run fetcher script
       id: new
       run: |
-        bun ./scripts/fetch_manifest.ts
+        ./scripts/fetch_manifest.ts
         if [ -z "$(git status --porcelain=v1 2>/dev/null)" ]; then
           echo "new=false" >> $GITHUB_OUTPUT
         else
