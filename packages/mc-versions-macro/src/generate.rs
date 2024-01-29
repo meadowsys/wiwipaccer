@@ -5,7 +5,7 @@ use ::quote::quote;
 use ::serde::Deserialize;
 
 const VERSION_MANIFEST_V2: &str = include_str!("./version_manifest_v2.json");
-const VERSION_VALIDATION: &str = include_str!("./version_validation.wiwimeta");
+const VERSION_VALIDATION: &str = include_str!("./version_validation.txt");
 
 #[derive(Deserialize)]
 struct Manifest {
@@ -55,11 +55,10 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 				compile_error!(#message);
 			}
 		})?;
-	let version_validation = ::ron::from_str::<Vec<(String, PackFormat)>>(VERSION_VALIDATION)
+	let version_validation = parse_version_validation(VERSION_VALIDATION)
 		.map_err(|err| {
-			let message = format!("parsing version validation file had an error: {err}");
 			quote! {
-				compile_error!(#message);
+				compile_error!(#err);
 			}
 		})?;
 
@@ -117,6 +116,37 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 			#( #versions ),*
 		];
 	})
+}
+
+fn parse_version_validation(file: &str) -> Result<Vec<(String, PackFormat)>, String> {
+	let invalid_line_err = |l_no| format!("line #{l_no} in version_validation.txt is invalid");
+
+	file
+		.split('\n')
+		.zip(1usize..)
+		.map(|(l, i)| (l.trim(), i))
+		.filter(|(l, _)| !l.is_empty())
+		.map(|(l, i)| {
+			l.split_once(' ')
+				.map(|(pv, mcv)| (pv.trim(), mcv.trim()))
+				.ok_or_else(|| invalid_line_err(i))
+				.and_then(|(pv, mcv)| {
+					let pv = if let Some(pv) = pv.strip_prefix("verified=") {
+						pv.parse::<u8>()
+							.map(PackFormat::Verified)
+							.map_err(|_| invalid_line_err(i))
+					} else if pv == "none" {
+						Ok(PackFormat::None)
+					} else if pv == "unknown" {
+						Ok(PackFormat::Unknown)
+					} else {
+						Err(invalid_line_err(i))
+					};
+
+					pv.map(|pv| (mcv.into(), pv))
+				})
+		})
+		.collect()
 }
 
 fn gen_release(
