@@ -36,7 +36,7 @@ impl OptionRuntime {
 	}
 }
 
-async fn read_versions(p: &WithOptionID<'_>) -> Result<nr::OptionProviders> {
+async fn read_versions(p: &WithOptionID<'_>) -> Result<nr::Providers> {
 	let version_entries_dir = p.option_provider_entries_dir_checked().await?;
 	let mut versions_nom = nr::Providers::default();
 	let versions = versions_nom.mut_inner();
