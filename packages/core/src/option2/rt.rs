@@ -8,7 +8,7 @@ pub struct OptionRuntime {
 	name: nr::Name,
 	description: nr::Description,
 	id: nr::ID,
-	versions: nr::OptionProviders
+	versions: nr::Providers
 }
 
 impl OptionRuntime {
