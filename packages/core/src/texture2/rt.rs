@@ -62,7 +62,7 @@ async fn read_options(p: &WithTextureID<'_>) -> Result<nr::Options> {
 		let p = p.clone().with_option_id_osstr(&file_name)?;
 
 		// TODO
-		if let Some(o) = OptionRuntime::new().await? {
+		if let Some(o) = OptionRuntime::new(&p).await? {
 			let id = option2::nr::ID::new(p.option_id_ref().into());
 			options.insert(id, o);
 		}

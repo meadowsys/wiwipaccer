@@ -6,5 +6,8 @@ pub type Result<T> = StdResult<T, Error>;
 #[derive(Debug, Error)]
 pub enum Error {
 	#[error(transparent)]
-	UtilError(#[from] crate::util::error::Error)
+	UtilError(#[from] crate::util::error::Error),
+
+	#[error(transparent)]
+	VersionError(#[from] crate::version2::Error)
 }

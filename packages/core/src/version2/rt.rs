@@ -36,7 +36,7 @@ impl PackVersionSpecRuntime {
 }
 
 impl VersionRuntime {
-	pub(crate) async fn new() -> Result<Self> {
+	pub(crate) async fn new() -> Result<Option<Self>> {
 		todo!()
 	}
 }
