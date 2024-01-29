@@ -16,6 +16,6 @@ use ::hashbrown::HashMap;
 		nominal!(pub Name, inner: String);
 		nominal!(pub Description, inner: Option<String>);
 		nominal!(pub ID, inner: String);
-		nominal!(pub OptionProviders, inner: HashMap<provider::nr::ID, provider::OptionProviderRuntime>);
+		nominal!(pub Providers, inner: HashMap<provider::nr::ID, provider::ProviderRuntime>);
 	}
 }
