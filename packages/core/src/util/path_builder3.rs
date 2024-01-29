@@ -17,7 +17,7 @@ const TEXTURE_MANIFEST: &str = "texture.wiwimeta";
 
 const OPTION_MANIFEST: &str = "option.wiwimeta";
 
-const OPTION_PROVIDER_MANIFEST: &str = "option-provider.wiwimeta";
+const OPTION_PROVIDER_MANIFEST: &str = "provider.wiwimeta";
 
 // -- structs --
 

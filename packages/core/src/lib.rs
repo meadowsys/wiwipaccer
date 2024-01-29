@@ -17,4 +17,4 @@ pub mod workspace2;
 pub mod pack2;
 pub mod texture2;
 pub mod option2;
-pub mod option_provider2;
+pub mod provider;

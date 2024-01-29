@@ -1,6 +1,6 @@
 use crate::util::fs;
 use crate::util::path_builder3::WithOptionID;
-use crate::option_provider2::{ self, OptionProviderRuntime };
+use crate::provider::{ self, OptionProviderRuntime };
 use super::error::*;
 use super::{ meta, nr };
 
@@ -48,7 +48,7 @@ async fn read_versions(p: &WithOptionID<'_>) -> Result<nr::OptionProviders> {
 
 		// TODO
 		if let Some(v) = OptionProviderRuntime::new().await? {
-			let id = option_provider2::nr::ID::new(p.option_provider_id_ref().into());
+			let id = provider::nr::ID::new(p.option_provider_id_ref().into());
 			versions.insert(id, v);
 		}
 	}
