@@ -8,7 +8,7 @@ pub struct OptionRuntime {
 	name: nr::Name,
 	description: nr::Description,
 	id: nr::ID,
-	versions: nr::Providers
+	providers: nr::Providers
 }
 
 impl OptionRuntime {
@@ -25,18 +25,18 @@ impl OptionRuntime {
 		let description = description.transmute_nom();
 		let id = nr::ID::new(p.option_id_ref().into());
 
-		let versions = read_versions(p).await?;
+		let providers = read_providers(p).await?;
 
 		Ok(Some(Self {
 			name,
 			description,
 			id,
-			versions
+			providers
 		}))
 	}
 }
 
-async fn read_versions(p: &WithOptionID<'_>) -> Result<nr::Providers> {
+async fn read_providers(p: &WithOptionID<'_>) -> Result<nr::Providers> {
 	let version_entries_dir = p.provider_entries_dir_checked().await?;
 	let mut versions_nom = nr::Providers::default();
 	let versions = versions_nom.mut_inner();
