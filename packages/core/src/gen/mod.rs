@@ -4,13 +4,13 @@ mod random_leaves;
 
 pub use self::error::Error;
 use self::error::*;
-use self::random_cube_all::RandomCubeAll;
-use self::random_leaves::RandomLeaves;
+pub use self::random_cube_all::RandomCubeAll;
+pub use self::random_leaves::RandomLeaves;
 use ::serde::{ Deserialize, Serialize };
 
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "type")]
-pub(crate) enum Generator {
+pub enum Generator {
 	#[serde(rename = "random-cube-all")]
 	RandomCubeAll {
 		#[serde(flatten)]
