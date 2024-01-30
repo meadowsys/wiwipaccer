@@ -47,7 +47,7 @@ async fn read_versions(p: &WithOptionID<'_>) -> Result<nr::Providers> {
 		let p = p.clone().with_provider_id_osstr(&file_name)?;
 
 		// TODO
-		if let Some(v) = ProviderRuntime::new().await? {
+		if let Some(v) = ProviderRuntime::new(&p).await? {
 			let id = provider::nr::ID::new(p.provider_id_ref().into());
 			versions.insert(id, v);
 		}

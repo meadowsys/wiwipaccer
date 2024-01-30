@@ -1,3 +1,4 @@
+use crate::gen::Generator;
 use crate::util::ron;
 use super::error::*;
 use ::serde::{ Deserialize, Serialize };
@@ -7,26 +8,20 @@ use ::serde::{ Deserialize, Serialize };
 enum ProviderMeta {
 	#[serde(rename = "1")]
 	Version1 {
-		versions: Vec<PackVersionSpecMeta>
+		#[serde(flatten)]
+		gen: Generator
 	}
 }
 
-#[derive(Deserialize, Serialize)]
-pub(super) enum PackVersionSpecMeta {
-	PackVersion(u8),
-	MCVersion(String),
-	MCVersionRange(String, String)
-}
-
 pub(super) struct ProviderUnversioned {
-	pub(super) versions: Vec<PackVersionSpecMeta>
+	pub(super) gen: Generator
 }
 
 pub(super) fn deserialise_version(s: &str) -> Result<ProviderUnversioned> {
 	use ProviderMeta::*;
 	Ok(match ron::from_str(s)? {
-		Version1 { versions } => {
-			ProviderUnversioned { versions }
+		Version1 { gen } => {
+			ProviderUnversioned { gen }
 		}
 	})
 }

@@ -18,3 +18,4 @@ pub mod pack2;
 pub mod texture2;
 pub mod option2;
 pub mod provider;
+pub mod gen;
