@@ -31,7 +31,7 @@ impl<'h> FrontendData<'h> {
 		let name = &workspace.name;
 		let packs = workspace.pack_ids.ref_inner()
 			.iter()
-			.map(|p| (p, workspace.packs.ref_inner().get(p).expect("invalid state")))
+			.map(|id| (id, workspace.packs.ref_inner().get(id).expect("invalid state")))
 			.map(|(id, p)| (&**id.ref_inner(), pack2::FrontendData::new(p, mc_version)))
 			.collect();
 
