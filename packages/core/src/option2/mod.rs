@@ -3,7 +3,7 @@ mod meta;
 mod rt;
 
 pub use self::error::Error;
-pub use self::rt::OptionRuntime;
+pub use self::rt::{ OptionRuntime, FrontendData };
 use super::provider;
 use ::hashbrown::HashMap;
 

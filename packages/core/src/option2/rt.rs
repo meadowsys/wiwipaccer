@@ -1,8 +1,11 @@
+use crate::mc_versions::MCVersionRef;
 use crate::util::fs;
 use crate::util::path_builder3::WithOptionID;
 use crate::provider::{ self, ProviderRuntime };
 use super::error::*;
 use super::{ meta, nr };
+use ::hashbrown::HashMap;
+use ::serde::Serialize;
 
 pub struct OptionRuntime {
 	name: nr::Name,
@@ -54,4 +57,29 @@ async fn read_providers(p: &WithOptionID<'_>) -> Result<nr::Providers> {
 	}
 
 	Ok(versions_nom)
+}
+
+#[derive(Serialize)]
+pub struct FrontendData<'h> {
+	name: &'h nr::Name,
+	description: &'h nr::Description,
+	id: &'h nr::ID,
+	available_providers: HashMap<&'h str, provider::FrontendData<'h>>
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(option: &'h OptionRuntime, mc_version: MCVersionRef) -> Self {
+		let name = &option.name;
+		let description = &option.description;
+		let id = &option.id;
+		let available_providers = option.providers.ref_inner()
+			.iter()
+			.filter_map(|(id, p)| {
+				provider::FrontendData::new(p, mc_version)
+					.map(|p| (&**id.ref_inner(), p))
+			})
+			.collect();
+
+		Self { name, description, id, available_providers }
+	}
 }

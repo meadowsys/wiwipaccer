@@ -1,3 +1,4 @@
+use crate::mc_versions::MCVersionRef;
 use crate::texture2::{ self, TextureRuntime };
 use crate::util::{ create_path_builder3, fs };
 use crate::util::path_builder3::WithRootDir;
@@ -6,6 +7,7 @@ use super::{ meta, nm, nr };
 use ::async_trait::async_trait;
 use ::hashbrown::HashMap;
 use ::nominal::Dummy;
+use ::serde::Serialize;
 
 pub struct PackRuntime {
 	name: nr::Name,
@@ -166,4 +168,43 @@ async fn read_textures(p: &WithRootDir<'_>) -> Result<nr::Textures> {
 	}
 
 	Ok(textures_nom)
+}
+
+#[derive(Serialize)]
+pub struct FrontendData<'h> {
+	name: &'h nr::Name,
+	description: &'h nr::Description,
+	id: &'h nr::ID,
+	dir: &'h nr::Dir,
+	version: &'h nr::Version,
+	dependencies: &'h nr::Dependencies,
+	textures: HashMap<&'h str, texture2::FrontendData<'h>>
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(pack: &'h PackRuntime, mc_version: MCVersionRef) -> Self {
+		let name = &pack.name;
+		let description = &pack.description;
+		let id = &pack.id;
+		let dir = &pack.dir;
+		let version = &pack.version;
+		let dependencies = &pack.dependencies;
+		let textures = pack.textures.ref_inner()
+			.iter()
+			.map(|(id, t)| (
+				&**id.ref_inner(),
+				texture2::FrontendData::new(t, mc_version)
+			))
+			.collect();
+
+		Self {
+			name,
+			description,
+			id,
+			dir,
+			version,
+			dependencies,
+			textures
+		}
+	}
 }

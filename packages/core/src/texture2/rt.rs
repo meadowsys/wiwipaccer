@@ -1,8 +1,11 @@
+use crate::mc_versions::MCVersionRef;
 use crate::option2::{ self, OptionRuntime };
 use crate::util::fs;
 use crate::util::path_builder3::WithTextureID;
 use super::{ meta, nm, nr };
 use super::error::*;
+use ::hashbrown::HashMap;
+use ::serde::Serialize;
 
 pub struct TextureRuntime {
 	name: nr::Name,
@@ -69,4 +72,31 @@ async fn read_options(p: &WithTextureID<'_>) -> Result<nr::Options> {
 	}
 
 	Ok(options_nom)
+}
+
+#[derive(Serialize)]
+pub struct FrontendData<'h> {
+	name: &'h nr::Name,
+	description: &'h nr::Description,
+	id: &'h nr::ID,
+	default: &'h nr::Default,
+	options: HashMap<&'h str, option2::FrontendData<'h>>
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(texture: &'h TextureRuntime, mc_version: MCVersionRef) -> Self {
+		let name = &texture.name;
+		let description = &texture.description;
+		let id = &texture.id;
+		let default = &texture.default;
+		let options = texture.options.ref_inner()
+			.iter()
+			.map(|(id, o)| (
+				&**id.ref_inner(),
+				option2::FrontendData::new(o, mc_version)
+			))
+			.collect();
+
+		Self { name, description, id, default, options }
+	}
 }

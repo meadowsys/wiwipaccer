@@ -3,7 +3,7 @@ mod meta;
 mod rt;
 
 pub use self::error::Error;
-pub use self::rt::PackRuntime;
+pub use self::rt::{ PackRuntime, FrontendData };
 use super::texture2;
 use ::hashbrown::HashMap;
 

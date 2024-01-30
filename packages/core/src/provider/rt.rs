@@ -4,6 +4,7 @@ use crate::util::fs;
 use crate::util::path_builder3::WithProviderID;
 use super::error::*;
 use super::{ meta, nr };
+use ::serde::Serialize;
 
 pub struct ProviderRuntime {
 	id: nr::ID,
@@ -53,5 +54,26 @@ impl ProviderRuntime {
 			id,
 			gen
 		}))
+	}
+}
+
+#[derive(Serialize)]
+pub struct FrontendData<'h> {
+	id: &'h nr::ID
+}
+
+impl<'h> FrontendData<'h> {
+	pub fn new(provider: &'h ProviderRuntime, mc_version: MCVersionRef) -> Option<Self> {
+		let res = match &provider.gen {
+			Generator::RandomCubeAll { gen } => { gen.is_available_for(mc_version) }
+			Generator::RandomLeaves { gen } => { gen.is_available_for(mc_version) }
+		};
+
+		if res {
+			let id = &provider.id;
+			Some(Self { id })
+		} else {
+			None
+		}
 	}
 }
