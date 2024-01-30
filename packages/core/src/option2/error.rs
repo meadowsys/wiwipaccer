@@ -1,7 +1,7 @@
 use ::thiserror::Error;
 use ::std::result::Result as StdResult;
 
-pub type Result<T> = StdResult<T, Error>;
+pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
 pub enum Error {

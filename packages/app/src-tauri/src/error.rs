@@ -1,7 +1,8 @@
 use ::std::future::Future;
+use ::std::result::Result as StdResult;
 use ::thiserror::Error;
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
 pub enum Error {
