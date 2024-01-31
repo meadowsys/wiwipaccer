@@ -26,7 +26,7 @@ pub trait DependencyResolver {
 		&self,
 		id: &nr::ID,
 		version_req: &::semver::VersionReq
-	) -> Result<DependencyResult<Self::Dependency>>;
+	) -> Result<DependencyResult<Self::Dependency>, Box<dyn std::error::Error>>;
 }
 
 #[async_trait]
@@ -94,6 +94,11 @@ impl PackRuntime {
 			dependencies,
 			textures
 		})
+	}
+
+	#[inline]
+	pub(crate) fn version(&self) -> &nr::Version {
+		&self.version
 	}
 }
 
