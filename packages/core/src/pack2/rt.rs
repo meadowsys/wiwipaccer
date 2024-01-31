@@ -19,6 +19,7 @@ pub struct PackRuntime {
 	textures: nr::Textures
 }
 
+// TODO: consider removing #[async_trait]
 #[async_trait]
 pub trait DependencyResolver {
 	type Dependency: Dependency;
@@ -97,7 +98,17 @@ impl PackRuntime {
 	}
 
 	#[inline]
-	pub(crate) fn version(&self) -> &nr::Version {
+	pub fn id(&self) -> &nr::ID {
+		&self.id
+	}
+
+	#[inline]
+	pub fn dir(&self) -> &nr::Dir {
+		&self.dir
+	}
+
+	#[inline]
+	pub fn version(&self) -> &nr::Version {
 		&self.version
 	}
 }

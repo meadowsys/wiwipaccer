@@ -26,3 +26,10 @@ pub(super) fn deserialise_workspace(s: &str) -> Result<WorkspaceUnversioned> {
 		}
 	})
 }
+
+#[inline]
+pub(super) fn serialise_workspace(workspace: WorkspaceUnversioned) -> Result<String> {
+	let WorkspaceUnversioned { name, packs } = workspace;
+	let workspace = WorkspaceMeta::Version1 { name, packs };
+	ron::to_string_minified(&workspace).map_err(Into::into)
+}
