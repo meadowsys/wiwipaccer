@@ -36,6 +36,7 @@ jobs:
           - libsoup-3.0-dev
           - libssl-dev
           - libwebkit2gtk-4.1-dev
+          - musl-tools
           - wget
 
         - target-triple: x86_64-pc-windows-msvc
