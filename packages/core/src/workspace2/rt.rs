@@ -86,7 +86,7 @@ impl<'h> pack2::DependencyResolver for DependencyResolver<'h> {
 		&self,
 		pack_id: &pack2::nr::ID,
 		version_req: &::semver::VersionReq
-	) -> Result<DependencyResult<Self::Dependency>, Box<dyn std::error::Error>> {
+	) -> Result<DependencyResult<Self::Dependency>, Box<dyn std::error::Error + Send>> {
 		let pack = match self.packs.ref_inner().get(pack_id) {
 			Some(s) => { s }
 			None => { return Ok(DependencyResult::NotFound) }

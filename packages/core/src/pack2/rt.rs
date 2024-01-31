@@ -27,7 +27,7 @@ pub trait DependencyResolver {
 		&self,
 		id: &nr::ID,
 		version_req: &::semver::VersionReq
-	) -> Result<DependencyResult<Self::Dependency>, Box<dyn std::error::Error>>;
+	) -> Result<DependencyResult<Self::Dependency>, Box<dyn std::error::Error + Send>>;
 }
 
 #[async_trait]
