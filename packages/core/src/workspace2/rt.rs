@@ -36,7 +36,7 @@ impl WorkspaceRuntime {
 		Ok(new)
 	}
 
-	pub async fn to_config_str(&self) -> Result<String> {
+	pub fn to_config_str(&self) -> Result<String> {
 		let name = self.name.clone().transmute_nom();
 		let packs = self.packs.ref_inner()
 			.values()

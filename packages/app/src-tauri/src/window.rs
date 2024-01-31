@@ -4,12 +4,7 @@ use ::tauri::{ AppHandle, Manager as _, Runtime, Window, WindowBuilder, WindowUr
 // #[cfg(target_os = "macos")]
 // use ::tauri::TitleBarStyle;
 
-const START_LABEL: &str = "start";
-const START_URL: &str = "start";
-const WORKSPACE_LABEL_PREFIX: &str = "workspace-";
-const WORKSPACE_URL: &str = "workspace";
-
-pub enum OpenOpts {
+pub enum WindowType {
 	Start,
 	Workspace {
 		name: String
@@ -19,16 +14,8 @@ pub enum OpenOpts {
 /// apparently on Windows™, creating a window builder deadlocks when used in a
 /// synchronous command smh, so making this fn async will force an async call
 /// context, even if block_on is used
-pub async fn open<R: Runtime>(handle: &AppHandle<R>, opts: OpenOpts) -> Window<R> {
-	use OpenOpts::*;
-	let (label, url) = match opts {
-		Start => {
-			(START_LABEL.into(), START_URL.into())
-		}
-		Workspace { name } => {
-			(encode_workspace_label(name), WORKSPACE_URL.into())
-		}
-	};
+pub async fn open<R: Runtime>(handle: &AppHandle<R>, window_type: WindowType) -> Window<R> {
+	let (label, url) = window_type.get_label_and_url();
 
 	common_builder(handle, label, url)
 		.await
@@ -62,16 +49,6 @@ async fn common_builder<R: Runtime>(
 }
 
 #[inline]
-pub fn encode_workspace_label(name: String) -> String {
-	format!("{WORKSPACE_LABEL_PREFIX}{name}")
-}
-
-#[inline]
-pub fn decode_workspace_label(label: &str) -> Option<&str> {
-	label.strip_prefix(WORKSPACE_LABEL_PREFIX)
-}
-
-#[inline]
 fn build_window<R: Runtime>(builder: WindowBuilder<R>) -> Window<R> {
 	builder.build()
 		.expect("window failed to build")
@@ -82,4 +59,40 @@ fn unminimise_and_focus<R: Runtime>(window: Window<R>) -> Window<R> {
 	window.unminimize().expect("couldn't unminimise window");
 	window.set_focus().expect("couldn't focus window");
 	window
+}
+
+impl WindowType {
+	const START_LABEL: &'static str = "start";
+	const START_URL: &'static str = "start";
+	const WORKSPACE_LABEL_PREFIX: &'static str = "workspace-";
+	const WORKSPACE_URL: &'static str = "workspace";
+
+	pub fn get_label_and_url(&self) -> (String, String) {
+		use WindowType::*;
+
+		match self {
+			Start => { (
+				Self::START_LABEL.into(),
+				Self::START_URL.into()
+			) }
+			Workspace { name } => { (
+				format!(
+					"{prefix}{name}",
+					prefix = Self::WORKSPACE_LABEL_PREFIX
+				),
+				Self::WORKSPACE_URL.into()
+			) }
+		}
+	}
+
+	pub fn decode_window_label(label: &str) -> Option<Self> {
+		if label == Self::START_LABEL {
+			Some(Self::Start)
+		} else if let Some(name) = label.strip_prefix(Self::WORKSPACE_LABEL_PREFIX) {
+			let name = name.into();
+			Some(Self::Workspace { name })
+		} else {
+			None
+		}
+	}
 }

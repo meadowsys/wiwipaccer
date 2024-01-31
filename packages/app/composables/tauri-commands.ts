@@ -23,3 +23,22 @@ export async function invoke_create_new_workspace(name: string) {
 export async function invoke_open_workspace(name: string) {
 	await invoke("open_workspace", { name });
 }
+
+export async function invoke_get_workspace_name() {
+	return await invoke("get_workspace_name") as string | null;
+}
+
+export type InvokeGetFrontendDataForArgs = {
+	name: string;
+	mc_version: string;
+};
+export async function invoke_get_frontend_data_for({
+	name,
+	mc_version
+}: InvokeGetFrontendDataForArgs) {
+	// TODO: send it through zod when schema is more known
+	return await invoke(
+		"get_frontend_data_for",
+		{ name, /* ew */ mcVersion: mc_version }
+	) as object;
+}

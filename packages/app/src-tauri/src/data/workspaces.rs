@@ -1,18 +1,17 @@
 use crate::error::*;
 use super::AppDB;
 use ::serde::{ Deserialize, Serialize };
-use ::wiwipaccer_core::workspace::WorkspaceConfig;
 
 #[derive(Deserialize, Serialize)]
 pub struct SavedWorkspace {
-	config: WorkspaceConfig
+	config: String
 }
 
 const WORKSPACE_TABLE: &str = "workspaces";
 
 impl SavedWorkspace {
 	#[inline]
-	pub fn new(config: WorkspaceConfig) -> Self {
+	pub fn new(config: String) -> Self {
 		Self { config }
 	}
 
@@ -23,8 +22,8 @@ impl SavedWorkspace {
 		Ok(config)
 	}
 
-	pub async fn write(&self, db: &AppDB) -> Result<()> {
-		let record_id = (WORKSPACE_TABLE, self.config.name().ref_inner());
+	pub async fn write(&self, name: &str, db: &AppDB) -> Result<()> {
+		let record_id = (WORKSPACE_TABLE, name);
 
 		let surreal = db.surreal().await;
 		let config: Option<Self> = surreal.select(record_id).await?;
@@ -42,13 +41,23 @@ impl SavedWorkspace {
 		Ok(())
 	}
 
-	pub async fn list(db: &AppDB) -> Result<Vec<Self>> {
+	pub async fn list(db: &AppDB) -> Result<Vec<String>> {
+		#[derive(Deserialize)]
+		struct IDOnly {
+			id: String
+		}
+
 		let surreal = db.surreal().await;
-		Ok(surreal.select(WORKSPACE_TABLE).await?)
+		let mut res = surreal.query("select meta::id(id) from $table")
+			.bind(("table", WORKSPACE_TABLE))
+			.await?;
+		let ids: Vec<IDOnly> = res.take(0)?;
+
+		Ok(ids.into_iter().map(|id| id.id).collect())
 	}
 
 	#[inline]
-	pub fn into_inner(self) -> WorkspaceConfig {
+	pub fn into_inner(self) -> String {
 		self.config
 	}
 }

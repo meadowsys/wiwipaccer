@@ -5,7 +5,7 @@
 
 use ::tauri::{ async_runtime, Manager, RunEvent };
 use ::wiwipaccer::*;
-use ::wiwipaccer::window::OpenOpts;
+use ::wiwipaccer::window::WindowType;
 
 #[cfg(not(debug_assertions))]
 #[global_allocator]
@@ -26,7 +26,7 @@ fn main() {
 			app.manage(appdb);
 			app.manage(workspaces);
 
-			let window_future = window::open(handle, OpenOpts::Start);
+			let window_future = window::open(handle, WindowType::Start);
 			let _window = async_runtime::block_on(window_future);
 
 			Ok(())

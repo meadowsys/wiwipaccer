@@ -6,6 +6,9 @@ pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
 pub enum Error {
+	#[error(transparent)]
+	MCVersionError(#[from] ::wiwipaccer_core::mc_versions::Error),
+
 	#[error("non UTF-8 paths are not supported")]
 	NonUtf8Path,
 
@@ -19,7 +22,7 @@ pub enum Error {
 	TauriError(#[from] ::tauri::Error),
 
 	#[error(transparent)]
-	WorkspaceError(#[from] ::wiwipaccer_core::workspace::error::Error)
+	WorkspaceError(#[from] ::wiwipaccer_core::workspace2::Error)
 }
 
 pub type ResultStringErr<T> = std::result::Result<T, String>;

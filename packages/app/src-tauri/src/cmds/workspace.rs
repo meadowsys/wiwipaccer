@@ -1,22 +1,17 @@
 use crate::data::DataTauriState;
 use crate::data::workspaces::SavedWorkspace;
 use crate::error::*;
-use crate::window::{ self, OpenOpts };
+use crate::window::{ self, WindowType };
 use crate::workspaces::WorkspacesTauriState;
 use ::tauri::{ AppHandle, Runtime };
+use ::wiwipaccer_core::mc_versions::MCVersion;
 
 /// checks existing workspaces in db
 #[tauri::command]
 pub async fn list_existing_workspaces(
 	db: DataTauriState<'_>
 ) -> ResultStringErr<Vec<String>> {
-	string_error(async {
-		let saved = SavedWorkspace::list(&db).await?;
-		let list = saved.into_iter()
-			.map(|w| w.into_inner().name().ref_inner().into())
-			.collect();
-		Ok(list)
-	}).await
+	string_error(SavedWorkspace::list(&db)).await
 }
 
 /// checks existing workspaces in db
@@ -48,5 +43,24 @@ pub async fn create_new_workspace(
 /// and load appropriately
 #[tauri::command]
 pub async fn open_workspace<R: Runtime>(handle: AppHandle<R>, name: String) {
-	let _window = window::open(&handle, OpenOpts::Workspace { name }).await;
+	let _window = window::open(&handle, WindowType::Workspace { name }).await;
+}
+
+#[tauri::command]
+pub async fn get_frontend_data_for(
+	name: String,
+	mc_version: String,
+	workspaces: WorkspacesTauriState<'_>
+) -> ResultStringErr<::serde_json::Value> {
+	string_error(async {
+		let mc_version = MCVersion::get(&mc_version)?;
+		let workspace = workspaces.create_or_open_or_get(&name).await?;
+
+		let lock = workspace.lock().await;
+		let frontend_data = lock.frontend_data(mc_version);
+		let frontend_data = ::serde_json::to_value(frontend_data)?;
+		drop(lock);
+
+		Ok(frontend_data)
+	}).await
 }

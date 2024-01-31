@@ -6,9 +6,8 @@ use ::std::sync::Arc;
 use ::tauri::State;
 use ::tokio::sync::RwLock;
 use ::tokio::sync::Mutex;
-use ::wiwipaccer_core::nom as n;
-use ::wiwipaccer_core::workspace::{ self, Workspace};
-
+use ::wiwipaccer_core::mc_versions::MCVersionRef;
+use ::wiwipaccer_core::workspace2::{ self, WorkspaceRuntime };
 /// - [`RwLock`]: most of the time will be reading (fetch a workspace etc), write
 ///   access for workspace creation / opening purposes (opening a new window)
 /// - [`HashMap`]: name to workspace mapping
@@ -25,7 +24,7 @@ pub struct Workspaces {
 
 #[repr(transparent)]
 pub struct WorkspaceWrapper {
-	workspace: Workspace
+	workspace: WorkspaceRuntime
 }
 
 pub type WorkspacesTauriState<'h> = State<'h, Workspaces>;
@@ -54,11 +53,11 @@ impl Workspaces {
 
 		let workspace = if let Some(saved) = saved {
 			let config = saved.into_inner();
-			let workspace = Workspace::from_config(&config).await?;
+			let workspace = WorkspaceRuntime::from_config_str(&config).await?;
 			Arc::new(Mutex::new(WorkspaceWrapper { workspace }))
 		} else {
-			let workspace = Workspace::new(n::workspace::Name::new(name.into()));
-			SavedWorkspace::new(workspace.to_config()).write(&self.db).await?;
+			let workspace = WorkspaceRuntime::new(workspace2::nr::Name::new(name.into()));
+			SavedWorkspace::new(workspace.to_config_str()?).write(name, &self.db).await?;
 			Arc::new(Mutex::new(WorkspaceWrapper { workspace }))
 		};
 
@@ -75,7 +74,7 @@ impl Workspaces {
 
 impl WorkspaceWrapper {
 	#[inline]
-	pub fn frontend_data(&self) -> workspace::FrontendData {
-		workspace::FrontendData::new(&self.workspace)
+	pub fn frontend_data(&self, mc_version: MCVersionRef) -> workspace2::FrontendData {
+		workspace2::FrontendData::new(&self.workspace, mc_version)
 	}
 }
