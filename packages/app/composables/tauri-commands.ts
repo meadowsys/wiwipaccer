@@ -42,3 +42,7 @@ export async function invoke_get_frontend_data_for({
 		{ name, /* ew */ mcVersion: mc_version }
 	) as object;
 }
+
+export async function invoke_prompt_add_pack({ name }: { name: string; }) {
+	await invoke("prompt_add_pack", { name });
+}

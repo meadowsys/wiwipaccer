@@ -2,6 +2,7 @@ use crate::data::AppDB;
 use crate::data::workspaces::SavedWorkspace;
 use crate::error::*;
 use ::hashbrown::HashMap;
+use ::std::ffi::OsStr;
 use ::std::sync::Arc;
 use ::tauri::State;
 use ::tokio::sync::RwLock;
@@ -76,5 +77,11 @@ impl WorkspaceWrapper {
 	#[inline]
 	pub fn frontend_data(&self, mc_version: MCVersionRef) -> workspace2::FrontendData {
 		workspace2::FrontendData::new(&self.workspace, mc_version)
+	}
+
+	#[inline]
+	pub async fn add_pack_osstr(&mut self, dir: &OsStr) -> Result<()> {
+		// TODO: save to db, somehow
+		self.workspace.add_pack_with_dir_osstr(dir).await.map_err(Into::into)
 	}
 }

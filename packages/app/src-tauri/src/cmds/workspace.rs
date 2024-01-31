@@ -3,7 +3,7 @@ use crate::data::workspaces::SavedWorkspace;
 use crate::error::*;
 use crate::window::{ self, WindowType };
 use crate::core::WorkspacesTauriState;
-use ::tauri::{ AppHandle, Runtime };
+use ::tauri::{ AppHandle, Runtime, Window };
 use ::wiwipaccer_core::mc_versions::MCVersion;
 
 /// checks existing workspaces in db
@@ -46,6 +46,7 @@ pub async fn open_workspace<R: Runtime>(handle: AppHandle<R>, name: String) {
 	let _window = window::open(&handle, WindowType::Workspace { name }).await;
 }
 
+// TODO fetch state out of window automatically here
 #[tauri::command]
 pub async fn get_frontend_data_for(
 	name: String,
@@ -62,5 +63,32 @@ pub async fn get_frontend_data_for(
 		drop(lock);
 
 		Ok(frontend_data)
+	}).await
+}
+
+// TODO fetch state out of window automatically here
+#[tauri::command]
+pub async fn prompt_add_pack/* <R: Runtime> */(
+	name: String,
+	// window: Window<R>,
+	workspaces: WorkspacesTauriState<'_>,
+) -> ResultStringErr<()> {
+	string_error(async {
+		let workspace = workspaces.create_or_open_or_get(&name).await?;
+		let mut lock = workspace.lock().await;
+
+		let file_handle = ::rfd::AsyncFileDialog::new()
+			.pick_folder()
+			.await;
+		let file_handle = match file_handle {
+			Some(f) => { f }
+			None => { return Ok(()) }
+		};
+
+		let dir = file_handle.path();
+		lock.add_pack_osstr(dir.as_os_str()).await?;
+		drop(lock);
+
+		Ok(())
 	}).await
 }

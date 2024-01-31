@@ -16,6 +16,7 @@ macro_rules! command_handler {
 			cmds::workspace::create_new_workspace,
 			cmds::workspace::open_workspace,
 			cmds::workspace::get_frontend_data_for,
+			cmds::workspace::prompt_add_pack,
 
 			cmds::window::get_workspace_name
 		]

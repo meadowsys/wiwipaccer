@@ -6,6 +6,7 @@ use ::async_trait::async_trait;
 use ::camino::Utf8Path;
 use ::hashbrown::HashMap;
 use ::serde::Serialize;
+use ::std::ffi::OsStr;
 
 pub struct WorkspaceRuntime {
 	name: nr::Name,
@@ -30,7 +31,7 @@ impl WorkspaceRuntime {
 		let mut new = Self::new(nr::Name::new(name.into_inner()));
 
 		for dir in packs.into_inner() {
-			new.add_pack(dir).await?;
+			new.add_pack(&dir).await?;
 		}
 
 		Ok(new)
@@ -48,15 +49,25 @@ impl WorkspaceRuntime {
 		meta::serialise_workspace(meta::WorkspaceUnversioned { name, packs })
 	}
 
-	pub async fn add_pack(&mut self, dir: String) -> Result<()> {
-		if !Utf8Path::new(&dir).is_absolute() {
-			return Err(Error::AbsolutePathOnly(dir))
-		}
+	pub async fn add_pack(&mut self, dir: &str) -> Result<()> {
+		let resolver = self.dependency_resolver();
+		let pack = pack2::PackRuntime::new(dir, resolver).await?;
+		self.add_pack_common(pack).await
+	}
 
+	pub async fn add_pack_with_dir_osstr(&mut self, dir: &OsStr) -> Result<()> {
+		let resolver = self.dependency_resolver();
+		let pack = pack2::PackRuntime::new_with_osstr(dir, resolver).await?;
+		self.add_pack_common(pack).await
+	}
+
+	#[inline]
+	fn dependency_resolver(&self) -> DependencyResolver {
 		let packs = &self.packs;
-		let resolver = DependencyResolver { packs };
+		DependencyResolver { packs }
+	}
 
-		let pack = pack2::PackRuntime::new(&dir, resolver).await?;
+	async fn add_pack_common(&mut self, pack: pack2::PackRuntime) -> Result<()> {
 		let id = pack.id().clone();
 
 		if self.packs.ref_inner().contains_key(&id) {
@@ -109,7 +120,7 @@ impl<'h> pack2::Dependency for Dependency<'h> {}
 #[derive(Serialize)]
 pub struct FrontendData<'h> {
 	name: &'h nr::Name,
-	packs: Vec<(&'h str, pack2::FrontendData<'h>)>
+	packs: Vec<pack2::FrontendData<'h>>
 }
 
 impl<'h> FrontendData<'h> {
@@ -117,8 +128,8 @@ impl<'h> FrontendData<'h> {
 		let name = &workspace.name;
 		let packs = workspace.pack_ids.ref_inner()
 			.iter()
-			.map(|id| (id, workspace.packs.ref_inner().get(id).expect("invalid state")))
-			.map(|(id, p)| (&**id.ref_inner(), pack2::FrontendData::new(p, mc_version)))
+			.map(|id| workspace.packs.ref_inner().get(id).expect("invalid state"))
+			.map(|p| pack2::FrontendData::new(p, mc_version))
 			.collect();
 
 		Self { name, packs }

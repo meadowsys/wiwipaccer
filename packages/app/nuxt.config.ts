@@ -14,6 +14,10 @@ export default defineNuxtConfig({
 			]
 		}
 	},
+	typescript: {
+		shim: false,
+		typeCheck: "build"
+	},
 	builder: "vite",
 	modules: [
 		"@nuxt/ui",

@@ -8,6 +8,7 @@ use ::async_trait::async_trait;
 use ::hashbrown::HashMap;
 use ::nominal::Dummy;
 use ::serde::Serialize;
+use ::std::ffi::OsStr;
 
 pub struct PackRuntime {
 	name: nr::Name,
@@ -48,6 +49,7 @@ pub enum DependencyResult<D> {
 }
 
 impl PackRuntime {
+	#[inline]
 	pub(crate) async fn new<R, D>(dir: &str, dep_resolver: R)
 		-> Result<Self>
 	where
@@ -56,6 +58,27 @@ impl PackRuntime {
 	{
 		let p = create_path_builder3()
 			.with_root_dir(dir);
+		Self::new_with_path_builder(p, dep_resolver).await
+	}
+
+	#[inline]
+	pub(crate) async fn new_with_osstr<R, D>(dir: &OsStr, dep_resolver: R)
+		-> Result<Self>
+	where
+		R: DependencyResolver<Dependency = D>,
+		D: Dependency
+	{
+		let p = create_path_builder3()
+			.with_root_dir_osstr(dir)?;
+		Self::new_with_path_builder(p, dep_resolver).await
+	}
+
+	pub(crate) async fn new_with_path_builder<R, D>(p: WithRootDir<'_>, dep_resolver: R)
+		-> Result<Self>
+	where
+		R: DependencyResolver<Dependency = D>,
+		D: Dependency
+	{
 		let dir = p.root_dir_checked().await?;
 		let meta_path = p.root_manifest_checked().await?;
 
