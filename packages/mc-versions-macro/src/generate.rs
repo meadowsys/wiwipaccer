@@ -66,7 +66,16 @@ fn inject_generated_mc_versions_inner(_: TokenStream) -> Result<TokenStream, Tok
 
 	let mut versions = versions.into_iter()
 		.map(|v| {
-			(::chrono::DateTime::parse_from_rfc3339(&v.release_time).unwrap(), v)
+			let parse = ::chrono::DateTime::parse_from_rfc3339;
+
+			let release_time = parse(&v.release_time).unwrap();
+			// in the extraordinary case of 1.6.3 and 13w37b, they have identical
+			// release times, but their `time` field, whatever that is, isn't, so doing this
+			// should mean sorting is *fully* stable, no matter the input order, as long as
+			// the data itself doesn't change of course
+			let time = parse(&v.time).unwrap();
+
+			((release_time, time), v)
 		})
 		.collect::<Vec<_>>();
 
