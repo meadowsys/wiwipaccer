@@ -10,7 +10,7 @@
 		"app:dev": "cd packages/app && bun tauri dev"
 	},
 	"devDependencies": {
-		"bun-types": "^1.0.21",
+		"bun-types": "^1.0.25",
 		"zod": "^3.22.4"
 	}
 }
