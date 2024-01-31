@@ -2,7 +2,7 @@ use crate::data::DataTauriState;
 use crate::data::workspaces::SavedWorkspace;
 use crate::error::*;
 use crate::window::{ self, WindowType };
-use crate::workspaces::WorkspacesTauriState;
+use crate::core::WorkspacesTauriState;
 use ::tauri::{ AppHandle, Runtime };
 use ::wiwipaccer_core::mc_versions::MCVersion;
 

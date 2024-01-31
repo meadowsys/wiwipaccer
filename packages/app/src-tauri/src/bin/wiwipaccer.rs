@@ -21,7 +21,7 @@ fn main() {
 
 			let appdb = async_runtime::block_on(data::AppDB::new(handle))
 				.expect("failed to create db");
-			let workspaces = workspaces::Workspaces::new(&appdb);
+			let workspaces = core::Workspaces::new(&appdb);
 
 			app.manage(appdb);
 			app.manage(workspaces);
