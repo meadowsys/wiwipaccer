@@ -3,7 +3,13 @@ mod meta;
 mod rt;
 
 pub use self::error::Error;
-pub use self::rt::{ PackRuntime, FrontendData };
+pub use self::rt::{
+	PackRuntime,
+	Dependency,
+	DependencyResolver,
+	DependencyResult,
+	FrontendData
+};
 use super::texture2;
 use ::hashbrown::HashMap;
 
