@@ -6,7 +6,7 @@ pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
 pub enum Error {
-	#[error(transparent)]
+	#[error("error resolving dependency: {0}")]
 	DependencyResolverError(#[from] Box<dyn std::error::Error + Send>),
 
 	#[error(
