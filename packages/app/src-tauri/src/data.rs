@@ -78,8 +78,9 @@ impl AppDB {
 		SurrealLock::new(self.inner.read().await)
 	}
 
-	/// takes inner out, and drops it. DO NOT use self after calling this method,
-	/// it will panic. exposed to be called when app is exiting
+	/// takes inner out, and drops it. **DO NOT** use self after calling this method,
+	/// it will panic. Calling this multiple times will do nothing on subsequent
+	/// calls. To be used _only_ when app is exiting, in the exit handler
 	pub fn drop_db(&self) {
 		let inner = self.inner.blocking_write().take();
 		drop(inner);
