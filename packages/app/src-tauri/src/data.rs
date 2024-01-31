@@ -38,6 +38,7 @@ struct Inner {
 }
 
 impl AppDB {
+	// param `handle` is (only) used in prod to get home dir
 	#[cfg_attr(debug_assertions, allow(unused_variables))]
 	pub async fn new<R: Runtime>(handle: &AppHandle<R>) -> Result<Self> {
 		#[cfg(not(debug_assertions))]
