@@ -47,7 +47,7 @@ jobs:
     - name: install system dependencies
       if: matrix.target.apt
       run: |
-        sudo add-apt-repository -y ppa:git-core/git
+        sudo add-apt-repository -y ppa:git-core/ppa
         sudo apt-get install -y ${{ join(matrix.target.apt, ' ') }}
     - name: checkout code
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
