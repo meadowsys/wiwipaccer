@@ -15,8 +15,7 @@ export default defineNuxtConfig({
 		}
 	},
 	typescript: {
-		shim: false,
-		typeCheck: "build"
+		shim: false
 	},
 	builder: "vite",
 	modules: [
