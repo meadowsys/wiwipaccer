@@ -2,7 +2,8 @@
 	"name": "wiwipaccer-workspace",
 	"private": true,
 	"workspaces": [
-		"packages/app"
+		"packages/app",
+		"packages/ts-result"
 	],
 	"scripts": {
 		"app:build-release": "cd packages/app && bun tauri build",
