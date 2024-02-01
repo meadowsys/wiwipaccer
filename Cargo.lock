@@ -6218,6 +6218,7 @@ dependencies = [
  "tauri-build",
  "thiserror",
  "tokio",
+ "ts-result",
  "wiwipaccer-core",
 ]
 

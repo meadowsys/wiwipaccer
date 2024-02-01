@@ -72,8 +72,8 @@ pub async fn prompt_add_pack/* <R: Runtime> */(
 	name: String,
 	// window: Window<R>,
 	workspaces: WorkspacesTauriState<'_>,
-) -> ResultStringErr<()> {
-	string_error(async {
+) -> WrappedTSResult<()> {
+	wrapped_ts_result(async {
 		let workspace = workspaces.create_or_open_or_get(&name).await?;
 		let mut lock = workspace.lock().await;
 

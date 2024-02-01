@@ -1,6 +1,7 @@
 use ::std::future::Future;
 use ::std::result::Result as StdResult;
 use ::thiserror::Error;
+use ::ts_result::NiceErrorMessage;
 
 pub type Result<T, E = Error> = StdResult<T, E>;
 
@@ -33,3 +34,13 @@ where
 {
 	future.await.map_err(|e| e.to_string())
 }
+
+impl NiceErrorMessage for Error {
+	fn to_error_message(&self) -> String {
+		// TODO make this actually better
+		self.to_string()
+	}
+}
+
+pub type WrappedTSResult<T, E = Error, RE = ()> = ::ts_result::WrappedTSResult<T, E, RE>;
+pub use ::ts_result::wrapped_ts_result_async as wrapped_ts_result;

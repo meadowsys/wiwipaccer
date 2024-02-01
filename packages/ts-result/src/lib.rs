@@ -1,10 +1,11 @@
 //! custom error type to avoid promise rejecting, and present an API similar to
 //! [`Result`] in rust, by representing it as a union type
 
-use serde::{ Serialize, Serializer };
-use serde::ser::SerializeStruct;
+use ::serde::{ Serialize, Serializer };
+use ::serde::ser::SerializeStruct;
+use ::std::future::Future;
 
-pub enum TSResult<T: Serialize, E: NiceErrorMessage> {
+pub enum TSResult<T, E> {
 	Ok(T),
 	Err(E)
 }
@@ -41,4 +42,25 @@ where
 
 		s.end()
 	}
+}
+
+pub type WrappedTSResult<T, E, RE = ()> = Result<TSResult<T, E>, RE>;
+
+#[inline]
+pub fn wrapped_ts_result<T, E, RE>(result: Result<T, E>)
+	-> WrappedTSResult<T, E, RE>
+{
+	match result {
+		Ok(v) => { Ok(TSResult::Ok(v)) }
+		Err(e) => { Ok(TSResult::Err(e)) }
+	}
+}
+
+#[inline]
+pub async fn wrapped_ts_result_async<T, E, RE, F>(future: F)
+	-> WrappedTSResult<T, E, RE>
+where
+	F: Future<Output = Result<T, E>>
+{
+	wrapped_ts_result(future.await)
 }

@@ -1,3 +1,6 @@
+// TODO: remove when more finished
+#![allow(unused)]
+
 #![allow(clippy::new_without_default)]
 
 pub mod cmds;
