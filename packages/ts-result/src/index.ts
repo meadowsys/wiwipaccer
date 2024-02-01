@@ -5,17 +5,15 @@ export type TSResultParam<T, E> = {
 	err: E;
 }
 
-export function ts_result<T extends ZodType, E extends ZodType>(
-	{ ok, err }: TSResultParam<T, E>
-) {
+export function ts_result<T extends ZodType>(value: T) {
 	return z.union([
 		z.object({
 			success: z.literal(true),
-			value: ok
+			value
 		}).strict(),
 		z.object({
 			success: z.literal(false),
-			error: err
+			error: z.string()
 		}).strict()
 	]);
 }
