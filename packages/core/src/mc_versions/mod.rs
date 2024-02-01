@@ -1,7 +1,9 @@
+pub mod error;
+
+pub use self::error::*;
 use ::serde::{ Deserialize, Deserializer, Serialize, Serializer };
 use ::std::mem;
 use ::std::result::Result as StdResult;
-use ::thiserror::Error;
 
 pub struct MCVersion {
 	inner: Inner
@@ -126,11 +128,3 @@ pub type MCVersionRef = &'static MCVersion;
 pub type MCVersionRefSlice = &'static [MCVersion];
 
 ::mc_versions_macro::inject_generated_mc_versions!();
-
-// TODO: can this be moved into a better place / done better?
-pub type Result<T, E = Error> = StdResult<T, E>;
-#[derive(Debug, Error)]
-pub enum Error {
-	#[error("unknown minecraft version: {0}")]
-	UnknownMCVersion(String)
-}
