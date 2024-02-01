@@ -1,4 +1,3 @@
-pub mod error;
 pub mod locale;
 pub mod window;
 pub mod workspace;

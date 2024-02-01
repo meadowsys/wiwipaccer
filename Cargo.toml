@@ -4,7 +4,8 @@ members = [
 	"packages/app/src-tauri",
 	"packages/core",
 	"packages/mc-versions-macro",
-	"packages/nominal"
+	"packages/nominal",
+	"packages/ts-result"
 ]
 
 [workspace.package]
