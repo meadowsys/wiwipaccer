@@ -57,6 +57,15 @@ pub fn wrapped_ts_result<T, E, RE>(result: Result<T, E>)
 }
 
 #[inline]
+pub fn wrapped_ts_result_fn<T, E, RE, F>(f: F)
+	-> WrappedTSResult<T, E, RE>
+where
+	F: FnOnce() -> Result<T, E>
+{
+	wrapped_ts_result(f())
+}
+
+#[inline]
 pub async fn wrapped_ts_result_async<T, E, RE, F>(future: F)
 	-> WrappedTSResult<T, E, RE>
 where
