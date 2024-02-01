@@ -3,12 +3,15 @@
 
 use ::serde::{ Serialize, Serializer };
 use ::serde::ser::SerializeStruct;
+use ::std::convert::Infallible;
 use ::std::future::Future;
 
 pub enum TSResult<T, E> {
 	Ok(T),
 	Err(E)
 }
+
+pub use TSResult::{ Ok, Err };
 
 pub trait NiceErrorMessage {
 	fn to_error_message(&self) -> String;
@@ -19,6 +22,7 @@ where
 	T: Serialize,
 	E: NiceErrorMessage
 {
+	#[inline]
 	fn serialize<S>(&self, s: S) -> Result<S::Ok, S::Error>
 	where
 		S: Serializer
@@ -30,13 +34,13 @@ where
 		let mut s = s.serialize_struct("TSResult", 2)?;
 
 		match self {
-			TSResult::Ok(v) => {
+			Ok(val) => {
 				s.serialize_field(SUCCESS, &true)?;
-				s.serialize_field(VALUE, v)?
+				s.serialize_field(VALUE, val)?;
 			}
-			TSResult::Err(e) => {
+			Err(err) => {
 				s.serialize_field(SUCCESS, &false)?;
-				s.serialize_field(ERROR, &e.to_error_message())?;
+				s.serialize_field(ERROR, &err.to_error_message())?;
 			}
 		}
 
@@ -44,15 +48,15 @@ where
 	}
 }
 
-pub type WrappedTSResult<T, E, RE = ()> = Result<TSResult<T, E>, RE>;
+pub type WrappedTSResult<T, E, RE = Infallible> = Result<TSResult<T, E>, RE>;
 
 #[inline]
 pub fn wrapped_ts_result<T, E, RE>(result: Result<T, E>)
 	-> WrappedTSResult<T, E, RE>
 {
 	match result {
-		Ok(v) => { Ok(TSResult::Ok(v)) }
-		Err(e) => { Ok(TSResult::Err(e)) }
+		Result::Ok(v) => { Result::Ok(Ok(v)) }
+		Result::Err(e) => { Result::Ok(Err(e)) }
 	}
 }
 
@@ -83,4 +87,9 @@ macro_rules! impl_display {
 			}
 		}
 	}
+}
+
+#[inline]
+pub fn lines(lines: &[String]) -> String {
+	lines.join("\n")
 }
