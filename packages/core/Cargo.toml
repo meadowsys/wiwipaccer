@@ -16,6 +16,7 @@ semver.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
+ts-result = { path = "../ts-result" }
 
 # workspace:
 # async-trait.workspace = true

@@ -64,3 +64,14 @@ where
 {
 	wrapped_ts_result(future.await)
 }
+
+#[macro_export]
+macro_rules! display_impl {
+	($struct:ident) => {
+		impl ::std::fmt::Display for $struct {
+			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+				f.write_str(&self.to_error_message())
+			}
+		}
+	}
+}
