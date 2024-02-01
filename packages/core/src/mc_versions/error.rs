@@ -1,6 +1,6 @@
 use ::std::result::Result as StdResult;
 use ::thiserror::Error;
-use ::ts_result::{ NiceErrorMessage, display_impl };
+use ::ts_result::{ NiceErrorMessage, impl_display };
 
 pub type Result<T, E = Error> = StdResult<T, E>;
 
@@ -20,4 +20,4 @@ impl NiceErrorMessage for Error {
 	}
 }
 
-display_impl!(Error);
+impl_display!(Error);
