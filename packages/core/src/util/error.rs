@@ -1,9 +1,11 @@
 use ::std::result::Result as StdResult;
 use ::thiserror::Error;
+use ::ts_result::{ NiceErrorMessage, impl_display };
 
 pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
+#[deprecated]
 pub enum Error {
 	#[error("background task failed:\n{0}")]
 	BackgroundTaskFailed(#[source] tokio::task::JoinError),
