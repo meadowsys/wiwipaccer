@@ -4,7 +4,6 @@ use ::thiserror::Error;
 pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
-#[deprecated]
 pub enum Error {
 	#[error("only absolute paths are allowed, provided path is relative:\n{0}")]
 	AbsolutePathOnly(String),

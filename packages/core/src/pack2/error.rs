@@ -5,7 +5,6 @@ use super::nr;
 pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
-#[deprecated]
 pub enum Error {
 	#[error("error resolving dependency: {0}")]
 	DependencyResolverError(#[from] Box<dyn std::error::Error + Send>),

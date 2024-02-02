@@ -6,7 +6,6 @@ use ::ts_result::NiceErrorMessage;
 pub type Result<T, E = Error> = StdResult<T, E>;
 
 #[derive(Debug, Error)]
-#[deprecated]
 pub enum Error {
 	#[error(transparent)]
 	MCVersionError(#[from] ::wiwipaccer_core::mc_versions::Error),
