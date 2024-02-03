@@ -13,6 +13,7 @@ pub mod util;
 pub mod version;
 pub mod workspace;
 
+pub mod error;
 pub mod workspace2;
 pub mod pack2;
 pub mod texture2;

@@ -6,6 +6,8 @@ use ::serde::ser::SerializeStruct;
 use ::std::convert::Infallible;
 use ::std::future::Future;
 
+pub use ::std::error::Error;
+
 pub enum TSResult<T, E> {
 	Ok(T),
 	Err(E)
