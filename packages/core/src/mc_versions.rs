@@ -19,8 +19,8 @@ pub struct Inner {
 	/// eg. "1.18.2 is the 12th release" (do not rely on this its just an example)
 	///
 	/// Because this number is generated incrementing and creation outside this
-	/// module is impossible (and we don't create any manually in here), this can
-	/// be relied on for a unique value.
+	/// module is impossible (and we don't create any manually in this module),
+	/// this can be relied on for a unique incrementing value.
 	pub n: usize
 }
 
@@ -47,14 +47,18 @@ pub enum PackFormat {
 }
 
 impl MCVersion {
-	pub fn get(version: &str) -> Result<MCVersionRef, unknown_mc_version_err::InGetting> {
+	pub fn get(version: &str)
+		-> Result<MCVersionRef, unknown_mc_version_err::InGetting>
+	{
 		MC_VERSIONS
 			.iter()
 			.find(|v| v.name == version)
 			.ok_or_else(|| unknown_mc_version_err::in_getting(version))
 	}
 
-	pub fn get_range(from: &str, to: &str) -> Result<MCVersionRefSlice, unknown_mc_version_err::InGettingRange> {
+	pub fn get_range(from: &str, to: &str)
+		-> Result<MCVersionRefSlice, unknown_mc_version_err::InGettingRange>
+	{
 		let mut v_from = MC_VERSIONS
 			.iter()
 			.position(|v| v.name == from)
