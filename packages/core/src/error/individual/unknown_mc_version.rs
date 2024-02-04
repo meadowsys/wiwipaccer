@@ -10,5 +10,3 @@ impl NiceErrorMessage for UnknownMCVersion {
 		format!("unknown minecraft version {version}")
 	}
 }
-
-impl_display!(UnknownMCVersion);

@@ -4,7 +4,7 @@
 use ::serde::{ Serialize, Serializer };
 use ::serde::ser::SerializeStruct;
 use ::std::convert::Infallible;
-use ::std::future::Future;
+use ::std::fmt;
 
 pub use ::std::error::Error;
 
@@ -15,8 +15,24 @@ pub enum TSResult<T, E> {
 
 pub use TSResult::{ Ok, Err };
 
-pub trait NiceErrorMessage {
-	fn to_error_message(&self) -> String;
+impl<T, E> From<Result<T, E>> for TSResult<T, E> {
+	#[inline]
+	fn from(value: Result<T, E>) -> Self {
+		match value {
+			Result::Ok(v) => { Ok(v) }
+			Result::Err(e) => { Err(e) }
+		}
+	}
+}
+
+impl<T, E> From<TSResult<T, E>> for Result<T, E> {
+	#[inline]
+	fn from(value: TSResult<T, E>) -> Self {
+		match value {
+			Ok(v) => { Result::Ok(v) }
+			Err(e) => { Result::Err(e) }
+		}
+	}
 }
 
 impl<T, E> Serialize for TSResult<T, E>
@@ -52,38 +68,32 @@ where
 
 pub type WrappedTSResult<T, E, RE = Infallible> = Result<TSResult<T, E>, RE>;
 
-#[inline]
-pub fn wrapped_ts_result<T, E, RE>(result: Result<T, E>)
-	-> WrappedTSResult<T, E, RE>
-{
-	match result {
-		Result::Ok(v) => { Result::Ok(Ok(v)) }
-		Result::Err(e) => { Result::Ok(Err(e)) }
+pub trait NiceErrorMessage {
+	fn to_error_message(&self) -> String;
+
+	#[inline]
+	fn as_display(&self) -> NiceErrorMessageDisplay<'_, Self> {
+		NiceErrorMessageDisplay { inner: self }
 	}
 }
 
-#[inline]
-pub fn wrapped_ts_result_fn<T, E, RE, F>(f: F)
-	-> WrappedTSResult<T, E, RE>
-where
-	F: FnOnce() -> Result<T, E>
-{
-	wrapped_ts_result(f())
+#[repr(transparent)]
+pub struct NiceErrorMessageDisplay<'h, T: ?Sized> {
+	inner: &'h T
 }
 
-#[inline]
-pub async fn wrapped_ts_result_async<T, E, RE, F>(future: F)
-	-> WrappedTSResult<T, E, RE>
-where
-	F: Future<Output = Result<T, E>>
-{
-	wrapped_ts_result(future.await)
+impl<'h, T> fmt::Display for NiceErrorMessageDisplay<'h, T> where T: NiceErrorMessage {
+	#[inline]
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		f.write_str(&self.inner.to_error_message())
+	}
 }
 
 #[macro_export]
 macro_rules! impl_display {
 	($struct:ident) => {
 		impl ::std::fmt::Display for $struct {
+			#[inline]
 			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
 				f.write_str(&self.to_error_message())
 			}

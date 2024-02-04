@@ -18,20 +18,23 @@ impl NiceErrorMessage for MCVersionError {
 		use MCVersionError::*;
 		match self {
 			InGet { version } => {
-				format!("could not fetch minecraft version: {version}")
+				format!(
+					"could not fetch minecraft version: {version}",
+					version = version.as_display()
+				)
 			}
 			InGetRangeFrom { from, to } => {
 				format!(
 					"could not fetch start minecraft version in range from `{from}` to `{to}`: {error}",
 					from = from.version,
-					error = from
+					error = from.as_display()
 				)
 			}
 			InGetRangeTo { from, to } => {
 				format!(
 					"could not fetch start minecraft version in range from `{from}` to `{to}`: {error}",
 					to = to.version,
-					error = to
+					error = to.as_display()
 				)
 			}
 		}
