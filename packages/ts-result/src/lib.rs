@@ -1,6 +1,9 @@
 //! custom error type to avoid promise rejecting, and present an API similar to
 //! [`Result`] in rust, by representing it as a union type
 
+pub mod formatter;
+
+pub use self::formatter::Formatter;
 use ::serde::{ Serialize, Serializer };
 use ::serde::ser::SerializeStruct;
 use ::std::convert::Infallible;
@@ -69,11 +72,37 @@ where
 pub type WrappedTSResult<T, E, RE = Infallible> = Result<TSResult<T, E>, RE>;
 
 pub trait NiceErrorMessage {
-	fn to_error_message(&self) -> String;
+	/// # Correctness
+	///
+	/// This function is expected to write its message with no leading or
+	/// trailing newlines. Calling [`Formatter::next_line`] is okay and correct,
+	/// but writing a newline character or strings with newline characters is not.
+	fn fmt(&self, f: &mut Formatter);
+
+	#[inline]
+	fn to_error_message(&self) -> String {
+		let mut formatter = Formatter::new();
+		self.fmt(&mut formatter);
+		formatter.into_string()
+	}
 
 	#[inline]
 	fn as_display(&self) -> NiceErrorMessageDisplay<'_, Self> {
 		NiceErrorMessageDisplay { inner: self }
+	}
+}
+
+impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &T {
+	#[inline]
+	fn fmt(&self, f: &mut Formatter) {
+		<T as NiceErrorMessage>::fmt(self, f);
+	}
+}
+
+impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &mut T {
+	#[inline]
+	fn fmt(&self, f: &mut Formatter) {
+		<T as NiceErrorMessage>::fmt(self, f);
 	}
 }
 
@@ -85,6 +114,7 @@ pub struct NiceErrorMessageDisplay<'h, T: ?Sized> {
 impl<'h, T> fmt::Display for NiceErrorMessageDisplay<'h, T> where T: NiceErrorMessage {
 	#[inline]
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		// TODO optimisation to use our formatter stuff?
 		f.write_str(&self.inner.to_error_message())
 	}
 }

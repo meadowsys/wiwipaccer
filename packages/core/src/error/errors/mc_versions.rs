@@ -14,28 +14,32 @@ pub enum MCVersionError {
 }
 
 impl NiceErrorMessage for MCVersionError {
-	fn to_error_message(&self) -> String {
+	fn fmt(&self, f: &mut Formatter) {
 		use MCVersionError::*;
 		match self {
 			InGet { version } => {
-				format!(
-					"could not fetch minecraft version: {version}",
-					version = version.as_display()
-				)
+				f.write_line("could not fetch minecraft version");
+				f.fmt_with_indent(version);
 			}
 			InGetRangeFrom { from, to } => {
-				format!(
-					"could not fetch start minecraft version in range from `{from}` to `{to}`: {error}",
-					from = from.version,
-					error = from.as_display()
-				)
+				f.write_line("could not fetch minecraft version");
+				f.with_indent(|f| {
+					f.write_args(format_args!("from {} to {to}", from.version));
+					f.next_line();
+
+					f.write_str("reason: ");
+					f.fmt(from);
+				});
 			}
 			InGetRangeTo { from, to } => {
-				format!(
-					"could not fetch start minecraft version in range from `{from}` to `{to}`: {error}",
-					to = to.version,
-					error = to.as_display()
-				)
+				f.write_line("could not fetch minecraft version");
+				f.with_indent(|f| {
+					f.write_args(format_args!("from {from} to {}", to.version));
+					f.next_line();
+
+					f.write_str("reason: ");
+					f.fmt(to);
+				});
 			}
 		}
 	}

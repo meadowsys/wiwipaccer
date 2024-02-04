@@ -5,8 +5,7 @@ pub struct UnknownMCVersion {
 }
 
 impl NiceErrorMessage for UnknownMCVersion {
-	fn to_error_message(&self) -> String {
-		let Self { version } = self;
-		format!("unknown minecraft version {version}")
+	fn fmt(&self, f: &mut Formatter) {
+		f.write_args(format_args!("unknown minecraft version {}", self.version));
 	}
 }
