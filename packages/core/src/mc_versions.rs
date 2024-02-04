@@ -1,4 +1,4 @@
-use crate::error::errors::MCVersionError;
+use crate::error::unknown_mc_version_err;
 use ::serde::{ Deserialize, Deserializer, Serialize, Serializer };
 use ::std::mem;
 use ::std::result::Result as StdResult;
@@ -47,22 +47,22 @@ pub enum PackFormat {
 }
 
 impl MCVersion {
-	pub fn get(version: &str) -> Result<MCVersionRef, MCVersionError> {
+	pub fn get(version: &str) -> Result<MCVersionRef, unknown_mc_version_err::InGetting> {
 		MC_VERSIONS
 			.iter()
 			.find(|v| v.name == version)
-			.ok_or_else(|| MCVersionError::in_getting(version))
+			.ok_or_else(|| unknown_mc_version_err::in_getting(version))
 	}
 
-	pub fn get_range(from: &str, to: &str) -> Result<MCVersionRefSlice, MCVersionError> {
+	pub fn get_range(from: &str, to: &str) -> Result<MCVersionRefSlice, unknown_mc_version_err::InGettingRange> {
 		let mut v_from = MC_VERSIONS
 			.iter()
 			.position(|v| v.name == from)
-			.ok_or_else(|| MCVersionError::in_getting_range_from(from, to))?;
+			.ok_or_else(|| unknown_mc_version_err::in_getting_range_from(from, to))?;
 		let mut v_to = MC_VERSIONS
 			.iter()
 			.position(|v| v.name == to)
-			.ok_or_else(|| MCVersionError::in_getting_range_to(from, to))?;
+			.ok_or_else(|| unknown_mc_version_err::in_getting_range_to(from, to))?;
 
 		if v_from > v_to {
 			mem::swap(&mut v_from, &mut v_to);
