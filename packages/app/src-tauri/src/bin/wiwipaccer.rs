@@ -2,16 +2,17 @@
 	all(not(debug_assertions), target_os = "windows"),
 	windows_subsystem = "windows"
 )]
-
+/*
 use ::tauri::{ async_runtime, Manager, RunEvent };
 use ::wiwipaccer::*;
 use ::wiwipaccer::window::WindowType;
-
+*/
 #[cfg(not(debug_assertions))]
 #[global_allocator]
 static ALLOC: ::mimalloc::MiMalloc = ::mimalloc::MiMalloc;
 
 fn main() {
+	/*
 	let rt = rt::create_rt();
 	async_runtime::set(rt.handle().clone());
 
@@ -46,4 +47,5 @@ fn main() {
 				_ => {}
 			}
 		})
+	*/
 }
