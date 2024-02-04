@@ -89,6 +89,19 @@ impl<'h, T> fmt::Display for NiceErrorMessageDisplay<'h, T> where T: NiceErrorMe
 	}
 }
 
+pub trait WrapInTSResult<T, E> {
+	fn wrap_in_ts_result<RE>(self) -> WrappedTSResult<T, E, RE>;
+}
+
+impl<T, E> WrapInTSResult<T, E> for Result<T, E> {
+	fn wrap_in_ts_result<RE>(self) -> WrappedTSResult<T, E, RE> {
+		match self {
+			Result::Ok(v) => { Result::Ok(Ok(v)) }
+			Result::Err(e) => { Result::Ok(Err(e)) }
+		}
+	}
+}
+
 #[macro_export]
 macro_rules! impl_display {
 	($struct:ident) => {
