@@ -75,8 +75,11 @@ pub trait NiceErrorMessage {
 	/// # Correctness
 	///
 	/// This function is expected to write its message with no leading or
-	/// trailing newlines. Calling [`Formatter::next_line`] is okay and correct,
-	/// but writing a newline character or strings with newline characters is not.
+	/// trailing newlines. Calling [`Formatter::next_line`] in the middle of
+	/// other non-whitespace characters is okay and correct, but writing a
+	/// newline character or strings with newline characters is not. You also
+	/// should not call [`Formatter::next_line`] at the start or end of the
+	/// function, before/after anything else.
 	fn fmt(&self, f: &mut Formatter);
 
 	#[inline]
