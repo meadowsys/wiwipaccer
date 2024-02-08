@@ -135,6 +135,16 @@ fn parse_version_validation(file: &str) -> Result<Vec<(String, PackFormat)>, Str
 		.zip(1usize..)
 		.map(|(l, i)| (l.trim(), i))
 		.filter(|(l, _)| !l.is_empty())
+		.filter_map(|(l, i)| {
+			// comment handling
+			if l.starts_with("//") {
+				None
+			} else if let Some((prefix, _comment)) = l.split_once("//") {
+				Some((prefix.trim_end(), i))
+			} else {
+				Some((l, i))
+			}
+		})
 		.map(|(l, i)| {
 			l.split_once(' ')
 				.map(|(pv, mcv)| (pv.trim(), mcv.trim()))
