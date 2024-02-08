@@ -88,11 +88,6 @@ pub trait NiceErrorMessage {
 		self.fmt(&mut formatter);
 		formatter.into_string()
 	}
-
-	#[inline]
-	fn as_display(&self) -> NiceErrorMessageDisplay<'_, Self> {
-		NiceErrorMessageDisplay { inner: self }
-	}
 }
 
 impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &T {
@@ -108,6 +103,15 @@ impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &mut T {
 		<T as NiceErrorMessage>::fmt(self, f);
 	}
 }
+
+pub trait NiceErrorMessageExt: NiceErrorMessage {
+	#[inline]
+	fn as_display(&self) -> NiceErrorMessageDisplay<'_, Self> {
+		NiceErrorMessageDisplay { inner: self }
+	}
+}
+
+impl<T: NiceErrorMessage> NiceErrorMessageExt for T {}
 
 #[repr(transparent)]
 pub struct NiceErrorMessageDisplay<'h, T: ?Sized> {
