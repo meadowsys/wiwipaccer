@@ -141,8 +141,12 @@ fn parse_version_validation(file: &str) -> Result<Vec<(String, PackFormat)>, Str
 				.ok_or_else(|| invalid_line_err(i))
 				.and_then(|(pv, mcv)| {
 					let pv = if let Some(pv) = pv.strip_prefix("verified=") {
-						pv.parse::<u8>()
+						pv.parse()
 							.map(PackFormat::Verified)
+							.map_err(|_| invalid_line_err(i))
+					} else if let Some(pv) = pv.strip_prefix("unverified=") {
+						pv.parse()
+							.map(PackFormat::Unverified)
 							.map_err(|_| invalid_line_err(i))
 					} else if pv == "none" {
 						Ok(PackFormat::None)
