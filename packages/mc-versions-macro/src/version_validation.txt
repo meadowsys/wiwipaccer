@@ -34,6 +34,8 @@ unverified=3   1.12.2
 unverified=3   1.12.1
 unverified=3   1.12
 
+verified=4     3D Shareware v1.34
+
 unverified=13  1.19.4-pre1
 unverified=13  1.19.4-pre2
 unverified=17  23w32a
