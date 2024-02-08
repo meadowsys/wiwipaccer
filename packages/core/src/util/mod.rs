@@ -3,6 +3,7 @@
 
 pub mod error;
 pub mod fs;
+pub mod fs2;
 pub mod path_builder;
 pub mod path_builder3;
 pub mod ron;
