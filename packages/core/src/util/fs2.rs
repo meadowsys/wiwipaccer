@@ -80,10 +80,10 @@ where
 
 async fn spawn_blocking<T, E, F, EF>(f: F, e_fn: EF) -> Result<T, E>
 where
-	F: FnOnce() -> Result<T, E> + Send + 'static,
-	EF: FnOnce(fs_err::SpawnBlocking) -> E,
 	T: Send + 'static,
-	E: Send + 'static
+	E: Send + 'static,
+	F: FnOnce() -> Result<T, E> + Send + 'static,
+	EF: FnOnce(fs_err::SpawnBlocking) -> E
 {
 	match ::tokio::task::spawn_blocking(f).await {
 		Ok(r) => { r }
