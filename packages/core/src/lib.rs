@@ -2,6 +2,7 @@
 #![allow(dead_code, unused_imports, unused_variables)]
 #![allow(clippy::missing_safety_doc)]
 
+#![feature(impl_trait_in_assoc_type)]
 #![feature(try_trait_v2)]
 
 pub mod mc_versions;

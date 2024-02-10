@@ -67,6 +67,12 @@ pub struct IsDir {
 	error: WithPath<Metadata>
 }
 
+impl IsDir {
+	pub fn into_inner(self) -> MetadataWithPath {
+		self.error
+	}
+}
+
 impl NiceErrorMessage for IsDir {
 	fn fmt(&self, f: &mut Formatter) {
 		f.write_line_args(format_args!("error checking if path is a dir"));
@@ -78,6 +84,12 @@ impl NiceErrorMessage for IsDir {
 
 pub struct IsFile {
 	error: WithPath<Metadata>
+}
+
+impl IsFile {
+	pub fn into_inner(self) -> MetadataWithPath {
+		self.error
+	}
 }
 
 impl NiceErrorMessage for IsFile {
