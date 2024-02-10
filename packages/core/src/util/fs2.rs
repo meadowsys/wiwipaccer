@@ -50,9 +50,9 @@ where
 	}
 }
 
-pub async fn read_dir<'f, F>(path_fn: F) -> Result<ReadDir<F>, fs_err::WithPath<fs_err::ReadDir>>
+pub async fn read_dir<F>(path_fn: F) -> Result<ReadDir<F>, fs_err::WithPath<fs_err::ReadDir>>
 where
-	F: Fn() -> String + 'f
+	F: Fn() -> String
 {
 	match tokio::fs::read_dir(path_fn()).await {
 		Ok(read_dir) => { Ok(ReadDir { read_dir, path_fn }) }
@@ -78,9 +78,10 @@ pub struct ReadDir<F> {
 	path_fn: F
 }
 
-impl<'f, F> ReadDir<F>
+
+impl<F> ReadDir<F>
 where
-	F: Fn() -> String + 'f
+	F: Fn() -> String
 {
 	pub async fn next(&mut self) -> Result<Option<tokio::fs::DirEntry>, fs_err::WithPath<fs_err::ReadDirEntry>> {
 		self.read_dir.next_entry()
