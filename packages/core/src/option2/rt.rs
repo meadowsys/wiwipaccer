@@ -1,7 +1,7 @@
 use crate::mc_versions::MCVersionRef;
 use crate::util::fs;
 use crate::util::path_builder3::WithOptionID;
-use crate::provider::{ self, ProviderRuntime };
+use crate::provider2::{ self, ProviderRuntime };
 use super::error::*;
 use super::{ meta, nr };
 use ::hashbrown::HashMap;
@@ -51,7 +51,7 @@ async fn read_providers(p: &WithOptionID<'_>) -> Result<nr::Providers> {
 
 		// TODO
 		if let Some(v) = ProviderRuntime::new(&p).await? {
-			let id = provider::nr::ID::new(p.provider_id_ref().into());
+			let id = provider2::nr::ID::new(p.provider_id_ref().into());
 			versions.insert(id, v);
 		}
 	}
@@ -64,7 +64,7 @@ pub struct FrontendData<'h> {
 	name: &'h nr::Name,
 	description: &'h nr::Description,
 	id: &'h nr::ID,
-	available_providers: HashMap<&'h str, provider::FrontendData<'h>>
+	available_providers: HashMap<&'h str, provider2::FrontendData<'h>>
 }
 
 impl<'h> FrontendData<'h> {
@@ -75,7 +75,7 @@ impl<'h> FrontendData<'h> {
 		let available_providers = option.providers.ref_inner()
 			.iter()
 			.filter_map(|(id, p)| {
-				provider::FrontendData::new(p, mc_version)
+				provider2::FrontendData::new(p, mc_version)
 					.map(|p| (&**id.ref_inner(), p))
 			})
 			.collect();
