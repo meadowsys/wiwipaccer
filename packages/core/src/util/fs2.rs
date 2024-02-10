@@ -14,7 +14,6 @@ where
 	).await.map_err(|e| e.with_path(path_fn()))
 }
 
-#[inline]
 pub async fn is_dir<F>(path_fn: F) -> Result<bool, fs_err::IsDir>
 where
 	F: Fn() -> String
@@ -25,8 +24,7 @@ where
 }
 
 
-#[inline]
-pub async fn is_file2<F>(path_fn: F) -> Result<bool, fs_err::IsFile>
+pub async fn is_file<F>(path_fn: F) -> Result<bool, fs_err::IsFile>
 where
 	F: Fn() -> String
 {
@@ -52,18 +50,15 @@ where
 	}
 }
 
-// #[inline]
-// pub async fn read_dir(path: n::global::DirPath) -> Result<ReadDir> {
-// 	read_dir2(path.into_inner()).await
-// }
-
-// #[inline]
-// pub async fn read_dir2(path: String) -> Result<ReadDir> {
-// 	tokio::fs::read_dir(path)
-// 		.await
-// 		.map(ReadDir)
-// 		.map_err(Error::FSError)
-// }
+pub async fn read_dir<'f, F>(path_fn: F) -> Result<ReadDir<F>, fs_err::WithPath<fs_err::ReadDir>>
+where
+	F: Fn() -> String + 'f
+{
+	match tokio::fs::read_dir(path_fn()).await {
+		Ok(read_dir) => { Ok(ReadDir { read_dir, path_fn }) }
+		Err(e) => { Err(fs_err::read_dir(e, path_fn())) }
+	}
+}
 
 async fn spawn_blocking<T, E, F, EF>(f: F, e_fn: EF) -> Result<T, E>
 where
@@ -78,14 +73,18 @@ where
 	}
 }
 
-// #[repr(transparent)]
-// pub struct ReadDir(tokio::fs::ReadDir);
+pub struct ReadDir<F> {
+	read_dir: tokio::fs::ReadDir,
+	path_fn: F
+}
 
-// impl ReadDir {
-// 	#[inline]
-// 	pub async fn next(&mut self) -> Result<Option<tokio::fs::DirEntry>> {
-// 		self.0.next_entry()
-// 			.await
-// 			.map_err(Error::FSError)
-// 	}
-// }
+impl<'f, F> ReadDir<F>
+where
+	F: Fn() -> String + 'f
+{
+	pub async fn next(&mut self) -> Result<Option<tokio::fs::DirEntry>, fs_err::WithPath<fs_err::ReadDirEntry>> {
+		self.read_dir.next_entry()
+			.await
+			.map_err(|e| fs_err::read_dir_entry(e, (self.path_fn)()))
+	}
+}

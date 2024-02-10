@@ -108,11 +108,27 @@ impl NiceErrorMessage for ReadToString {
 	}
 }
 
-// pub struct ReadDir {
-// 	error: ::std::io::Error
-// }
+pub struct ReadDir {
+	error: ::std::io::Error
+}
 
+impl NiceErrorMessage for ReadDir {
+	fn fmt(&self, f: &mut Formatter) {
+		f.write_line("error reading directory:");
+		f.write_args(format_args!("{}", self.error));
+	}
+}
 
+pub struct ReadDirEntry {
+	error: ::std::io::Error
+}
+
+impl NiceErrorMessage for ReadDirEntry {
+	fn fmt(&self, f: &mut Formatter) {
+		f.write_line("error reading next dir entry:");
+		f.write_args(format_args!("{}", self.error));
+	}
+}
 
 pub fn spawn_blocking(error: ::tokio::task::JoinError) -> SpawnBlocking {
 	SpawnBlocking { error }
@@ -148,4 +164,14 @@ pub fn read_to_string_join(error: SpawnBlocking) -> ReadToString {
 
 pub fn read_to_string_utf8(error: ::std::str::Utf8Error, bytes: Vec<u8>) -> ReadToString {
 	ReadToString::UTF8 { error, bytes }
+}
+
+pub fn read_dir(error: ::std::io::Error, path: String) -> WithPath<ReadDir> {
+	let error = ReadDir { error };
+	WithPath { error, path }
+}
+
+pub fn read_dir_entry(error: ::std::io::Error, path: String) -> WithPath<ReadDirEntry> {
+	let error = ReadDirEntry { error };
+	WithPath { error, path }
 }
