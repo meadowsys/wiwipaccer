@@ -1,3 +1,5 @@
+#![deprecated]
+
 pub mod error;
 
 use crate::mc_versions::{ MC_VERSIONS, MCVersion };

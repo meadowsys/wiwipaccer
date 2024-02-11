@@ -1,3 +1,5 @@
+#![deprecated]
+
 mod root;
 mod with_texture;
 mod with_option;

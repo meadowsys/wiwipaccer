@@ -1,3 +1,5 @@
+#![deprecated]
+
 //! provides ron serialise/deserialise functions using wiwipaccer's default ron config
 
 use super::error::*;

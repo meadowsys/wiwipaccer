@@ -1,3 +1,5 @@
+#![deprecated]
+
 use super::error::*;
 use super::fs;
 use ::camino::Utf8PathBuf;

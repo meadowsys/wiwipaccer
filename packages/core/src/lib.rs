@@ -2,6 +2,9 @@
 #![allow(dead_code, unused_imports, unused_variables)]
 #![allow(clippy::missing_safety_doc)]
 
+// TODO: remove this when ready to clean up old code
+#![allow(deprecated)]
+
 #![feature(impl_trait_in_assoc_type)]
 #![feature(try_trait_v2)]
 

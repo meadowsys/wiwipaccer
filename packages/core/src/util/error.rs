@@ -1,3 +1,5 @@
+#![deprecated]
+
 use ::std::result::Result as StdResult;
 use ::thiserror::Error;
 

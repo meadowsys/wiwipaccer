@@ -1,3 +1,5 @@
+#![deprecated]
+
 use crate::nom as n;
 use super::error::*;
 use ::std::fs;
