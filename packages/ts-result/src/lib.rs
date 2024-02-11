@@ -2,12 +2,13 @@
 //! [`Result`] in rust, by representing it as a union type
 
 pub mod formatter;
+pub mod nice_error_msg;
 
 pub use self::formatter::Formatter;
+pub use self::nice_error_msg::*;
 use ::serde::{ Serialize, Serializer };
 use ::serde::ser::SerializeStruct;
 use ::std::convert::Infallible;
-use ::std::fmt;
 
 pub use ::std::error::Error;
 
@@ -71,61 +72,6 @@ where
 
 pub type WrappedTSResult<T, E, RE = Infallible> = Result<TSResult<T, E>, RE>;
 
-pub trait NiceErrorMessage {
-	/// # Correctness
-	///
-	/// This function is expected to write its message with no leading or
-	/// trailing newlines. Calling [`Formatter::next_line`] in the middle of
-	/// other non-whitespace characters is okay and correct, but writing a
-	/// newline character or strings with newline characters is not. You also
-	/// should not call [`Formatter::next_line`] at the start or end of the
-	/// function, before/after anything else.
-	fn fmt(&self, f: &mut Formatter);
-
-	#[inline]
-	fn to_error_message(&self) -> String {
-		let mut formatter = Formatter::new();
-		self.fmt(&mut formatter);
-		formatter.into_string()
-	}
-}
-
-impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &T {
-	#[inline]
-	fn fmt(&self, f: &mut Formatter) {
-		<T as NiceErrorMessage>::fmt(self, f);
-	}
-}
-
-impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &mut T {
-	#[inline]
-	fn fmt(&self, f: &mut Formatter) {
-		<T as NiceErrorMessage>::fmt(self, f);
-	}
-}
-
-pub trait NiceErrorMessageExt: NiceErrorMessage {
-	#[inline]
-	fn as_display(&self) -> NiceErrorMessageDisplay<'_, Self> {
-		NiceErrorMessageDisplay { inner: self }
-	}
-}
-
-impl<T: NiceErrorMessage> NiceErrorMessageExt for T {}
-
-#[repr(transparent)]
-pub struct NiceErrorMessageDisplay<'h, T: ?Sized> {
-	inner: &'h T
-}
-
-impl<'h, T> fmt::Display for NiceErrorMessageDisplay<'h, T> where T: NiceErrorMessage {
-	#[inline]
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		// TODO optimisation to use our formatter stuff?
-		f.write_str(&self.inner.to_error_message())
-	}
-}
-
 pub trait WrapInTSResult<T, E> {
 	fn wrap_in_ts_result<RE>(self) -> WrappedTSResult<T, E, RE>;
 }
@@ -149,9 +95,4 @@ macro_rules! impl_display {
 			}
 		}
 	}
-}
-
-#[inline]
-pub fn lines(lines: &[String]) -> String {
-	lines.join("\n")
 }
