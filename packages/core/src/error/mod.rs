@@ -1,3 +1,4 @@
+pub mod common;
 pub mod fs_err;
 pub mod path_builder_err;
 pub mod ron_err;

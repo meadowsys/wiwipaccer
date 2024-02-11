@@ -50,7 +50,7 @@ where
 	}
 }
 
-pub async fn read_dir<F>(path_fn: F) -> Result<ReadDir<F>, fs_err::WithPath<fs_err::ReadDir>>
+pub async fn read_dir<F>(path_fn: F) -> Result<ReadDir<F>, fs_err::ReadDirWithPath>
 where
 	F: Fn() -> String
 {
@@ -83,7 +83,7 @@ impl<F> ReadDir<F>
 where
 	F: Fn() -> String
 {
-	pub async fn next(&mut self) -> Result<Option<tokio::fs::DirEntry>, fs_err::WithPath<fs_err::ReadDirEntry>> {
+	pub async fn next(&mut self) -> Result<Option<tokio::fs::DirEntry>, fs_err::ReadDirEntryWithPath> {
 		self.read_dir.next_entry()
 			.await
 			.map_err(|e| fs_err::read_dir_entry(e, (self.path_fn)()))

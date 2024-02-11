@@ -1,3 +1,4 @@
+use super::common::WithPath;
 use ::ts_result::*;
 
 pub struct SpawnBlocking {
@@ -9,23 +10,6 @@ impl NiceErrorMessage for SpawnBlocking {
 		f.write_line_args(format_args!("tokio failed to run background task"));
 		f.with_indent(|f| {
 			f.write_args(format_args!("{}", self.error));
-		});
-	}
-}
-
-pub struct WithPath<E> {
-	error: E,
-	path: String
-}
-
-impl<E: NiceErrorMessage> NiceErrorMessage for WithPath<E> {
-	fn fmt(&self, f: &mut Formatter) {
-		f.write_str("for path: ");
-		f.write_str(&self.path);
-		f.next_line();
-
-		f.with_indent(|f| {
-			f.fmt(&self.error);
 		});
 	}
 }
@@ -43,7 +27,7 @@ pub type MetadataWithPath = WithPath<Metadata>;
 
 impl Metadata {
 	pub fn with_path(self, path: String) -> WithPath<Self> {
-		WithPath { error: self, path }
+		WithPath::new(self, path)
 	}
 }
 
@@ -124,6 +108,8 @@ pub struct ReadDir {
 	error: ::std::io::Error
 }
 
+pub type ReadDirWithPath = WithPath<ReadDir>;
+
 impl NiceErrorMessage for ReadDir {
 	fn fmt(&self, f: &mut Formatter) {
 		f.write_line("error reading directory:");
@@ -134,6 +120,8 @@ impl NiceErrorMessage for ReadDir {
 pub struct ReadDirEntry {
 	error: ::std::io::Error
 }
+
+pub type ReadDirEntryWithPath = WithPath<ReadDirEntry>;
 
 impl NiceErrorMessage for ReadDirEntry {
 	fn fmt(&self, f: &mut Formatter) {
@@ -180,10 +168,10 @@ pub fn read_to_string_utf8(error: ::std::str::Utf8Error, bytes: Vec<u8>) -> Read
 
 pub fn read_dir(error: ::std::io::Error, path: String) -> WithPath<ReadDir> {
 	let error = ReadDir { error };
-	WithPath { error, path }
+	WithPath::new(error, path)
 }
 
 pub fn read_dir_entry(error: ::std::io::Error, path: String) -> WithPath<ReadDirEntry> {
 	let error = ReadDirEntry { error };
-	WithPath { error, path }
+	WithPath::new(error, path)
 }
