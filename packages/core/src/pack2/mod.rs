@@ -1,3 +1,5 @@
+#![deprecated]
+
 mod error;
 mod meta;
 mod rt;
