@@ -11,3 +11,4 @@ pub mod ron;
 
 pub use path_builder::{ path_builder, path_builder2 };
 pub use path_builder3::create_path_builder3;
+pub use path_builder4::create_path_builder4;
