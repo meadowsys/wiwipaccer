@@ -1,9 +1,6 @@
-pub mod error;
 mod random_cube_all;
 mod random_leaves;
 
-pub use self::error::Error;
-use self::error::*;
 pub use self::random_cube_all::RandomCubeAll;
 pub use self::random_leaves::RandomLeaves;
 use ::serde::{ Deserialize, Serialize };
