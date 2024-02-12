@@ -5,10 +5,12 @@ use super::*;
 
 pub enum CheckError {
 	NotFile {
-		path: String
+		path: String,
+		getting: &'static str
 	},
 	NotDir {
-		path: String
+		path: String,
+		getting: &'static str
 	},
 	Metadata {
 		error: fs_err::MetadataWithPath
@@ -87,10 +89,10 @@ where
 	}
 }
 
-pub fn not_file(path: String) -> CheckError {
-	CheckError::NotFile { path }
+pub fn not_file(path: String, getting: &'static str) -> CheckError {
+	CheckError::NotFile { path, getting }
 }
 
-pub fn not_dir(path: String) -> CheckError {
-	CheckError::NotDir { path }
+pub fn not_dir(path: String, getting: &'static str) -> CheckError {
+	CheckError::NotDir { path, getting }
 }

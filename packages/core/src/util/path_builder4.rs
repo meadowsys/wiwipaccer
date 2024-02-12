@@ -20,7 +20,7 @@ impl<'h> WithRootDir<'h> {
 	}
 	#[inline]
 	pub fn root_dir(&self) -> CheckPath {
-		self._root_dir().check_dir()
+		self._root_dir().check_dir("root dir")
 	}
 
 	#[inline]
@@ -29,7 +29,7 @@ impl<'h> WithRootDir<'h> {
 	}
 	#[inline]
 	pub fn root_manifest(&self) -> CheckPath {
-		self._root_manifest().check_file()
+		self._root_manifest().check_file("root manifest")
 	}
 
 	#[inline]
@@ -38,7 +38,7 @@ impl<'h> WithRootDir<'h> {
 	}
 	#[inline]
 	pub fn texture_entries_dir(&self) -> CheckPath {
-		self._texture_entries_dir().check_dir()
+		self._texture_entries_dir().check_dir("texture entries dir")
 	}
 }
 
@@ -49,7 +49,7 @@ impl<'h> WithTextureID<'h> {
 	}
 	#[inline]
 	pub fn texture_dir(&self) -> CheckPath {
-		self._texture_dir().check_dir()
+		self._texture_dir().check_dir("texture dir")
 	}
 
 	#[inline]
@@ -58,7 +58,7 @@ impl<'h> WithTextureID<'h> {
 	}
 	#[inline]
 	pub fn texture_manifest(&self) -> CheckPath {
-		self._texture_manifest().check_file()
+		self._texture_manifest().check_file("texture manifest")
 	}
 
 	#[inline]
@@ -67,7 +67,7 @@ impl<'h> WithTextureID<'h> {
 	}
 	#[inline]
 	pub fn option_entries_dir(&self) -> CheckPath {
-		self._option_entries_dir().check_dir()
+		self._option_entries_dir().check_dir("option entries dir")
 	}
 }
 
@@ -78,7 +78,7 @@ impl<'h> WithOptionID<'h> {
 	}
 	#[inline]
 	pub fn option_dir(&self) -> CheckPath {
-		self._option_dir().check_dir()
+		self._option_dir().check_dir("option dir")
 	}
 
 	#[inline]
@@ -87,7 +87,7 @@ impl<'h> WithOptionID<'h> {
 	}
 	#[inline]
 	pub fn option_manifest(&self) -> CheckPath {
-		self._option_manifest().check_file()
+		self._option_manifest().check_file("option manifest")
 	}
 
 	#[inline]
@@ -96,7 +96,7 @@ impl<'h> WithOptionID<'h> {
 	}
 	#[inline]
 	pub fn provider_entries_dir(&self) -> CheckPath {
-		self._provider_entries_dir().check_dir()
+		self._provider_entries_dir().check_dir("provider entries dir")
 	}
 }
 
@@ -107,7 +107,7 @@ impl<'h> WithProviderID<'h> {
 	}
 	#[inline]
 	pub fn provider_dir(&self) -> CheckPath {
-		self._provider_dir().check_dir()
+		self._provider_dir().check_dir("provider dir")
 	}
 
 	#[inline]
@@ -116,7 +116,7 @@ impl<'h> WithProviderID<'h> {
 	}
 	#[inline]
 	pub fn provider_manifest(&self) -> CheckPath {
-		self._provider_manifest().check_file()
+		self._provider_manifest().check_file("provider manifest")
 	}
 }
 
@@ -243,24 +243,25 @@ impl PathChain {
 	}
 
 	#[inline]
-	fn check_file(self) -> CheckPath {
+	fn check_file(self, getting: &'static str) -> CheckPath {
 		let path = self.into_string();
 		let check_type = CheckType::File;
-		CheckPath { path, check_type }
+		CheckPath { path, check_type, getting }
 	}
 
 	#[inline]
-	fn check_dir(self) -> CheckPath {
+	fn check_dir(self, getting: &'static str) -> CheckPath {
 		let path = self.into_string();
 		let check_type = CheckType::Dir;
-		CheckPath { path, check_type }
+		CheckPath { path, check_type, getting }
 	}
 }
 
 
 pub struct CheckPath {
 	path: String,
-	check_type: CheckType
+	check_type: CheckType,
+	getting: &'static str
 }
 
 enum CheckType {
@@ -291,8 +292,8 @@ impl IntoFuture for CheckPath {
 
 	#[inline]
 	fn into_future(self) -> Self::IntoFuture {
-		async {
-			let CheckPath { path, check_type } = self;
+		async move {
+			let CheckPath { path, check_type, getting } = self;
 			let path_fn = || path.clone();
 
 			match check_type {
@@ -300,14 +301,14 @@ impl IntoFuture for CheckPath {
 					if fs::is_file(path_fn).await? {
 						Ok(path)
 					} else {
-						Err(path_builder_err::not_file(path))
+						Err(path_builder_err::not_file(path, getting))
 					}
 				}
 				CheckType::Dir => {
 					if fs::is_dir(path_fn).await? {
 						Ok(path)
 					} else {
-						Err(path_builder_err::not_dir(path))
+						Err(path_builder_err::not_dir(path, getting))
 					}
 				}
 			}
