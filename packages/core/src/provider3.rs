@@ -106,12 +106,7 @@ mod rt {
 
 	impl<'h> FrontendData<'h> {
 		pub fn new(provider: &'h ProviderRuntime, mc_version: MCVersionRef) -> Option<Self> {
-			let res = match &provider.gen {
-				Generator::RandomCubeAll { gen } => { gen.is_available_for(mc_version) }
-				Generator::RandomLeaves { gen } => { gen.is_available_for(mc_version) }
-			};
-
-			if !res { return None }
+			if !provider.gen.is_available_for(mc_version) { return None }
 
 			let id = &provider.id;
 			Some(Self { id })

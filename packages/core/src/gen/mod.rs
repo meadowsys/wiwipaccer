@@ -3,6 +3,7 @@ mod random_leaves;
 
 pub use self::random_cube_all::RandomCubeAll;
 pub use self::random_leaves::RandomLeaves;
+use crate::mc_versions::MCVersionRef;
 use ::serde::{ Deserialize, Serialize };
 
 #[derive(Deserialize, Serialize)]
@@ -17,6 +18,16 @@ pub enum Generator {
 	RandomLeaves {
 		#[serde(flatten)]
 		gen: RandomLeaves
+	}
+}
+
+impl Generator {
+	pub fn is_available_for(&self, mc_version: MCVersionRef) -> bool {
+		use Generator::*;
+		match self {
+			RandomCubeAll { gen } => { gen.is_available_for(mc_version) }
+			RandomLeaves { gen } => { gen.is_available_for(mc_version) }
+		}
 	}
 }
 
