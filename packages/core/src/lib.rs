@@ -23,4 +23,5 @@ pub mod pack2;
 pub mod texture2;
 pub mod option2;
 pub mod provider2;
+pub mod provider3;
 pub mod gen;
