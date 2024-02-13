@@ -1,6 +1,7 @@
 use ::ron::error::{ Error, Position, SpannedError };
 use ::ts_result::*;
 
+#[derive(Debug)]
 pub enum Ron {
 	Error(Error),
 	SpannedError(SpannedError)

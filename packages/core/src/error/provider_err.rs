@@ -1,6 +1,7 @@
 use super::{ path_builder_err, fs_err, ron_err };
 use ::ts_result::*;
 
+#[derive(Debug)]
 pub struct DeserialiseMeta {
 	error: ron_err::Ron
 }
@@ -18,6 +19,7 @@ impl NiceErrorMessage for DeserialiseMeta {
 	}
 }
 
+#[derive(Debug)]
 pub enum New {
 	CheckPath(path_builder_err::CheckError),
 	DeserialiseMeta(DeserialiseMeta),

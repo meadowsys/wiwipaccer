@@ -3,6 +3,7 @@ use ::std::ops::ControlFlow::{ self, Break, Continue };
 use ::ts_result::*;
 use super::*;
 
+#[derive(Debug)]
 pub enum CheckError {
 	NotFile {
 		path: String,

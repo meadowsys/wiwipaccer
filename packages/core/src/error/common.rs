@@ -1,5 +1,6 @@
 use ::ts_result::*;
 
+#[derive(Debug)]
 pub struct WithPath<E> {
 	error: E,
 	path: String

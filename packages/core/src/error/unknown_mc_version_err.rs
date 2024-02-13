@@ -1,5 +1,6 @@
 use ::ts_result::*;
 
+#[derive(Debug)]
 struct UnknownMCVersion {
 	version: String
 }
@@ -10,6 +11,7 @@ impl NiceErrorMessage for UnknownMCVersion {
 	}
 }
 
+#[derive(Debug)]
 pub struct InGetting {
 	version: UnknownMCVersion
 }
@@ -21,6 +23,7 @@ impl NiceErrorMessage for InGetting {
 	}
 }
 
+#[derive(Debug)]
 pub struct InGettingRangeFrom {
 	from: UnknownMCVersion,
 	to: String
@@ -39,6 +42,7 @@ impl NiceErrorMessage for InGettingRangeFrom {
 	}
 }
 
+#[derive(Debug)]
 pub struct InGettingRangeTo {
 	from: String,
 	to: UnknownMCVersion
@@ -57,6 +61,7 @@ impl NiceErrorMessage for InGettingRangeTo {
 	}
 }
 
+#[derive(Debug)]
 pub enum InGettingRange {
 	From(InGettingRangeFrom),
 	To(InGettingRangeTo)

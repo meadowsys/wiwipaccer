@@ -1,6 +1,7 @@
 use super::common::WithPath;
 use ::ts_result::*;
 
+#[derive(Debug)]
 pub struct SpawnBlocking {
 	error: ::tokio::task::JoinError
 }
@@ -14,6 +15,7 @@ impl NiceErrorMessage for SpawnBlocking {
 	}
 }
 
+#[derive(Debug)]
 pub enum Metadata {
 	FileSystem {
 		error: ::std::io::Error
@@ -47,6 +49,7 @@ impl NiceErrorMessage for Metadata {
 	}
 }
 
+#[derive(Debug)]
 pub struct IsDir {
 	error: WithPath<Metadata>
 }
@@ -66,6 +69,7 @@ impl NiceErrorMessage for IsDir {
 	}
 }
 
+#[derive(Debug)]
 pub struct IsFile {
 	error: WithPath<Metadata>
 }
@@ -85,6 +89,7 @@ impl NiceErrorMessage for IsFile {
 	}
 }
 
+#[derive(Debug)]
 pub enum ReadToString {
 	FileSystem {
 		error: ::std::io::Error
@@ -104,6 +109,7 @@ impl NiceErrorMessage for ReadToString {
 	}
 }
 
+#[derive(Debug)]
 pub struct ReadDir {
 	error: ::std::io::Error
 }
@@ -117,6 +123,7 @@ impl NiceErrorMessage for ReadDir {
 	}
 }
 
+#[derive(Debug)]
 pub struct ReadDirEntry {
 	error: ::std::io::Error
 }
