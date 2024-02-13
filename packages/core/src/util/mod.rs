@@ -9,6 +9,7 @@ pub mod path_builder3;
 pub mod path_builder4;
 pub mod ron;
 pub mod ron2;
+pub mod utf8;
 
 pub use path_builder::{ path_builder, path_builder2 };
 pub use path_builder3::create_path_builder3;
