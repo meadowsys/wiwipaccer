@@ -125,20 +125,24 @@ pub struct Blank {
 	__private: ()
 }
 
+#[derive(Clone, Debug)]
 pub struct WithRootDir<'h> {
 	root_dir: &'h str
 }
 
+#[derive(Clone, Debug)]
 pub struct WithTextureID<'h> {
 	root: WithRootDir<'h>,
 	texture_id: &'h str
 }
 
+#[derive(Clone, Debug)]
 pub struct WithOptionID<'h> {
 	texture: WithTextureID<'h>,
 	option_id: &'h str
 }
 
+#[derive(Clone, Debug)]
 pub struct WithProviderID<'h> {
 	option: WithOptionID<'h>,
 	provider_id: &'h str
