@@ -90,16 +90,33 @@ impl NiceErrorMessage for IsFile {
 }
 
 #[derive(Debug)]
-pub enum ReadToString {
+pub enum Read {
 	FileSystem {
 		error: ::std::io::Error
 	},
 	Join {
 		error: SpawnBlocking
-	},
+	}
+}
+
+impl NiceErrorMessage for Read {
+	fn fmt(&self, f: &mut Formatter) {
+		todo!()
+	}
+}
+
+#[derive(Debug)]
+pub enum ReadToString {
+	Read(Read),
 	UTF8 {
 		error: ::std::str::Utf8Error,
 		bytes: Vec<u8>
+	}
+}
+
+impl From<Read> for ReadToString {
+	fn from(value: Read) -> Self {
+		Self::Read(value)
 	}
 }
 
@@ -161,12 +178,12 @@ pub fn is_file(error: WithPath<Metadata>) -> IsFile {
 	IsFile { error }
 }
 
-pub fn read_to_string_fs(error: ::std::io::Error) -> ReadToString {
-	ReadToString::FileSystem { error }
+pub fn read_fs(error: ::std::io::Error) -> Read {
+	Read::FileSystem { error }
 }
 
-pub fn read_to_string_join(error: SpawnBlocking) -> ReadToString {
-	ReadToString::Join { error }
+pub fn read_join(error: SpawnBlocking) -> Read {
+	Read::Join { error }
 }
 
 pub fn read_to_string_utf8(error: ::std::str::Utf8Error, bytes: Vec<u8>) -> ReadToString {

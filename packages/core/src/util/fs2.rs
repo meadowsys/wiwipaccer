@@ -33,17 +33,23 @@ where
 		.map_err(fs_err::is_file)
 }
 
+pub async fn read<F>(path_fn: F) -> Result<Vec<u8>, fs_err::Read>
+where
+	F: Fn() -> String
+{
+	let path = path_fn();
+	spawn_blocking(
+		|| fs::read(path).map_err(fs_err::read_fs),
+		fs_err::read_join
+	).await
+}
+
 // TODO: can probably be optimised (one less meta call?) if rewritten by hand?
 pub async fn read_to_string<F>(path_fn: F) -> Result<String, fs_err::ReadToString>
 where
 	F: Fn() -> String
 {
-	let path = path_fn();
-	let bytes = spawn_blocking(
-		|| fs::read(path).map_err(fs_err::read_to_string_fs),
-		fs_err::read_to_string_join
-	).await?;
-
+	let bytes = read(path_fn).await?;
 	match std::str::from_utf8(&bytes) {
 		Ok(_) => { Ok(unsafe { String::from_utf8_unchecked(bytes) }) }
 		Err(error) => { Err(fs_err::read_to_string_utf8(error, bytes)) }
