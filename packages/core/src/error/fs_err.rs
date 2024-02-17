@@ -101,7 +101,21 @@ pub enum Read {
 
 impl NiceErrorMessage for Read {
 	fn fmt(&self, f: &mut Formatter) {
-		todo!()
+		use Read::*;
+		match self {
+			FileSystem { error } => {
+				f.write_line("error reading file");
+				f.with_indent(|f| {
+					f.write_args(format_args!("{error}"));
+				});
+			}
+			Join { error } => {
+				f.write_line("error joining task while reading file");
+				f.with_indent(|f| {
+					f.fmt(error);
+				});
+			}
+		}
 	}
 }
 
@@ -122,7 +136,18 @@ impl From<Read> for ReadToString {
 
 impl NiceErrorMessage for ReadToString {
 	fn fmt(&self, f: &mut Formatter) {
-		todo!()
+		use ReadToString::*;
+		match self {
+			Read(read) => {
+				f.fmt(read);
+			}
+			UTF8 { error, bytes: _ } => {
+				f.write_line("UTF8 error reading to string");
+				f.with_indent(|f| {
+					f.write_args(format_args!("{error}"));
+				});
+			}
+		}
 	}
 }
 
@@ -136,7 +161,9 @@ pub type ReadDirWithPath = WithPath<ReadDir>;
 impl NiceErrorMessage for ReadDir {
 	fn fmt(&self, f: &mut Formatter) {
 		f.write_line("error reading directory:");
-		f.write_args(format_args!("{}", self.error));
+		f.with_indent(|f| {
+			f.write_args(format_args!("{}", self.error));
+		});
 	}
 }
 
