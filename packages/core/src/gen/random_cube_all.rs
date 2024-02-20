@@ -1,4 +1,4 @@
-use crate::mc_versions::MCVersionRef;
+use ::mc_versions::MCVersionRef;
 use ::serde::{ Deserialize, Serialize };
 
 #[derive(Deserialize, Serialize)]

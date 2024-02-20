@@ -3,7 +3,7 @@ mod random_leaves;
 
 pub use self::random_cube_all::RandomCubeAll;
 pub use self::random_leaves::RandomLeaves;
-use crate::mc_versions::MCVersionRef;
+use ::mc_versions::MCVersionRef;
 use ::serde::{ Deserialize, Serialize };
 
 #[derive(Deserialize, Serialize)]

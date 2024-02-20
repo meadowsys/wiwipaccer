@@ -1,19 +1,21 @@
-use crate::error::unknown_mc_version_err;
-use ::serde::{ Deserialize, Deserializer, Serialize, Serializer };
+pub mod error;
+
+use ::serde::{ Serialize, Serializer };
 use ::std::mem;
 use ::std::result::Result as StdResult;
+use ::std::str::FromStr;
 
 pub struct MCVersion {
 	inner: Inner
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct Inner {
 	pub name: &'static str,
 	pub release_type: ReleaseType,
 	pub pack_format: PackFormat,
 
-	/// release ordering
+	/// release sequence ordering
 	///
 	/// eg. this release is the n'th release ever released\
 	/// eg. "1.18.2 is the 12th release" (do not rely on this its just an example)
@@ -24,7 +26,7 @@ pub struct Inner {
 	pub n: usize
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub enum ReleaseType {
 	#[serde(rename = "snapshot")]
 	Snapshot,
@@ -36,7 +38,7 @@ pub enum ReleaseType {
 	OldAlpha
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub enum PackFormat {
 	#[serde(rename = "verified")]
 	Verified(u8),
@@ -49,26 +51,26 @@ pub enum PackFormat {
 }
 
 impl MCVersion {
+	#[inline]
 	pub fn get(version: &str)
-		-> Result<MCVersionRef, unknown_mc_version_err::InGetting>
+		-> Result<MCVersionRef, error::InGetting>
 	{
-		MC_VERSIONS
-			.iter()
-			.find(|v| v.name == version)
-			.ok_or_else(|| unknown_mc_version_err::in_getting(version))
+		version.parse()
 	}
 
+
+
 	pub fn get_range(from: &str, to: &str)
-		-> Result<MCVersionRefSlice, unknown_mc_version_err::InGettingRange>
+		-> Result<MCVersionRefSlice, error::InGettingRange>
 	{
 		let mut v_from = MC_VERSIONS
 			.iter()
 			.position(|v| v.name == from)
-			.ok_or_else(|| unknown_mc_version_err::in_getting_range_from(from, to))?;
+			.ok_or_else(|| error::in_getting_range_from(from, to))?;
 		let mut v_to = MC_VERSIONS
 			.iter()
 			.position(|v| v.name == to)
-			.ok_or_else(|| unknown_mc_version_err::in_getting_range_to(from, to))?;
+			.ok_or_else(|| error::in_getting_range_to(from, to))?;
 
 		if v_from > v_to {
 			mem::swap(&mut v_from, &mut v_to);
@@ -80,8 +82,20 @@ impl MCVersion {
 
 impl ::std::ops::Deref for MCVersion {
 	type Target = Inner;
+	#[inline]
 	fn deref(&self) -> &Self::Target {
 		&self.inner
+	}
+}
+
+impl FromStr for MCVersionRef {
+	type Err = error::InGetting;
+	#[inline]
+	fn from_str(s: &str) -> StdResult<Self, Self::Err> {
+		MC_VERSIONS
+			.iter()
+			.find(|v| v.name == s)
+			.ok_or_else(|| error::in_getting(s))
 	}
 }
 
@@ -103,17 +117,6 @@ impl Serialize for MCVersion {
 		S: Serializer
 	{
 		<Inner as Serialize>::serialize(&self.inner, serializer)
-	}
-}
-
-impl Deserialize<'static> for MCVersion {
-	#[inline]
-	fn deserialize<D>(deserializer: D) -> StdResult<Self, D::Error>
-	where
-		D: Deserializer<'static>
-	{
-		let inner = <Inner as Deserialize>::deserialize(deserializer)?;
-		Ok(Self { inner })
 	}
 }
 

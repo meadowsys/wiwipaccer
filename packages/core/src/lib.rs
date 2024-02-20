@@ -8,7 +8,6 @@
 #![feature(impl_trait_in_assoc_type)]
 #![feature(try_trait_v2)]
 
-pub mod mc_versions;
 pub mod nom;
 pub mod option;
 pub mod pack;

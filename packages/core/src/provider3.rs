@@ -1,6 +1,6 @@
 use crate::error::provider_err;
 use crate::gen::Generator;
-use crate::mc_versions::{ MC_VERSIONS, MCVersionRef, MCVersionRefSlice };
+use ::mc_versions::{ MC_VERSIONS, MCVersionRef, MCVersionRefSlice };
 use crate::util::fs2 as fs;
 use crate::util::path_builder4::WithProviderID;
 use crate::util::ron2 as ron;

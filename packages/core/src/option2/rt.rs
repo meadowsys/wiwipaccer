@@ -1,4 +1,4 @@
-use crate::mc_versions::MCVersionRef;
+use ::mc_versions::MCVersionRef;
 use crate::util::fs;
 use crate::util::path_builder3::WithOptionID;
 use crate::provider2::{ self, ProviderRuntime };

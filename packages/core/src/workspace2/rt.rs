@@ -1,4 +1,4 @@
-use crate::mc_versions::MCVersionRef;
+use ::mc_versions::MCVersionRef;
 use crate::pack2::{ self, DependencyResult };
 use super::{ meta, nm, nr };
 use super::error::*;

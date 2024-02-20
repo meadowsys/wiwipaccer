@@ -2,7 +2,7 @@
 
 pub mod error;
 
-use crate::mc_versions::{ MC_VERSIONS, MCVersion };
+use ::mc_versions::{ MC_VERSIONS, MCVersion };
 use crate::nom as n;
 use crate::util::{ fs, path_builder, ron };
 use error::*;

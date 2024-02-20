@@ -1,4 +1,4 @@
-use crate::mc_versions::MCVersionRef;
+use ::mc_versions::MCVersionRef;
 use crate::texture2::{ self, TextureRuntime };
 use crate::util::{ create_path_builder3, fs };
 use crate::util::path_builder3::WithRootDir;

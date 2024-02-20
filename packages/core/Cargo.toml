@@ -9,6 +9,7 @@ publish = false
 async-trait.workspace = true
 camino.workspace = true
 hashbrown.workspace = true
+mc-versions = { path = "../mc-versions" }
 mc-versions-macro = { path = "../mc-versions-macro" }
 nominal = { path = "../nominal", features = ["serde"] }
 ron.workspace = true

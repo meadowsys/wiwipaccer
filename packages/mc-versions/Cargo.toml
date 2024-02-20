@@ -1,0 +1,11 @@
+[package]
+name = "mc-versions"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+mc-versions-macro = { path = "../mc-versions-macro" }
+serde.workspace = true
+ts-result = { path = "../ts-result" }
