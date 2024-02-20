@@ -52,33 +52,33 @@ mod rt {
 		gen: Generator
 	}
 
-	pub enum PackVersionSpecRuntime {
-		PackVersion(u8),
-		MCVersion(MCVersionRef),
-		MCVersionRange(MCVersionRefSlice)
-	}
-
-	impl PackVersionSpecRuntime {
-		pub fn satisfies(&self, mc_version: MCVersionRef) -> bool {
-			use PackVersionSpecRuntime::*;
-			match self {
-				PackVersion(s) => {
-					mc_version.pack_format
-						.get_version()
-						.map(|v| v == *s)
-						.unwrap_or_else(|| false)
-				}
-
-				MCVersion(s) => {
-					**s == *mc_version
-				}
-
-				MCVersionRange(s) => {
-					s.iter().any(|s| *s == *mc_version)
-				}
-			}
-		}
-	}
+	// pub enum PackVersionSpecRuntime {
+	// 	PackVersion(u8),
+	// 	MCVersion(MCVersionRef),
+	// 	MCVersionRange(MCVersionRefSlice)
+	// }
+	//
+	// impl PackVersionSpecRuntime {
+	// 	pub fn satisfies(&self, mc_version: MCVersionRef) -> bool {
+	// 		use PackVersionSpecRuntime::*;
+	// 		match self {
+	// 			PackVersion(s) => {
+	// 				mc_version.pack_format
+	// 					.get_version()
+	// 					.map(|v| v == *s)
+	// 					.unwrap_or_else(|| false)
+	// 			}
+	//
+	// 			MCVersion(s) => {
+	// 				**s == *mc_version
+	// 			}
+	//
+	// 			MCVersionRange(s) => {
+	// 				s.iter().any(|s| *s == *mc_version)
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	impl ProviderRuntime {
 		pub(crate) async fn new(p: &WithProviderID<'_>) -> Result<Option<Self>, provider_err::New> {
