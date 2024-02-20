@@ -1725,6 +1725,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "gen"
+version = "0.0.0"
+dependencies = [
+ "hashbrown 0.14.3",
+ "ts-result",
+]
+
+[[package]]
 name = "generator"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"

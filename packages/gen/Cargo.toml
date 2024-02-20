@@ -1,0 +1,10 @@
+[package]
+name = "gen"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+hashbrown.workspace = true
+ts-result = { path = "../ts-result" }

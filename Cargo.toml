@@ -3,6 +3,7 @@ resolver = "2"
 members = [
 	"packages/app/src-tauri",
 	"packages/core",
+	"packages/gen",
 	"packages/mc-versions-macro",
 	"packages/mc-versions",
 	"packages/nominal",
