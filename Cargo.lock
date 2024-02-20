@@ -2448,6 +2448,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "lazy-wrap"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b05fcf3ec66d34a5e65a6e14d5648ac4d5c16d5a9abc11536dc666809c1539e2"
+dependencies = [
+ "parking_lot",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2694,6 +2703,7 @@ checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 name = "mc-versions"
 version = "0.0.0"
 dependencies = [
+ "lazy-wrap",
  "mc-versions-macro",
  "serde",
  "ts-result",

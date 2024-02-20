@@ -6,6 +6,7 @@ license.workspace = true
 publish = false
 
 [dependencies]
+lazy-wrap.workspace = true
 mc-versions-macro = { path = "../mc-versions-macro" }
 serde.workspace = true
 ts-result = { path = "../ts-result" }
