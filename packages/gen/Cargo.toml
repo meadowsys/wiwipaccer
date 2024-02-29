@@ -1,5 +1,5 @@
 [package]
-name = "gen"
+name = "wiwipaccer-gen"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

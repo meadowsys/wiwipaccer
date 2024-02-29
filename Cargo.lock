@@ -1725,14 +1725,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gen"
-version = "0.0.0"
-dependencies = [
- "hashbrown 0.14.3",
- "ts-result",
-]
-
-[[package]]
 name = "generator"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6250,6 +6242,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "wiwipaccer-common"
+version = "0.0.0"
+
+[[package]]
 name = "wiwipaccer-core"
 version = "0.0.0"
 dependencies = [
@@ -6264,6 +6260,14 @@ dependencies = [
  "serde",
  "thiserror",
  "tokio",
+ "ts-result",
+]
+
+[[package]]
+name = "wiwipaccer-gen"
+version = "0.0.0"
+dependencies = [
+ "hashbrown 0.14.3",
  "ts-result",
 ]
 
