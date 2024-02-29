@@ -1,4 +1,5 @@
 pub trait Boxed {
+	/// Wraps the value into a box, storing it onto the heap.
 	fn boxed(self) -> Box<Self>;
 }
 
