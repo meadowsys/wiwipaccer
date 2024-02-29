@@ -6277,6 +6277,7 @@ version = "0.0.0"
 dependencies = [
  "hashbrown 0.14.3",
  "ts-result",
+ "wiwipaccer-common",
 ]
 
 [[package]]

@@ -8,3 +8,4 @@ publish = false
 [dependencies]
 hashbrown.workspace = true
 ts-result = { path = "../ts-result" }
+wiwipaccer-common = { path = "../common" }
