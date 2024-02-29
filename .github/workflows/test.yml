@@ -1,0 +1,39 @@
+name: tests
+on:
+  push:
+    branches:
+    - "**"
+
+jobs:
+  test:
+    name: run
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: checkout code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    - name: setup rust
+      run: rustc --version
+
+    - name: run tests
+      run: |
+        # excluding tauri app because it doesn't want to build and behave with the specified rustflags
+        cargo test --release --workspace --exclude wiwipaccer
+      env:
+        RUSTFLAGS: "-Cinstrument-coverage -Cinline-threshold=0 -Clink-dead-code"
+        LLVM_PROFILE_FILE: "target/coverage/test-file.profraw"
+
+    - name: fetch/run grcov
+      run: |
+        curl -Lo grcov.bz2 https://github.com/mozilla/grcov/releases/download/v0.8.19/grcov-x86_64-unknown-linux-musl.tar.bz2
+        tar xvf grcov.bz2
+        rm grcov.bz2
+
+        ./grcov . -s . -t lcov --binary-path ./target/release/ --branch --ignore-not-existing --ignore "target/**/*" -o ./target/coverage/tests.lcov
+
+    - name: upload to codecov
+      uses: codecov/codecov-action@54bcd8715eee62d40e33596ef5e8f0f48dbbccab # v4.1.0
+      with:
+        files: target/coverage/*.lcov
+        token: ${{ secrets.CODECOV_TOKEN }}
