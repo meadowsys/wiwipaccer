@@ -88,6 +88,15 @@ impl Formatter {
 	}
 
 	#[inline]
+	pub fn undo_next_line(&mut self) {
+		if let Some(last_char) = self.string.pop() {
+			if last_char != '\n' {
+				self.string.push(last_char);
+			}
+		}
+	}
+
+	#[inline]
 	pub fn write_line_args(&mut self, args: Arguments<'_>) {
 		self.init_indent();
 		self.write_args(args);
