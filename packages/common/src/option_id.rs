@@ -1,4 +1,5 @@
 use ::boxed::Boxed as _;
+use ::std::fmt::{ self, Display };
 use ::ts_result::{ Formatter, NiceErrorMessage };
 
 /// An ID for an option, consisting of the pack its from, the texture its for,
@@ -28,6 +29,13 @@ impl OptionID {
 	#[inline]
 	pub fn option_id_ref(&self) -> &str {
 		&self.option_id
+	}
+}
+
+impl Display for OptionID {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		let Self { pack_id, texture_id, option_id } = self;
+		write!(f, "{pack_id}:{texture_id}:{option_id}")
 	}
 }
 
