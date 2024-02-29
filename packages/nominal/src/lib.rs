@@ -52,23 +52,23 @@ macro_rules! nominal_mod {
 }
 
 #[repr(transparent)]
-pub struct Nominal<T, M>(T, PhantomData<M>);
-
-/// Dummy marker type for when it doesn't matter what the marker type is
-/// (for example, in the middle of longer function chains)
-pub struct Dummy;
+pub struct Nominal<T, M> {
+	item: T,
+	marker: PhantomData<M>
+}
 
 impl<T, M> Nominal<T, M> {
 	/// Wraps a value into a Nominal struct
 	#[inline]
-	pub fn new(value: T) -> Self {
-		Self(value, PhantomData)
+	pub fn new(item: T) -> Self {
+		let marker = PhantomData;
+		Self { item, marker }
 	}
 
 	/// Unwraps and returns the value, consuming the wrapper
 	#[inline]
 	pub fn into_inner(self) -> T {
-		self.0
+		self.item
 	}
 
 	/// Gets a reference to inner
@@ -77,7 +77,7 @@ impl<T, M> Nominal<T, M> {
 	/// to prevent unintentional auto-derefs
 	#[inline]
 	pub fn ref_inner(&self) -> &T {
-		&self.0
+		&self.item
 	}
 
 	/// Gets a mutable reference to inner
@@ -86,7 +86,7 @@ impl<T, M> Nominal<T, M> {
 	/// to prevent unintentional auto-derefs
 	#[inline]
 	pub fn mut_inner(&mut self) -> &mut T {
-		&mut self.0
+		&mut self.item
 	}
 
 	/// Consumes and rewraps self to another nominal type, where the two inner types
@@ -94,62 +94,62 @@ impl<T, M> Nominal<T, M> {
 	/// but it still explicitly calls a conversion, so should be clear still? :thinking:
 	#[inline]
 	pub fn transmute_nom<M2>(self) -> Nominal<T, M2> {
-		Nominal(self.0, PhantomData)
+		Nominal::new(self.into_inner())
 	}
 
 	#[inline]
-	pub fn map_nom<M2, T2, F>(self, f: F) -> Nominal<T2, M2>
+	pub fn map_nom<T2, F>(self, f: F) -> Nominal<T2, M>
 	where
 		F: FnOnce(T) -> T2
 	{
-		Nominal(f(self.0), PhantomData)
+		Nominal::new(f(self.into_inner()))
 	}
 
 	#[inline]
-	pub async fn async_map_nom<M2, T2, F, Fu>(self, f: F) -> Nominal<T2, M2>
+	pub async fn async_map_nom<T2, F, Fu>(self, f: F) -> Nominal<T2, M>
 	where
 		F: FnOnce(T) -> Fu,
 		Fu: Future<Output = T2>
 	{
-		Nominal(f(self.0).await, PhantomData)
+		Nominal::new(f(self.into_inner()).await)
 	}
 }
 
 impl<T, M, E> Nominal<Result<T, E>, M> {
 	#[inline]
 	pub fn transpose(self) -> Result<Nominal<T, M>, E> {
-		self.0.map(|val| Nominal(val, PhantomData))
+		self.into_inner().map(Nominal::new)
 	}
 
 	#[inline]
-	pub fn map_nom_ok<M2, T2, F>(self, f: F) -> Nominal<Result<T2, E>, M2>
+	pub fn map_nom_ok<T2, F>(self, f: F) -> Nominal<Result<T2, E>, M>
 	where
 		F: FnOnce(T) -> T2
 	{
-		Nominal(self.0.map(f), PhantomData)
+		Nominal::new(self.into_inner().map(f))
 	}
 
 	#[inline]
-	pub fn map_nom_err<M2, E2, F>(self, f: F) -> Nominal<Result<T, E2>, M2>
+	pub fn map_nom_err<E2, F>(self, f: F) -> Nominal<Result<T, E2>, M>
 	where
 		F: FnOnce(E) -> E2
 	{
-		Nominal(self.0.map_err(f), PhantomData)
+		Nominal::new(self.into_inner().map_err(f))
 	}
 }
 
 impl<T, M> Nominal<Option<T>, M> {
 	#[inline]
 	pub fn transpose(self) -> Option<Nominal<T, M>> {
-		self.0.map(|val| Nominal(val, PhantomData))
+		self.into_inner().map(Nominal::new)
 	}
 
 	#[inline]
-	pub fn map_nom_some<M2, T2, F>(self, f: F) -> Nominal<Option<T2>, M2>
+	pub fn map_nom_some<T2, F>(self, f: F) -> Nominal<Option<T2>, M>
 	where
 		F: FnOnce(T) -> T2
 	{
-		Nominal(self.0.map(f), PhantomData)
+		Nominal::new(self.into_inner().map(f))
 	}
 }
 
@@ -161,8 +161,8 @@ where
 {
 	#[inline]
 	fn clone(&self) -> Self {
-		let t = <T as Clone>::clone(self.ref_inner());
-		Self(t, PhantomData)
+		let item = <T as Clone>::clone(self.ref_inner());
+		Nominal::new(item)
 	}
 
 	#[inline]
@@ -198,8 +198,8 @@ where
 {
 	#[inline]
 	fn default() -> Self {
-		let t = <T as Default>::default();
-		Self(t, PhantomData)
+		let item = <T as Default>::default();
+		Nominal::new(item)
 	}
 }
 
@@ -285,8 +285,8 @@ where
 	where
 		Self: Sized
 	{
-		let t = <T as Ord>::max(self.into_inner(), other.into_inner());
-		Self(t, PhantomData)
+		let item = <T as Ord>::max(self.into_inner(), other.into_inner());
+		Nominal::new(item)
 	}
 
 	#[inline]
@@ -294,8 +294,8 @@ where
 	where
 		Self: Sized
 	{
-		let t = <T as Ord>::min(self.into_inner(), other.into_inner());
-		Self(t, PhantomData)
+		let item = <T as Ord>::min(self.into_inner(), other.into_inner());
+		Nominal::new(item)
 	}
 
 	#[inline]
@@ -303,8 +303,8 @@ where
 	where
 		Self: Sized
 	{
-		let t = <T as Ord>::clamp(self.into_inner(), min.into_inner(), max.into_inner());
-		Self(t, PhantomData)
+		let item = <T as Ord>::clamp(self.into_inner(), min.into_inner(), max.into_inner());
+		Nominal::new(item)
 	}
 }
 
@@ -319,7 +319,7 @@ where
 		D: Deserializer<'de>
 	{
 		<T as Deserialize>::deserialize::<D>(deserializer)
-			.map(|t| Self(t, PhantomData))
+			.map(Nominal::new)
 	}
 
 	#[inline]

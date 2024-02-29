@@ -30,7 +30,8 @@ impl TextureRuntime {
 		let description = description.transmute_nom();
 		let id = nr::ID::new(p.texture_id_ref().into());
 		let default = default
-			.map_nom_some(option2::nr::ID::new);
+			.map_nom_some(option2::nr::ID::new)
+			.transmute_nom();
 		let options = read_options(p).await?;
 
 		// read option dir first,

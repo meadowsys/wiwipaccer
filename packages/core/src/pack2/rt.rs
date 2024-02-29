@@ -6,7 +6,6 @@ use super::error::*;
 use super::{ meta, nm, nr };
 use ::async_trait::async_trait;
 use ::hashbrown::HashMap;
-use ::nominal::Dummy;
 use ::serde::Serialize;
 use ::std::ffi::OsStr;
 
@@ -139,8 +138,9 @@ impl PackRuntime {
 #[inline]
 fn process_version(version: nm::Version) -> Result<nr::Version> {
 	version
-		.map_nom_some::<Dummy, _, _>(|v| ::semver::Version::parse(&v))
+		.map_nom_some(|v| ::semver::Version::parse(&v))
 		.map_nom(Option::transpose)
+		.transmute_nom()
 		.transpose()
 		.map_err(Into::into)
 }
