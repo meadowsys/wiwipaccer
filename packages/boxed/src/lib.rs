@@ -8,3 +8,14 @@ impl<T> Boxed for T {
 		Box::new(self)
 	}
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn it_boxes() {
+		let value = 3900238.boxed();
+		assert_eq!(3900238, *value);
+	}
+}
