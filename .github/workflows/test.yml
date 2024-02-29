@@ -23,6 +23,7 @@ jobs:
       env:
         RUSTFLAGS: "-Cinstrument-coverage -Cinline-threshold=0 -Clink-dead-code"
         LLVM_PROFILE_FILE: "target/coverage/test-file.profraw"
+        CARGO_INCREMENTAL: "0"
 
     - name: fetch/run grcov
       run: |
