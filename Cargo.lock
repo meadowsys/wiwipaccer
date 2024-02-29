@@ -572,6 +572,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "boxed"
+version = "0.0.0"
+
+[[package]]
 name = "brotli"
 version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
