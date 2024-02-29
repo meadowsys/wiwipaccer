@@ -73,6 +73,15 @@ impl Formatter {
 		self.string.push_str(s);
 	}
 
+	/// # Correctness
+	///
+	/// the char provided should not be newline
+	#[inline]
+	pub fn write_char(&mut self, c: char) {
+		self.init_indent();
+		self.string.push(c);
+	}
+
 	#[inline]
 	pub fn next_line(&mut self) {
 		self.string.push('\n');

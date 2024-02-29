@@ -6248,6 +6248,10 @@ dependencies = [
 [[package]]
 name = "wiwipaccer-common"
 version = "0.0.0"
+dependencies = [
+ "boxed",
+ "ts-result",
+]
 
 [[package]]
 name = "wiwipaccer-core"
