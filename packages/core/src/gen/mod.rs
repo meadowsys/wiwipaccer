@@ -1,3 +1,5 @@
+#![deprecated]
+
 mod random_cube_all;
 mod random_leaves;
 

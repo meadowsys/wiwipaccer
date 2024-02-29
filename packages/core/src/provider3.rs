@@ -1,9 +1,9 @@
 use crate::error::provider_err;
 use crate::gen::Generator;
-use ::mc_versions::{ MC_VERSIONS, MCVersionRef, MCVersionRefSlice };
 use crate::util::fs2 as fs;
 use crate::util::path_builder4::WithProviderID;
 use crate::util::ron2 as ron;
+use ::mc_versions::{ MC_VERSIONS, MCVersionRef, MCVersionRefSlice };
 use ::serde::{ Deserialize, Serialize };
 
 
@@ -22,13 +22,13 @@ mod meta {
 	enum ProviderMeta {
 		#[serde(rename = "1")]
 		Version1 {
-			#[serde(flatten)]
-			gen: Generator
+			// #[serde(flatten)]
+			// gen: Generator
 		}
 	}
 
 	pub(super) struct ProviderUnversioned {
-		pub(super) gen: Generator
+		// pub(super) gen: Generator
 	}
 
 	pub(super) fn deserialise_provider(s: &str)
@@ -36,8 +36,11 @@ mod meta {
 	{
 		use ProviderMeta::*;
 		Ok(match ron::from_str(s)? {
-			Version1 { gen } => {
-				ProviderUnversioned { gen }
+			// Version1 { gen } => {
+			// 	ProviderUnversioned { gen }
+			// }
+			Version1 {} => {
+				ProviderUnversioned {}
 			}
 		})
 	}
@@ -49,7 +52,7 @@ mod rt {
 
 	pub struct ProviderRuntime {
 		id: nr::ID,
-		gen: Generator
+		// gen: Generator
 	}
 
 	// pub enum PackVersionSpecRuntime {
@@ -87,14 +90,14 @@ mod rt {
 			let meta_file = fs::read_to_string(|| meta_path.clone()).await
 				.map_err(provider_err::reading_meta_file)?;
 			let meta::ProviderUnversioned {
-				gen
+				// gen
 			} = meta::deserialise_provider(&meta_file)?;
 
 			let id = nr::ID::new(p.provider_id_ref().into());
 
 			Ok(Some(Self {
 				id,
-				gen
+				// gen
 			}))
 		}
 	}
@@ -106,7 +109,7 @@ mod rt {
 
 	impl<'h> FrontendData<'h> {
 		pub fn new(provider: &'h ProviderRuntime, mc_version: MCVersionRef) -> Option<Self> {
-			if !provider.gen.is_available_for(mc_version) { return None }
+			// if !provider.gen.is_available_for(mc_version) { return None }
 
 			let id = &provider.id;
 			Some(Self { id })
