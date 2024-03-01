@@ -1,3 +1,4 @@
+use crate::NiceErrorMessage;
 use ::std::fmt::{ Arguments, Write };
 
 const INDENT: &str = "   ";
@@ -19,6 +20,10 @@ impl Formatter {
 		let string = String::new();
 		let indent = 0;
 		Self { string, indent }
+	}
+
+	pub fn as_str(&self) -> &str {
+		&self.string
 	}
 
 	#[inline]
@@ -113,7 +118,7 @@ impl Formatter {
 	#[inline]
 	pub fn fmt_with_indent<N>(&mut self, n: N)
 	where
-		N: super::NiceErrorMessage
+		N: NiceErrorMessage
 	{
 		self.with_indent(|f| n.fmt(f));
 	}
@@ -121,7 +126,7 @@ impl Formatter {
 	#[inline]
 	pub fn fmt<N>(&mut self, n: N)
 	where
-		N: super::NiceErrorMessage
+		N: NiceErrorMessage
 	{
 		n.fmt(self);
 	}
