@@ -1,4 +1,4 @@
-use crate::error::{ ComponentError, OptionIDError, invalid_chars };
+use crate::error::{ ComponentError, OptionIDError };
 use ::boxed::Boxed as _;
 use ::std::fmt::{ self, Display };
 
@@ -122,6 +122,27 @@ impl<'h> WithOptionID<'h> {
 
 		Ok(OptionID { pack_id, texture_id, option_id })
 	}
+}
+
+/// ID components are only allowed to contain loweralpha, numeric, and dash characters
+pub(crate) fn invalid_chars(id_component: &str) -> Option<Vec<char>> {
+	#[inline]
+	fn char_is_valid(c: char) -> bool {
+		matches!(c, 'a'..='z' | '0'..='9' | '-')
+	}
+
+	let iter = id_component.chars()
+		.filter(|c| !char_is_valid(*c));
+
+	// dedupe, but preserving order
+	let (hint_lower, hint_upper) = iter.size_hint();
+	let vec = Vec::with_capacity(hint_upper.unwrap_or(hint_lower));
+	let vec = iter.fold(vec, |mut acc, curr| {
+		if !acc.contains(&curr) { acc.push(curr) }
+		acc
+	});
+
+	if vec.is_empty() { None } else { Some(vec) }
 }
 
 #[cfg(test)]

@@ -76,26 +76,24 @@ impl NiceErrorMessage for OptionIDError {
 impl_display!(OptionIDError);
 impl Error for OptionIDError {}
 
-/// ID components are only allowed to contain loweralpha, numeric, and dash characters
-#[inline]
-pub(crate) fn invalid_chars(id_component: &str) -> Option<Vec<char>> {
-	#[inline]
-	fn char_is_valid(c: char) -> bool {
-		matches!(c, 'a'..='z' | '0'..='9' | '-')
+#[derive(Debug)]
+pub struct MinecraftIDError {
+	pub(crate) ns: Option<Box<ComponentError>>,
+	pub(crate) id: Option<Box<ComponentError>>
+}
+
+impl MinecraftIDError {
+	pub(crate) fn blank() -> Self {
+		let ns = None;
+		let id = None;
+		Self { ns, id }
 	}
 
-	let iter = id_component.chars()
-		.filter(|c| !char_is_valid(*c));
-
-	// dedupe, but preserving order
-	let (hint_lower, hint_upper) = iter.size_hint();
-	let vec = Vec::with_capacity(hint_upper.unwrap_or(hint_lower));
-	let vec = iter.fold(vec, |mut acc, curr| {
-		if !acc.contains(&curr) { acc.push(curr) }
-		acc
-	});
-
-	if vec.is_empty() { None } else { Some(vec) }
+	pub(crate) fn contains_error(&self) -> bool {
+		if self.ns.is_some() { return true }
+		if self.id.is_some() { return true }
+		false
+	}
 }
 
 #[cfg(test)]
