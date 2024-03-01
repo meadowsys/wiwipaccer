@@ -1,0 +1,10 @@
+Namespace is invalid
+   provided component: mine craft
+   invalid characters found:
+      - ' '
+ID is invalid
+   provided component: stone héhé
+   invalid characters found:
+      - ' '
+      - 'é'
+ID components are only allowed to contain loweralpha, numeric, and underscore characters

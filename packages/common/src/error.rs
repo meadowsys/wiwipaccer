@@ -96,15 +96,53 @@ impl MinecraftIDError {
 	}
 }
 
+impl NiceErrorMessage for MinecraftIDError {
+	fn fmt(&self, f: &mut Formatter) {
+		debug_assert!(self.contains_error());
+
+		if let Some(ns) = &self.ns {
+			f.write_line("Namespace is invalid");
+			f.with_indent(|f| f.fmt(&**ns));
+			f.next_line();
+		}
+
+		if let Some(id) = &self.id {
+			f.write_line("ID is invalid");
+			f.with_indent(|f| f.fmt(&**id));
+			f.next_line();
+		}
+
+		f.write_str("ID components are only allowed to contain loweralpha, numeric, and underscore characters");
+	}
+}
+
+impl_display!(MinecraftIDError);
+impl Error for MinecraftIDError {}
+
 #[cfg(test)]
 mod tests {
+	use super::*;
+	use crate::{ MinecraftID, OptionID };
+
 	#[test]
-	fn error_message() {
-		let expected = include_str!("../test/fixtures/error-message.txt");
+	fn option_id_error_message() {
+		let expected = include_str!("../test/fixtures/option-id-error-message.txt");
 		let error = OptionID::builder()
 			.pack_id("l&t")
 			.texture_id("aha      ùwú")
 			.option_id("ra andom")
+			.build()
+			.unwrap_err()
+			.to_error_message();
+		assert_eq!(expected, &*error);
+	}
+
+	#[test]
+	fn mc_id_error_message() {
+		let expected = include_str!("../test/fixtures/minecraft-id-error-message.txt");
+		let error = MinecraftID::builder()
+			.namespace("mine craft")
+			.id("stone héhé")
 			.build()
 			.unwrap_err()
 			.to_error_message();

@@ -116,3 +116,70 @@ pub(crate) fn invalid_chars(id_component: &str) -> Option<Vec<char>> {
 
 	if vec.is_empty() { None } else { Some(vec) }
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn builder() {
+		// good
+		MinecraftID::builder()
+			.namespace("minecraft")
+			.id("stone")
+			.build()
+			.unwrap();
+
+		// good
+		MinecraftID::builder()
+			.namespace("the_vault")
+			.id("vault_diamond")
+			.build()
+			.unwrap();
+
+		// ID contains exclamation mark
+		MinecraftID::builder()
+			.namespace("minecraft")
+			.id("aha invalid!!!!!!!!")
+			.build()
+			.unwrap_err();
+
+
+		// namespace contains spaces
+		MinecraftID::builder()
+			.namespace("name space")
+			.id("stone")
+			.build()
+			.unwrap_err();
+
+		// ID contains whatever the accents in ùwú are called hee
+		MinecraftID::builder()
+			.namespace("lt")
+			.id("aha ùwú")
+			.build()
+			.unwrap_err();
+	}
+
+	#[test]
+	fn ref_fns() {
+		let vault_diamond = MinecraftID::builder()
+			.namespace("the_vault")
+			.id("vault_diamond")
+			.build()
+			.unwrap();
+
+		assert_eq!("the_vault", vault_diamond.ns_ref());
+		assert_eq!("vault_diamond", vault_diamond.id_ref());
+	}
+
+	#[test]
+	fn display() {
+		let vault_diamond = MinecraftID::builder()
+			.namespace("the_vault")
+			.id("vault_diamond")
+			.build()
+			.unwrap()
+			.to_string();
+		assert_eq!("the_vault:vault_diamond", &*vault_diamond);
+	}
+}
