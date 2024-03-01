@@ -1,16 +1,34 @@
 use ::ts_result::*;
 
 #[derive(Debug)]
+pub(crate) struct ComponentError {
+	pub(crate) component: String,
+	pub(crate) invalid_chars: Vec<char>
+}
+
+impl NiceErrorMessage for ComponentError {
+	fn fmt(&self, f: &mut Formatter) {
+		let Self { component, invalid_chars } = self;
+
+		f.write_line_args(format_args!("provided component: {component}"));
+		f.write_line("invalid characters found:");
+		f.with_indent(|f| {
+			invalid_chars.iter().copied().for_each(|c| {
+				f.write_str("- '");
+				f.write_char(c);
+				f.write_char('\'');
+				f.next_line();
+			});
+			f.undo_next_line();
+		});
+	}
+}
+
+#[derive(Debug)]
 pub struct OptionIDError {
 	pub(crate) pack_id: Option<Box<ComponentError>>,
 	pub(crate) texture_id: Option<Box<ComponentError>>,
 	pub(crate) option_id: Option<Box<ComponentError>>,
-}
-
-#[derive(Debug)]
-pub(crate) struct ComponentError {
-	pub(crate) component: String,
-	pub(crate) invalid_chars: Vec<char>
 }
 
 impl OptionIDError {
@@ -31,6 +49,8 @@ impl OptionIDError {
 
 impl NiceErrorMessage for OptionIDError {
 	fn fmt(&self, f: &mut Formatter) {
+		debug_assert!(self.contains_error());
+
 		if let Some(pack_id) = &self.pack_id {
 			f.write_line("Pack ID is invalid");
 			f.with_indent(|f| f.fmt(&**pack_id));
@@ -50,24 +70,6 @@ impl NiceErrorMessage for OptionIDError {
 		}
 
 		f.write_str("ID components are only allowed to contain loweralpha, numeric, and dash characters");
-	}
-}
-
-impl NiceErrorMessage for ComponentError {
-	fn fmt(&self, f: &mut Formatter) {
-		let Self { component, invalid_chars } = self;
-
-		f.write_line_args(format_args!("provided component: {component}"));
-		f.write_line("invalid characters found:");
-		f.with_indent(|f| {
-			invalid_chars.iter().copied().for_each(|c| {
-				f.write_str("- '");
-				f.write_char(c);
-				f.write_char('\'');
-				f.next_line();
-			});
-			f.undo_next_line();
-		});
 	}
 }
 
