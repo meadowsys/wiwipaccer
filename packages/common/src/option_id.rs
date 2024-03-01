@@ -207,9 +207,17 @@ fn invalid_chars(id_component: &str) -> Option<Vec<char>> {
 		matches!(c, 'a'..='z' | '0'..='9' | '-')
 	}
 
-	let vec = id_component.chars()
-		.filter(|c| !char_is_valid(*c))
-		.collect::<Vec<_>>();
+	let iter = id_component.chars()
+		.filter(|c| !char_is_valid(*c));
+
+	// dedupe, but preserving order
+	let (hint_lower, hint_upper) = iter.size_hint();
+	let vec = Vec::with_capacity(hint_upper.unwrap_or(hint_lower));
+	let vec = iter.fold(vec, |mut acc, curr| {
+		if !acc.contains(&curr) { acc.push(curr) }
+		acc
+	});
+
 	if vec.is_empty() { None } else { Some(vec) }
 }
 
@@ -293,7 +301,7 @@ mod tests {
 		let expected = include_str!("../test/fixtures/error-message.txt");
 		let error = OptionID::builder()
 			.pack_id("l&t")
-			.texture_id("aha ùwú")
+			.texture_id("aha      ùwú")
 			.option_id("ra andom")
 			.build()
 			.unwrap_err()

@@ -3,7 +3,7 @@ Pack ID is invalid
    invalid characters found:
       - '&'
 Texture ID is invalid
-   provided component: aha ùwú
+   provided component: aha      ùwú
    invalid characters found:
       - ' '
       - 'ù'
