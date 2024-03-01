@@ -91,7 +91,8 @@ macro_rules! impl_display {
 		impl ::std::fmt::Display for $struct {
 			#[inline]
 			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-				f.write_str(&self.to_error_message())
+				let err_msg = ::ts_result::NiceErrorMessage::to_error_message(self);
+				f.write_str(&err_msg)
 			}
 		}
 	}
