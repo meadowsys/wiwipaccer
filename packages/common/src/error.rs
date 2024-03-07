@@ -73,9 +73,6 @@ impl NiceErrorMessage for OptionIDError {
 	}
 }
 
-impl_display!(OptionIDError);
-impl Error for OptionIDError {}
-
 #[derive(Debug)]
 pub struct MinecraftIDError {
 	pub(crate) ns: Option<Box<ComponentError>>,
@@ -116,9 +113,6 @@ impl NiceErrorMessage for MinecraftIDError {
 	}
 }
 
-impl_display!(MinecraftIDError);
-impl Error for MinecraftIDError {}
-
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -149,3 +143,7 @@ mod tests {
 		assert_eq!(expected, &*error);
 	}
 }
+
+impl_display_and_error!(ComponentError);
+impl_display_and_error!(OptionIDError);
+impl_display_and_error!(MinecraftIDError);

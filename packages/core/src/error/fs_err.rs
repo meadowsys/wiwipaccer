@@ -226,3 +226,12 @@ pub fn read_dir_entry(error: ::std::io::Error, path: String) -> WithPath<ReadDir
 	let error = ReadDirEntry { error };
 	WithPath::new(error, path)
 }
+
+impl_display_and_error!(SpawnBlocking);
+impl_display_and_error!(Metadata);
+impl_display_and_error!(IsDir);
+impl_display_and_error!(IsFile);
+impl_display_and_error!(Read);
+impl_display_and_error!(ReadToString);
+impl_display_and_error!(ReadDir);
+impl_display_and_error!(ReadDirEntry);

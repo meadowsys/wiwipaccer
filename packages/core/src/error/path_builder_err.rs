@@ -34,6 +34,14 @@ impl From<fs_err::IsFile> for CheckError {
 	}
 }
 
+impl NiceErrorMessage for CheckError {
+	fn fmt(&self, f: &mut Formatter) {
+		todo!()
+	}
+}
+
+impl_display_and_error!(CheckError);
+
 pub enum SilentResult {
 	Ok(String),
 	SilentFail,

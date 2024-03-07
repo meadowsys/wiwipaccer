@@ -19,3 +19,5 @@ impl NiceErrorMessage for Utf8Error {
 		f.with_indent(|f| f.write_args(format_args!("{}", self.error)));
 	}
 }
+
+impl_display_and_error!(Utf8Error);

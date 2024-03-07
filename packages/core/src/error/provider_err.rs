@@ -38,6 +38,28 @@ impl From<DeserialiseMeta> for New {
 	}
 }
 
+impl NiceErrorMessage for New {
+	fn fmt(&self, f: &mut Formatter) {
+		f.write_line("error creating new provider");
+
+		use New::*;
+		match self {
+			CheckPath(error) => {
+				f.fmt(error);
+			}
+			DeserialiseMeta(error) => {
+				f.fmt(error);
+			}
+			ReadingMetaFile(error) => {
+				f.fmt(error);
+			}
+		}
+	}
+}
+
+impl_display_and_error!(DeserialiseMeta);
+impl_display_and_error!(New);
+
 pub(crate) fn reading_meta_file(error: fs_err::ReadToString) -> New {
 	New::ReadingMetaFile(error)
 }

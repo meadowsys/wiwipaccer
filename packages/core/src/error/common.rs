@@ -23,3 +23,5 @@ impl<E: NiceErrorMessage> NiceErrorMessage for WithPath<E> {
 		});
 	}
 }
+
+impl_display_and_error!(for<E: NiceErrorMessage> WithPath<E>);

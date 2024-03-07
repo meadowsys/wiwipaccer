@@ -86,7 +86,7 @@ impl<T, E> WrapInTSResult<T, E> for Result<T, E> {
 }
 
 #[macro_export]
-macro_rules! impl_display {
+macro_rules! impl_display_and_error {
 	($struct:ident) => {
 		impl ::std::fmt::Display for $struct {
 			#[inline]
@@ -95,5 +95,40 @@ macro_rules! impl_display {
 				f.write_str(&err_msg)
 			}
 		}
+
+		impl ::std::error::Error for $struct {}
+	};
+
+	(
+		for<
+		$(
+			$generic_impl:ident
+			$(: $bounds_first:ident $(+ $bounds_remainder:ident)* )?
+		),+
+		> $struct:ident< $($generic_struct:ident),+ >
+	) => {
+		impl<
+			$(
+				$generic_impl
+				$(:
+					$bounds_first $(+ $bounds_remainder)*
+				)?
+			),+
+		> ::std::fmt::Display for $struct< $($generic_struct),+ > {
+			#[inline]
+			fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+				let err_msg = ::ts_result::NiceErrorMessage::to_error_message(self);
+				f.write_str(&err_msg)
+			}
+		}
+
+		impl<
+			$(
+				$generic_impl
+				$(:
+					$bounds_first $(+ $bounds_remainder)*
+				)?
+			),+
+		> ::std::error::Error for $struct< $($generic_struct),+ > {}
 	}
 }

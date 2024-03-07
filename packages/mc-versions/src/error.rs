@@ -92,3 +92,9 @@ pub fn in_getting_range_to(from: &str, to: &str) -> InGettingRange {
 	let to = UnknownMCVersion { version: to.into() };
 	InGettingRange::To(InGettingRangeTo { from, to })
 }
+
+impl_display_and_error!(UnknownMCVersion);
+impl_display_and_error!(InGetting);
+impl_display_and_error!(InGettingRangeFrom);
+impl_display_and_error!(InGettingRangeTo);
+impl_display_and_error!(InGettingRange);

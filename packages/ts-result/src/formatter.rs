@@ -120,7 +120,7 @@ impl Formatter {
 	where
 		N: NiceErrorMessage
 	{
-		self.with_indent(|f| n.fmt(f));
+		self.with_indent(|f| f.fmt(n));
 	}
 
 	#[inline]
@@ -128,6 +128,6 @@ impl Formatter {
 	where
 		N: NiceErrorMessage
 	{
-		n.fmt(self);
+		NiceErrorMessage::fmt(&n, self);
 	}
 }

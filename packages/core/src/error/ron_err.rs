@@ -30,3 +30,5 @@ impl NiceErrorMessage for Ron {
 		});
 	}
 }
+
+impl_display_and_error!(Ron);

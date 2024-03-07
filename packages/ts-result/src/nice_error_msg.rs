@@ -1,7 +1,7 @@
-use crate::Formatter;
+use crate::{ Error, Formatter };
 use ::std::fmt;
 
-pub trait NiceErrorMessage {
+pub trait NiceErrorMessage: Error {
 	/// # Correctness
 	///
 	/// This function is expected to write its message with no leading or
@@ -15,34 +15,17 @@ pub trait NiceErrorMessage {
 	#[inline]
 	fn to_error_message(&self) -> String {
 		let mut formatter = Formatter::new();
-		self.fmt(&mut formatter);
+		NiceErrorMessage::fmt(&self, &mut formatter);
 		formatter.into_string()
 	}
 }
 
-impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &T {
+impl<T: ?Sized + NiceErrorMessage + Error> NiceErrorMessage for &T {
 	#[inline]
 	fn fmt(&self, f: &mut Formatter) {
 		<T as NiceErrorMessage>::fmt(self, f);
 	}
 }
-
-impl<T: ?Sized + NiceErrorMessage> NiceErrorMessage for &mut T {
-	#[inline]
-	fn fmt(&self, f: &mut Formatter) {
-		<T as NiceErrorMessage>::fmt(self, f);
-	}
-}
-
-impl<T: NiceErrorMessage> NiceErrorMessage for Vec<T> {
-	fn fmt(&self, f: &mut Formatter) {
-		f.write_line("multiple errors:");
-		f.with_indent(|f| for item in self {
-			f.fmt(item);
-		});
-	}
-}
-
 
 pub trait NiceErrorMessageExt: NiceErrorMessage {
 	#[inline]
