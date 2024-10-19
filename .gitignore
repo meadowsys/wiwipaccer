@@ -1,10 +1,1 @@
-node_modules
-target
-.output
-.data
-.nuxt
-.nitro
-.cache
-dist
-
-/packages/app/src-tauri/dev-home-dir
+/target
