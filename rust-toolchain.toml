@@ -1,0 +1,13 @@
+[toolchain]
+channel = "nightly-2024-11-03"
+profile = "minimal"
+components = [
+	"clippy",
+	"llvm-tools",
+	"rust-analyzer",
+	"rust-docs",
+	"rust-src"
+]
+targets = [
+	"wasm32-wasip2"
+]

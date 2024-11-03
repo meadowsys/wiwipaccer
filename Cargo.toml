@@ -1,0 +1,44 @@
+[workspace]
+resolver = "2"
+members = [
+	"packages/provider-plugins/host",
+	"packages/provider-plugins/plugin-random-cube-all"
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Meadow Liu <meadowsys@kiwin.gay>"]
+repository = "https://github.com/meadowsys/wiwipaccer"
+license = "AGPL-3.0-only"
+
+[workspace.dependencies.hashbrown]
+version = "0.15.0"
+
+[workspace.dependencies.semver]
+version = "1.0.23"
+
+[workspace.dependencies.wasmtime]
+version = "26.0.0"
+default-features = false
+features = [
+	"runtime",
+	"cranelift",
+	"component-model",
+	"async",
+	"demangle",
+	"coredump",
+	"addr2line"
+
+	# vt: I dunno if beneficial
+	# "pooling-allocator"
+
+	# vt: for debugging guest code
+	# "profiling"
+
+	# vt: for debugging guest code
+	# "debug-builtins"
+]
+
+[workspace.dependencies.wit-bindgen]
+version = "0.34.0"
