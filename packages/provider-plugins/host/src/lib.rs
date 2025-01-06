@@ -23,6 +23,6 @@
 // 	Map(&'static [PluginProperty])
 // }
 
-pub fn å() -> &'static str {
+pub const fn å() -> &'static str {
 	"aaaaaaaaaaaaaaaaaa"
 }
