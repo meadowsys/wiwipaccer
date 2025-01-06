@@ -11,6 +11,7 @@ edition = "2021"
 authors = ["Meadow Liu <meadowsys@kiwin.gay>"]
 repository = "https://github.com/meadowsys/wiwipaccer"
 license = "AGPL-3.0-only"
+publish = false
 
 [workspace.dependencies.hashbrown]
 version = "0.15.0"
