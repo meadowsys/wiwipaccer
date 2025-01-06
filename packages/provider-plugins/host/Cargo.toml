@@ -1,5 +1,5 @@
 [package]
-name = "wiwipaccer-provider-plugins-host"
+name = "wiwipaccer-provider-plugin-host"
 version = { workspace = true }
 edition = { workspace = true }
 authors = { workspace = true }
