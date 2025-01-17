@@ -116,7 +116,7 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		pub fn y(mut self, y: N) -> CoordsXYZBuilder<N, S::XInit> {
+		pub fn y(mut self, y: N) -> CoordsXYZBuilder<N, S::YInit> {
 			unsafe {
 				self.y_ptr().write(y);
 				self.change_state()
@@ -124,7 +124,7 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		pub fn z(mut self, z: N) -> CoordsXYZBuilder<N, S::XInit> {
+		pub fn z(mut self, z: N) -> CoordsXYZBuilder<N, S::ZInit> {
 			unsafe {
 				self.z_ptr().write(z);
 				self.change_state()
