@@ -1,0 +1,12 @@
+[package]
+name = "wiwipaccer-model"
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+publish = false
+
+[dependencies]
+hashbrown = { workspace = true }
+wiwi = { workspace = true }

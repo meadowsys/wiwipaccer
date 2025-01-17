@@ -1,8 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
+	"packages/model",
 	"packages/provider-plugins/host",
-	"packages/provider-plugins/plugin-random-cube-all"
+	"packages/provider-plugins/plugin-random-cube-all",
+	"packages/standard-models",
 ]
 
 [workspace.package]
@@ -14,7 +16,7 @@ license = "AGPL-3.0-only"
 publish = false
 
 [workspace.dependencies.hashbrown]
-version = "0.15.0"
+version = "0.15.2"
 
 [workspace.dependencies.semver]
 version = "1.0.23"
@@ -43,3 +45,10 @@ features = [
 
 [workspace.dependencies.wit-bindgen]
 version = "0.34.0"
+
+[workspace.dependencies.wiwi]
+git = "https://github.com/meadowsys/wiwi"
+rev = "f000a24fa11c6e6d2fbf078f20bd8e571efd2d15"
+
+[workspace.dependencies.wiwipaccer-model]
+path = "packages/model"
