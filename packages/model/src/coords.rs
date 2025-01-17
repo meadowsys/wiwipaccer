@@ -8,12 +8,12 @@ pub struct CoordsXYZ<N> {
 
 impl<N> CoordsXYZ<N> {
 	#[inline(always)]
-	pub fn builder() -> coords_xyz_builder::CoordsXYZBuilderUninit<N> {
+	pub const fn builder() -> coords_xyz_builder::CoordsXYZBuilderUninit<N> {
 		coords_xyz_builder::CoordsXYZBuilder::new()
 	}
 
 	#[inline(always)]
-	unsafe fn finish_init(coords: MaybeUninit<CoordsXYZ<N>>) -> CoordsXYZ<N> {
+	const unsafe fn finish_init(coords: MaybeUninit<CoordsXYZ<N>>) -> CoordsXYZ<N> {
 		unsafe { coords.assume_init() }
 	}
 }
@@ -95,7 +95,7 @@ pub mod coords_xyz_builder {
 
 	impl<N> CoordsXYZBuilderUninit<N> {
 		#[inline(always)]
-		pub(super) fn new() -> Self {
+		pub(super) const fn new() -> Self {
 			Self {
 				inner: MaybeUninit::uninit(),
 				__marker: PhantomData
@@ -108,7 +108,7 @@ pub mod coords_xyz_builder {
 		S: CoordsXYZBuilderState
 	{
 		#[inline(always)]
-		pub fn x(mut self, x: N) -> CoordsXYZBuilder<N, S::XInit> {
+		pub const fn x(mut self, x: N) -> CoordsXYZBuilder<N, S::XInit> {
 			unsafe {
 				self.x_ptr().write(x);
 				self.change_state()
@@ -116,7 +116,7 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		pub fn y(mut self, y: N) -> CoordsXYZBuilder<N, S::YInit> {
+		pub const fn y(mut self, y: N) -> CoordsXYZBuilder<N, S::YInit> {
 			unsafe {
 				self.y_ptr().write(y);
 				self.change_state()
@@ -124,7 +124,7 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		pub fn z(mut self, z: N) -> CoordsXYZBuilder<N, S::ZInit> {
+		pub const fn z(mut self, z: N) -> CoordsXYZBuilder<N, S::ZInit> {
 			unsafe {
 				self.z_ptr().write(z);
 				self.change_state()
@@ -132,7 +132,7 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		pub fn build(self) -> CoordsXYZ<N>
+		pub const fn build(self) -> CoordsXYZ<N>
 		where
 			S::X: IsInit,
 			S::Y: IsInit,
@@ -142,7 +142,7 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		unsafe fn change_state<S2>(self) -> CoordsXYZBuilder<N, S2> {
+		const unsafe fn change_state<S2>(self) -> CoordsXYZBuilder<N, S2> {
 			CoordsXYZBuilder {
 				inner: self.inner,
 				__marker: PhantomData
@@ -150,17 +150,17 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		fn x_ptr(&mut self) -> *mut N {
+		const fn x_ptr(&mut self) -> *mut N {
 			unsafe { &raw mut (*self.inner.as_mut_ptr()).x }
 		}
 
 		#[inline(always)]
-		fn y_ptr(&mut self) -> *mut N {
+		const fn y_ptr(&mut self) -> *mut N {
 			unsafe { &raw mut (*self.inner.as_mut_ptr()).y }
 		}
 
 		#[inline(always)]
-		fn z_ptr(&mut self) -> *mut N {
+		const fn z_ptr(&mut self) -> *mut N {
 			unsafe { &raw mut (*self.inner.as_mut_ptr()).z }
 		}
 	}

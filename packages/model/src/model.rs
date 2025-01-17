@@ -13,12 +13,12 @@ pub struct Model {
 
 impl Model {
 	#[inline(always)]
-	pub fn builder() -> model_builder::ModelBuilderUninit {
+	pub const fn builder() -> model_builder::ModelBuilderUninit {
 		model_builder::ModelBuilder::new()
 	}
 
 	#[inline(always)]
-	unsafe fn finish_init(model: MaybeUninit<Model>) -> Model {
+	const unsafe fn finish_init(model: MaybeUninit<Model>) -> Model {
 		unsafe { model.assume_init() }
 	}
 }
@@ -86,7 +86,7 @@ pub mod model_builder {
 
 	impl ModelBuilderUninit {
 		#[inline(always)]
-		pub(super) fn new() -> Self {
+		pub(super) const fn new() -> Self {
 			Self {
 				inner: MaybeUninit::uninit(),
 				__marker: PhantomData
@@ -99,7 +99,7 @@ pub mod model_builder {
 		S: ModelBuilderState
 	{
 		#[inline(always)]
-		pub fn gui_light(mut self, gui_light: bool) -> ModelBuilder<S::GuiLightInit> {
+		pub const fn gui_light(mut self, gui_light: bool) -> ModelBuilder<S::GuiLightInit> {
 			unsafe {
 				self.gui_light_ptr().write(Some(gui_light));
 				self.change_state()
@@ -107,7 +107,7 @@ pub mod model_builder {
 		}
 
 		#[inline(always)]
-		pub fn build(mut self) -> Model {
+		pub const fn build(mut self) -> Model {
 			unsafe {
 				if S::GuiLight::IS_UNINIT {
 					self.gui_light_ptr().write(None);
@@ -118,7 +118,7 @@ pub mod model_builder {
 		}
 
 		#[inline(always)]
-		unsafe fn change_state<S2>(self) -> ModelBuilder<S2> {
+		const unsafe fn change_state<S2>(self) -> ModelBuilder<S2> {
 			ModelBuilder {
 				inner: self.inner,
 				__marker: PhantomData
@@ -126,7 +126,7 @@ pub mod model_builder {
 		}
 
 		#[inline(always)]
-		fn gui_light_ptr(&mut self) -> *mut Option<bool> {
+		const fn gui_light_ptr(&mut self) -> *mut Option<bool> {
 			unsafe { &raw mut (*self.inner.as_mut_ptr()).gui_light }
 		}
 	}
