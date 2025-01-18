@@ -66,11 +66,7 @@ pub mod coords_xyz_builder {
 		X: InitialisationStatus,
 		Y: InitialisationStatus,
 		Z: InitialisationStatus
-	> CoordsXYZBuilderState for CoordsXYZBuilderStateContainer<
-		X,
-		Y,
-		Z
-	> {
+	> CoordsXYZBuilderState for CoordsXYZBuilderStateContainer<X, Y, Z> {
 		type X = X;
 		type XInit = CoordsXYZBuilderStateContainer<Init, Y, Z>;
 
@@ -87,11 +83,7 @@ pub mod coords_xyz_builder {
 		X: InitialisationStatus,
 		Y: InitialisationStatus,
 		Z: InitialisationStatus
-	> Sealed for CoordsXYZBuilderStateContainer<
-		X,
-		Y,
-		Z
-	> {}
+	> Sealed for CoordsXYZBuilderStateContainer<X, Y, Z> {}
 
 	impl<N> CoordsXYZBuilderUninit<N> {
 		#[inline(always)]
@@ -108,7 +100,10 @@ pub mod coords_xyz_builder {
 		S: CoordsXYZBuilderState
 	{
 		#[inline(always)]
-		pub const fn x(mut self, x: N) -> CoordsXYZBuilder<N, S::XInit> {
+		pub const fn x(mut self, x: N) -> CoordsXYZBuilder<N, S::XInit>
+		where
+			S::X: IsUninit
+		{
 			unsafe {
 				self.x_ptr().write(x);
 				self.change_state()
@@ -116,7 +111,10 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		pub const fn y(mut self, y: N) -> CoordsXYZBuilder<N, S::YInit> {
+		pub const fn y(mut self, y: N) -> CoordsXYZBuilder<N, S::YInit>
+		where
+			S::Y: IsUninit
+		{
 			unsafe {
 				self.y_ptr().write(y);
 				self.change_state()
@@ -124,7 +122,10 @@ pub mod coords_xyz_builder {
 		}
 
 		#[inline(always)]
-		pub const fn z(mut self, z: N) -> CoordsXYZBuilder<N, S::ZInit> {
+		pub const fn z(mut self, z: N) -> CoordsXYZBuilder<N, S::ZInit>
+		where
+			S::Z: IsUninit
+		{
 			unsafe {
 				self.z_ptr().write(z);
 				self.change_state()
@@ -169,4 +170,139 @@ pub mod coords_xyz_builder {
 pub struct CoordsUV<N> {
 	u: N,
 	v: N
+}
+
+impl<N> CoordsUV<N> {
+	#[inline(always)]
+	pub const fn builder() -> coords_uv_builder::CoordsUVBuilderUninit<N> {
+		coords_uv_builder::CoordsUVBuilder::new()
+	}
+
+	#[inline(always)]
+	const unsafe fn finish_init(coords: MaybeUninit<CoordsUV<N>>) -> CoordsUV<N> {
+		unsafe { coords.assume_init() }
+	}
+}
+
+pub mod coords_uv_builder {
+	use super::*;
+	use self::private::Sealed;
+	use wiwi::builder::{
+		Init,
+		Uninit,
+		IsInit,
+		IsUninit,
+		InitialisationStatus,
+		PhantomDataInvariant
+	};
+
+	pub type CoordsUVBuilderUninit<N> = CoordsUVBuilder<N, CoordsUVBuilderStateContainer<Uninit, Uninit>>;
+	pub type CoordsUVBuilderInit<N> = CoordsUVBuilder<N, CoordsUVBuilderStateContainer<Init, Init>>;
+
+	pub struct CoordsUVBuilder<N, S> {
+		inner: MaybeUninit<CoordsUV<N>>,
+		__marker: PhantomDataInvariant<S>
+	}
+
+	pub trait CoordsUVBuilderState: Sealed {
+		type U: InitialisationStatus;
+		type UInit: CoordsUVBuilderState;
+
+		type V: InitialisationStatus;
+		type VInit: CoordsUVBuilderState;
+
+		type InitAll: CoordsUVBuilderState;
+	}
+
+	pub struct CoordsUVBuilderStateContainer<U, V> {
+		__marker: PhantomDataInvariant<(U, V)>
+	}
+
+	/// notouchie
+	mod private {
+		/// notouchie
+		pub trait Sealed {}
+	}
+
+	impl<
+		U: InitialisationStatus,
+		V: InitialisationStatus
+	> CoordsUVBuilderState for CoordsUVBuilderStateContainer<U, V> {
+		type U = U;
+		type UInit = CoordsUVBuilderStateContainer<Init, V>;
+
+		type V = V;
+		type VInit = CoordsUVBuilderStateContainer<U, Init>;
+
+		type InitAll = CoordsUVBuilderStateContainer<Init, Init>;
+	}
+
+	impl<
+		U: InitialisationStatus,
+		V: InitialisationStatus
+	> Sealed for CoordsUVBuilderStateContainer<U, V> {}
+
+	impl<N> CoordsUVBuilderUninit<N> {
+		#[inline(always)]
+		pub(super) const fn new() -> Self {
+			Self {
+				inner: MaybeUninit::uninit(),
+				__marker: PhantomData
+			}
+		}
+	}
+
+	impl<N, S> CoordsUVBuilder<N, S>
+	where
+		S: CoordsUVBuilderState
+	{
+		#[inline(always)]
+		pub const fn u(mut self, u: N) -> CoordsUVBuilder<N, S::UInit>
+		where
+			S::U: IsUninit
+		{
+			unsafe {
+				self.u_ptr().write(u);
+				self.change_state()
+			}
+		}
+
+		#[inline(always)]
+		pub const fn v(mut self, v: N) -> CoordsUVBuilder<N, S::VInit>
+		where
+			S::V: IsUninit
+		{
+			unsafe {
+				self.v_ptr().write(v);
+				self.change_state()
+			}
+		}
+
+		#[inline(always)]
+		pub const fn build(self) -> CoordsUV<N>
+		where
+			S::U: IsInit,
+			S::V: IsInit
+		{
+			unsafe { CoordsUV::finish_init(self.inner) }
+		}
+
+		#[inline(always)]
+		const unsafe fn change_state<S2>(self) -> CoordsUVBuilder<N, S2> {
+			CoordsUVBuilder {
+				inner: self.inner,
+				__marker: PhantomData
+			}
+		}
+
+		#[inline(always)]
+		const fn u_ptr(&mut self) -> *mut N {
+			unsafe { &raw mut (*self.inner.as_mut_ptr()).u }
+		}
+
+		#[inline(always)]
+		const fn v_ptr(&mut self) -> *mut N {
+			unsafe { &raw mut (*self.inner.as_mut_ptr()).v }
+		}
+	}
 }
