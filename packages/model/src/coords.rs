@@ -13,7 +13,7 @@ impl<N> CoordsXYZ<N> {
 	}
 
 	#[inline(always)]
-	const unsafe fn finish_init(coords: MaybeUninit<CoordsXYZ<N>>) -> CoordsXYZ<N> {
+	const unsafe fn finish_init(coords: MaybeUninit<Self>) -> Self {
 		unsafe { coords.assume_init() }
 	}
 }
@@ -30,8 +30,8 @@ pub mod coords_xyz_builder {
 		PhantomDataInvariant
 	};
 
-	pub type CoordsXYZBuilderUninit<N> = CoordsXYZBuilder<N, CoordsXYZBuilderStateContainer<Uninit, Uninit, Uninit>>;
-	pub type CoordsXYZBuilderInit<N> = CoordsXYZBuilder<N, CoordsXYZBuilderStateContainer<Init, Init, Init>>;
+	pub type CoordsXYZBuilderUninit<N> = CoordsXYZBuilder<N, StateContainer<Uninit, Uninit, Uninit>>;
+	pub type CoordsXYZBuilderInit<N> = CoordsXYZBuilder<N, StateContainer<Init, Init, Init>>;
 
 	#[repr(transparent)]
 	pub struct CoordsXYZBuilder<N, S> {
@@ -39,20 +39,18 @@ pub mod coords_xyz_builder {
 		__marker: PhantomDataInvariant<S>
 	}
 
-	pub trait CoordsXYZBuilderState: Sealed {
+	pub trait State: Sealed {
 		type X: InitialisationStatus;
-		type XInit: CoordsXYZBuilderState;
+		type XInit: State;
 
 		type Y: InitialisationStatus;
-		type YInit: CoordsXYZBuilderState;
+		type YInit: State;
 
 		type Z: InitialisationStatus;
-		type ZInit: CoordsXYZBuilderState;
-
-		type InitAll: CoordsXYZBuilderState;
+		type ZInit: State;
 	}
 
-	pub struct CoordsXYZBuilderStateContainer<X, Y, Z> {
+	pub struct StateContainer<X, Y, Z> {
 		__marker: PhantomDataInvariant<(X, Y, Z)>
 	}
 
@@ -66,24 +64,22 @@ pub mod coords_xyz_builder {
 		X: InitialisationStatus,
 		Y: InitialisationStatus,
 		Z: InitialisationStatus
-	> CoordsXYZBuilderState for CoordsXYZBuilderStateContainer<X, Y, Z> {
+	> State for StateContainer<X, Y, Z> {
 		type X = X;
-		type XInit = CoordsXYZBuilderStateContainer<Init, Y, Z>;
+		type XInit = StateContainer<Init, Y, Z>;
 
 		type Y = Y;
-		type YInit = CoordsXYZBuilderStateContainer<X, Init, Z>;
+		type YInit = StateContainer<X, Init, Z>;
 
 		type Z = Z;
-		type ZInit = CoordsXYZBuilderStateContainer<X, Y, Init>;
-
-		type InitAll = CoordsXYZBuilderStateContainer<Init, Init, Init>;
+		type ZInit = StateContainer<X, Y, Init>;
 	}
 
 	impl<
 		X: InitialisationStatus,
 		Y: InitialisationStatus,
 		Z: InitialisationStatus
-	> Sealed for CoordsXYZBuilderStateContainer<X, Y, Z> {}
+	> Sealed for StateContainer<X, Y, Z> {}
 
 	impl<N> CoordsXYZBuilderUninit<N> {
 		#[inline(always)]
@@ -97,8 +93,18 @@ pub mod coords_xyz_builder {
 
 	impl<N, S> CoordsXYZBuilder<N, S>
 	where
-		S: CoordsXYZBuilderState
+		S: State
 	{
+		#[inline(always)]
+		pub const fn build(self) -> CoordsXYZ<N>
+		where
+			S::X: IsInit,
+			S::Y: IsInit,
+			S::Z: IsInit
+		{
+			unsafe { CoordsXYZ::finish_init(self.inner) }
+		}
+
 		#[inline(always)]
 		pub const fn x(mut self, x: N) -> CoordsXYZBuilder<N, S::XInit>
 		where
@@ -131,17 +137,9 @@ pub mod coords_xyz_builder {
 				self.change_state()
 			}
 		}
+	}
 
-		#[inline(always)]
-		pub const fn build(self) -> CoordsXYZ<N>
-		where
-			S::X: IsInit,
-			S::Y: IsInit,
-			S::Z: IsInit
-		{
-			unsafe { CoordsXYZ::finish_init(self.inner) }
-		}
-
+	impl<N, S> CoordsXYZBuilder<N, S> {
 		#[inline(always)]
 		const unsafe fn change_state<S2>(self) -> CoordsXYZBuilder<N, S2> {
 			CoordsXYZBuilder {
@@ -179,7 +177,7 @@ impl<N> CoordsUV<N> {
 	}
 
 	#[inline(always)]
-	const unsafe fn finish_init(coords: MaybeUninit<CoordsUV<N>>) -> CoordsUV<N> {
+	const unsafe fn finish_init(coords: MaybeUninit<Self>) -> Self {
 		unsafe { coords.assume_init() }
 	}
 }
@@ -196,25 +194,23 @@ pub mod coords_uv_builder {
 		PhantomDataInvariant
 	};
 
-	pub type CoordsUVBuilderUninit<N> = CoordsUVBuilder<N, CoordsUVBuilderStateContainer<Uninit, Uninit>>;
-	pub type CoordsUVBuilderInit<N> = CoordsUVBuilder<N, CoordsUVBuilderStateContainer<Init, Init>>;
+	pub type CoordsUVBuilderUninit<N> = CoordsUVBuilder<N, StateContainer<Uninit, Uninit>>;
+	pub type CoordsUVBuilderInit<N> = CoordsUVBuilder<N, StateContainer<Init, Init>>;
 
 	pub struct CoordsUVBuilder<N, S> {
 		inner: MaybeUninit<CoordsUV<N>>,
 		__marker: PhantomDataInvariant<S>
 	}
 
-	pub trait CoordsUVBuilderState: Sealed {
+	pub trait State {
 		type U: InitialisationStatus;
-		type UInit: CoordsUVBuilderState;
+		type UInit: State;
 
 		type V: InitialisationStatus;
-		type VInit: CoordsUVBuilderState;
-
-		type InitAll: CoordsUVBuilderState;
+		type VInit: State;
 	}
 
-	pub struct CoordsUVBuilderStateContainer<U, V> {
+	pub struct StateContainer<U, V> {
 		__marker: PhantomDataInvariant<(U, V)>
 	}
 
@@ -227,20 +223,18 @@ pub mod coords_uv_builder {
 	impl<
 		U: InitialisationStatus,
 		V: InitialisationStatus
-	> CoordsUVBuilderState for CoordsUVBuilderStateContainer<U, V> {
+	> State for StateContainer<U, V> {
 		type U = U;
-		type UInit = CoordsUVBuilderStateContainer<Init, V>;
+		type UInit = StateContainer<Init, V>;
 
 		type V = V;
-		type VInit = CoordsUVBuilderStateContainer<U, Init>;
-
-		type InitAll = CoordsUVBuilderStateContainer<Init, Init>;
+		type VInit = StateContainer<U, Init>;
 	}
 
 	impl<
 		U: InitialisationStatus,
 		V: InitialisationStatus
-	> Sealed for CoordsUVBuilderStateContainer<U, V> {}
+	> Sealed for StateContainer<U, V> {}
 
 	impl<N> CoordsUVBuilderUninit<N> {
 		#[inline(always)]
@@ -254,8 +248,17 @@ pub mod coords_uv_builder {
 
 	impl<N, S> CoordsUVBuilder<N, S>
 	where
-		S: CoordsUVBuilderState
+		S: State
 	{
+		#[inline(always)]
+		pub const fn build(self) -> CoordsUV<N>
+		where
+			S::U: IsInit,
+			S::V: IsInit
+		{
+			unsafe { CoordsUV::finish_init(self.inner) }
+		}
+
 		#[inline(always)]
 		pub const fn u(mut self, u: N) -> CoordsUVBuilder<N, S::UInit>
 		where
@@ -277,16 +280,9 @@ pub mod coords_uv_builder {
 				self.change_state()
 			}
 		}
+	}
 
-		#[inline(always)]
-		pub const fn build(self) -> CoordsUV<N>
-		where
-			S::U: IsInit,
-			S::V: IsInit
-		{
-			unsafe { CoordsUV::finish_init(self.inner) }
-		}
-
+	impl<N, S> CoordsUVBuilder<N, S> {
 		#[inline(always)]
 		const unsafe fn change_state<S2>(self) -> CoordsUVBuilder<N, S2> {
 			CoordsUVBuilder {
