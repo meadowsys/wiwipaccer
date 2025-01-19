@@ -202,7 +202,7 @@ pub mod coords_uv_builder {
 		__marker: PhantomDataInvariant<S>
 	}
 
-	pub trait State {
+	pub trait State: Sealed {
 		type U: InitialisationStatus;
 		type UInit: State;
 
