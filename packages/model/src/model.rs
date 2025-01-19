@@ -152,7 +152,68 @@ pub mod position_builder {
 		}
 	}
 
-	//   - TODO: impl<S> where S: builder state trait for all the fns including `build()`
-	//     (`build()` calls `finish_init(..)`)
-	//   - TODO: impl block, same as previous one in headers and stuffs, for the internal fns
+	impl<S> PositionBuilder<S>
+	where
+		S: State
+	{
+		#[inline(always)]
+		pub const fn build(self) -> Position
+		where
+			S::Rotation: IsInit,
+			S::Translation: IsInit,
+			S::Scale: IsInit
+		{
+			unsafe { Position::finish_init(self.inner) }
+		}
+
+
+		#[inline(always)]
+		pub const fn rotation(mut self, rotation: CoordsXYZ<f64>) -> PositionBuilder<S::RotationInit> {
+			unsafe {
+				self.rotation_ptr().write(rotation);
+				self.change_state()
+			}
+		}
+
+		#[inline(always)]
+		pub const fn translation(mut self, translation: CoordsXYZ<f64>) -> PositionBuilder<S::TranslationInit> {
+			unsafe {
+				self.translation_ptr().write(translation);
+				self.change_state()
+			}
+		}
+
+		#[inline(always)]
+		pub const fn scale(mut self, scale: CoordsXYZ<f64>) -> PositionBuilder<S::ScaleInit> {
+			unsafe {
+				self.scale_ptr().write(scale);
+				self.change_state()
+			}
+		}
+	}
+
+	impl<S> PositionBuilder<S> {
+		#[inline(always)]
+		const unsafe fn change_state<S2>(self) -> PositionBuilder<S2> {
+			PositionBuilder {
+				inner: self.inner,
+				__marker: PhantomData
+			}
+		}
+
+		#[inline(always)]
+		const fn rotation_ptr(&mut self) -> *mut CoordsXYZ<f64> {
+			unsafe { &raw mut (*self.inner.as_mut_ptr()).rotation }
+		}
+
+		#[inline(always)]
+		const fn translation_ptr(&mut self) -> *mut CoordsXYZ<f64> {
+			unsafe { &raw mut (*self.inner.as_mut_ptr()).translation }
+		}
+
+		#[inline(always)]
+		const fn scale_ptr(&mut self) -> *mut CoordsXYZ<f64> {
+			unsafe { &raw mut (*self.inner.as_mut_ptr()).scale }
+		}
+	}
 }
