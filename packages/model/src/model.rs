@@ -231,7 +231,10 @@ pub mod display_builder {
 		pub const fn first_left(
 			mut self,
 			first_left: Position
-		) -> DisplayBuilder<S::FirstLeftInit> {
+		) -> DisplayBuilder<S::FirstLeftInit>
+		where
+			S::FirstLeft: IsUninit
+		{
 			unsafe {
 				self.first_left_ptr().write(Some(first_left));
 				self.change_state()
@@ -242,7 +245,10 @@ pub mod display_builder {
 		pub const fn first_right(
 			mut self,
 			first_right: Position
-		) -> DisplayBuilder<S::FirstRightInit> {
+		) -> DisplayBuilder<S::FirstRightInit>
+		where
+			S::FirstRight: IsUninit
+		{
 			unsafe {
 				self.first_right_ptr().write(Some(first_right));
 				self.change_state()
@@ -253,7 +259,10 @@ pub mod display_builder {
 		pub const fn third_left(
 			mut self,
 			third_left: Position
-		) -> DisplayBuilder<S::ThirdLeftInit> {
+		) -> DisplayBuilder<S::ThirdLeftInit>
+		where
+			S::ThirdLeft: IsUninit
+		{
 			unsafe {
 				self.third_left_ptr().write(Some(third_left));
 				self.change_state()
@@ -264,7 +273,10 @@ pub mod display_builder {
 		pub const fn third_right(
 			mut self,
 			third_right: Position
-		) -> DisplayBuilder<S::ThirdRightInit> {
+		) -> DisplayBuilder<S::ThirdRightInit>
+		where
+			S::ThirdRight: IsUninit
+		{
 			unsafe {
 				self.third_right_ptr().write(Some(third_right));
 				self.change_state()
@@ -275,7 +287,10 @@ pub mod display_builder {
 		pub const fn gui(
 			mut self,
 			gui: Position
-		) -> DisplayBuilder<S::GuiInit> {
+		) -> DisplayBuilder<S::GuiInit>
+		where
+			S::Gui: IsUninit
+		{
 			unsafe {
 				self.gui_ptr().write(Some(gui));
 				self.change_state()
@@ -286,7 +301,10 @@ pub mod display_builder {
 		pub const fn head(
 			mut self,
 			head: Position
-		) -> DisplayBuilder<S::HeadInit> {
+		) -> DisplayBuilder<S::HeadInit>
+		where
+			S::Head: IsUninit
+		{
 			unsafe {
 				self.head_ptr().write(Some(head));
 				self.change_state()
@@ -297,7 +315,10 @@ pub mod display_builder {
 		pub const fn ground(
 			mut self,
 			ground: Position
-		) -> DisplayBuilder<S::GroundInit> {
+		) -> DisplayBuilder<S::GroundInit>
+		where
+			S::Ground: IsUninit
+		{
 			unsafe {
 				self.ground_ptr().write(Some(ground));
 				self.change_state()
@@ -308,7 +329,10 @@ pub mod display_builder {
 		pub const fn fixed(
 			mut self,
 			fixed: Position
-		) -> DisplayBuilder<S::FixedInit> {
+		) -> DisplayBuilder<S::FixedInit>
+		where
+			S::Fixed: IsUninit
+		{
 			unsafe {
 				self.fixed_ptr().write(Some(fixed));
 				self.change_state()
