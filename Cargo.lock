@@ -1545,6 +1545,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "wiwipaccer-decl"
+version = "0.1.0"
+dependencies = [
+ "wiwi",
+]
+
+[[package]]
 name = "wiwipaccer-model"
 version = "0.1.0"
 dependencies = [
