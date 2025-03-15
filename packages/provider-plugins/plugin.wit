@@ -41,7 +41,7 @@ interface types {
 		/// Version of this plugin (optional, but highly recommended)
 		///
 		/// This must be a semver string (it will be enforced).
-		version: plugin-version,
+		version: plugin-version
 		// /// List of authors of this plugin (optional)
 		// ///
 		// /// These should be either just the name, or name followed by email

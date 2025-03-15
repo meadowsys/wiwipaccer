@@ -8,7 +8,7 @@ impl Guest for Plugin {
 		PluginMetadata {
 			ns: "wiwi".into(),
 			id: "random-cube-all".into(),
-			version: "0.1.0-testlol".into(),
+			version: "0.1.0-testlol".into()
 			// authors: vec![
 			// 	"Meadow Liu <meadowsys@kiwin.gay>".into(),
 			// 	api::h()
