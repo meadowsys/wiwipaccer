@@ -5,66 +5,67 @@ world plugin {
 	export imp;
 }
 
-// interface types {
-// 	// resource provider-input {
-// 	// 	get-assets: func(assets: list<asset-entry>)
-// 	// }
+interface types {
+	// resource provider-input {
+	// 	get-assets: func(assets: list<asset-entry>)
+	// }
 
-// 	// record provider-input {
-// 	// 	manifest: manifest,
-// 	// 	assets: list<asset-entry>
-// 	// }
+	// record provider-input {
+	// 	manifest: manifest,
+	// 	assets: list<asset-entry>
+	// }
 
-// 	// resource manifest {
-// 	// 	// ?
-// 	// 	// so far: string, bool, list of numbers (random-cube-all)
-// 	// 	// get: func(key: string) -> option<manifest-entry>;
-// 	// }
+	// resource manifest {
+	// 	// ?
+	// 	// so far: string, bool, list of numbers (random-cube-all)
+	// 	// get: func(key: string) -> option<manifest-entry>;
+	// }
 
-// 	// resource asset-entry {
-// 	// 	path: func() -> string;
-// 	// 	bytes: func() -> list<u8>;
-// 	// 	read-next-bytes: func(amount: u64, offset: u64) -> tuple<list<u8>, bool>;
-// 	// }
+	// resource asset-entry {
+	// 	path: func() -> string;
+	// 	bytes: func() -> list<u8>;
+	// 	read-next-bytes: func(amount: u64, offset: u64) -> tuple<list<u8>, bool>;
+	// }
 
-// 	record plugin-metadata {
-// 		/// Namespace this plugin is part of (required)
-// 		///
-// 		/// This should be unique across plugin makers. Try reversed internet
-// 		/// domain name if not sure.
-// 		ns: string,
-// 		/// ID of this plugin (required)
-// 		///
-// 		/// This must be unique within a namespace (which should not be an issue
-// 		/// if you know your namespace to be unique).
-// 		id: string,
-// 		/// Version of this plugin (optional, but highly recommended)
-// 		///
-// 		/// This must be a semver string (it will be enforced).
-// 		version: plugin-version,
-// 		/// List of authors of this plugin (optional)
-// 		///
-// 		/// These should be either just the name, or name followed by email
-// 		/// surrounded in angle brackets (`<` and `>`).
-// 		authors: list<plugin-author>
-// 	}
+	record plugin-metadata {
+		/// Namespace this plugin is part of (required)
+		///
+		/// This should be unique across plugin makers. Try reversed internet
+		/// domain name if not sure.
+		ns: string,
+		/// ID of this plugin (required)
+		///
+		/// This must be unique within a namespace (which should not be an issue
+		/// if you know your namespace to be unique).
+		id: string,
+		/// Version of this plugin (optional, but highly recommended)
+		///
+		/// This must be a semver string (it will be enforced).
+		version: plugin-version,
+		// /// List of authors of this plugin (optional)
+		// ///
+		// /// These should be either just the name, or name followed by email
+		// /// surrounded in angle brackets (`<` and `>`).
+		// authors: list<plugin-author>
+	}
 
-// 	// for later?
-// 	// record plugin-version {
-// 	// 	major: u64,
-// 	// 	minor: u64,
-// 	// 	patch: u64,
-// 	// 	pre: string,
-// 	// 	build: string
-// 	// }
-// 	type plugin-version = string;
+	// for later?
+	// record plugin-version {
+	// 	major: u64,
+	// 	minor: u64,
+	// 	patch: u64,
+	// 	pre: string,
+	// 	build: string
+	// }
+	type plugin-version = string;
 
-// 	// do we want to create a record for name, email, etc?
-// 	type plugin-author = string;
+	// // do we want to create a record for name, email, etc?
+	// // probably, but later
+	// type plugin-author = string;
 
-// 	/// binary data
-// 	type binary = list<u8>;
-// }
+	// /// binary data
+	// type binary = list<u8>;
+}
 
 interface api {
 }
@@ -73,7 +74,7 @@ interface imp {
 	// use types.{ provider-input };
 	// run: func(input: provider-input) -> something-idk;
 
-	// use types.{ plugin-metadata };
+	use types.{ plugin-metadata };
 
-	// metadata: func() -> plugin-metadata;
+	metadata: func() -> plugin-metadata;
 }
