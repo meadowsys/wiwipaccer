@@ -10,6 +10,7 @@ pub struct Texture {
 	id: Box<str>,
 	name: Box<str>,
 	block_id: Box<str>
+	// blockstates
 }
 
 // - todo impl struct with `builder()` and `finish_init(..)`
