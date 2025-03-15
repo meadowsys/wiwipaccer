@@ -1,3 +1,9 @@
+#![allow(
+	dead_code,
+	unused_imports,
+	reason = "wip (todo remove me)"
+)]
+
 use wiwi::prelude::*;
 
 pub struct Texture {

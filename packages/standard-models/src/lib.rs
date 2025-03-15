@@ -1,7 +1,7 @@
 use wiwipaccer_model::coords::CoordsXYZ;
 use wiwipaccer_model::model::{ Display, Position };
 
-static BLOCKTEST: Display = Display::builder()
+static _BLOCKTEST: Display = Display::builder()
 	.gui(
 		Position::builder()
 			.rotation(
