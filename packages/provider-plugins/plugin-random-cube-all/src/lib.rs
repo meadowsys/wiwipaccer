@@ -1,7 +1,4 @@
-use wiwipaccer_provider_plugin_impl::*;
-
-// use exports::wiwi::wiwipaccer_provider_plugin::imp;
-// use wiwi::wiwipaccer_provider_plugin::api;
+use wiwipaccer_provider_plugin_impl::{ Guest, PluginMetadata, export };
 
 struct Plugin;
 export!(Plugin);
@@ -18,8 +15,4 @@ impl Guest for Plugin {
 			// ]
 		}
 	}
-}
-
-pub const fn å() -> &'static str {
-	"aaaaaaaaaaaaaaaaaa"
 }

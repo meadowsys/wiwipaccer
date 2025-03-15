@@ -1936,7 +1936,6 @@ dependencies = [
 name = "wiwipaccer-provider-plugin-random-cube-all"
 version = "0.1.0"
 dependencies = [
- "wit-bindgen",
  "wiwipaccer-provider-plugin-impl",
 ]
 

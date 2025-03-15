@@ -11,5 +11,4 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-wit-bindgen = { workspace = true }
 wiwipaccer-provider-plugin-impl = { workspace = true }
