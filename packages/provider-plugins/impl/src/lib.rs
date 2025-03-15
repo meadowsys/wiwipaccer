@@ -1,5 +1,5 @@
 #[doc(hidden)]
-pub mod __generated {
+pub mod __generated_notouchie {
 	wit_bindgen::generate!({
 		path: "../plugin.wit",
 
@@ -11,13 +11,16 @@ pub mod __generated {
 }
 
 #[doc(inline)]
-pub use self::__generated::exports::wiwi::wiwipaccer_provider_plugin::imp::Guest;
+pub use self::__generated_notouchie::exports::wiwi::wiwipaccer_provider_plugin::imp::Guest;
 #[doc(inline)]
-pub use self::__generated::wiwi::wiwipaccer_provider_plugin::types::{ PluginMetadata, PluginVersion };
+pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::{ PluginMetadata, PluginVersion };
 
 #[macro_export]
 macro_rules! export {
 	($component:ident) => {
-		$crate::__generated::export!($component with_types_in $crate::__generated);
+		$crate::__generated_notouchie::export! {
+			$component
+			with_types_in $crate::__generated_notouchie
+		}
 	}
 }
