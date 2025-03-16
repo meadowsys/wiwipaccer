@@ -1,3 +1,9 @@
+// because windows
+#![cfg_attr(
+	not(debug_assertions),
+	windows_subsystem = "windows"
+)]
+
 fn main() {
 	tauri::Builder::<tauri::Wry>::new()
 		.invoke_handler(tauri::generate_handler![])
