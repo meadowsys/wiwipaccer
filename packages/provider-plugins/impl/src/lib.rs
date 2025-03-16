@@ -24,3 +24,8 @@ macro_rules! export {
 		}
 	}
 }
+
+#[macro_export]
+macro_rules! cargo_pkg_version {
+	() => { String::from(env!("CARGO_PKG_VERSION")) }
+}
