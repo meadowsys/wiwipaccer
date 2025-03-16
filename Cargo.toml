@@ -3,9 +3,9 @@ resolver = "2"
 members = [
 	"packages/decl",
 	"packages/model",
-	"packages/provider-plugins/host",
-	"packages/provider-plugins/impl",
-	"packages/provider-plugins/plugin-random-cube-all",
+	"packages/provider-plugin-api",
+	"packages/provider-plugin-host",
+	"packages/provider-plugin-random-cube-all",
 	"packages/standard-models",
 ]
 
@@ -27,21 +27,23 @@ version = "1.0.23"
 version = "26.0.0"
 default-features = false
 features = [
+	# todo reassess these features?
 	"runtime",
 	"cranelift",
-	"component-model",
-	"async",
-	"demangle",
-	"coredump",
-	"addr2line"
+	"component-model"
 
-	# vt: I dunno if beneficial
+	# "async",
+	# "demangle",
+	# "coredump",
+	# "addr2line",
+
+	# I dunno if beneficial
 	# "pooling-allocator"
 
-	# vt: for debugging guest code
+	# for debugging guest code
 	# "profiling"
 
-	# vt: for debugging guest code
+	# for debugging guest code
 	# "debug-builtins"
 ]
 
@@ -55,8 +57,8 @@ rev = "f000a24fa11c6e6d2fbf078f20bd8e571efd2d15"
 [workspace.dependencies.wiwipaccer-decl]
 path = "packages/decl"
 
-[workspace.dependencies.wiwipaccer-provider-plugin-impl]
-path = "packages/provider-plugins/impl"
+[workspace.dependencies.wiwipaccer-provider-plugin-api]
+path = "packages/provider-plugin-api"
 
 [workspace.dependencies.wiwipaccer-model]
 path = "packages/model"

@@ -1,5 +1,5 @@
 wasmtime::component::bindgen!({
-	path: "../plugin.wit",
+	path: "../provider-plugin-api/provider-plugin.wit",
 
 	// ???
 	// async: true,

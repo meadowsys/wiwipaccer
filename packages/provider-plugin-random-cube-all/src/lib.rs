@@ -1,4 +1,4 @@
-use wiwipaccer_provider_plugin_impl::{ Guest, PluginMetadata, cargo_pkg_version, export };
+use wiwipaccer_provider_plugin_api::{ Guest, PluginMetadata, cargo_pkg_version, export };
 
 struct Plugin;
 export!(Plugin);

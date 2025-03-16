@@ -1,7 +1,7 @@
 #[doc(hidden)]
 pub mod __generated_notouchie {
 	wit_bindgen::generate!({
-		path: "../plugin.wit",
+		path: "provider-plugin.wit",
 
 		ownership: Borrowing {
 			duplicate_if_necessary: true

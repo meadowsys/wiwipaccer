@@ -1,5 +1,5 @@
 [package]
-name = "wiwipaccer-provider-plugin-impl"
+name = "wiwipaccer-provider-plugin-random-cube-all"
 version = { workspace = true }
 edition = { workspace = true }
 authors = { workspace = true }
@@ -7,5 +7,8 @@ repository = { workspace = true }
 license = { workspace = true }
 publish = false
 
+[lib]
+crate-type = ["cdylib"]
+
 [dependencies]
-wit-bindgen = { workspace = true }
+wiwipaccer-provider-plugin-api = { workspace = true }
