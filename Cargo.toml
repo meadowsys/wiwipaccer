@@ -19,14 +19,24 @@ repository = "https://github.com/meadowsys/wiwipaccer"
 license = "AGPL-3.0-only"
 publish = false
 
+[workspace.dependencies.console-error-panic-hook]
+package = "console_error_panic_hook"
+version = "0.1.7"
+
 [workspace.dependencies.hashbrown]
 version = "0.15.2"
 
+[workspace.dependencies.leptos]
+version = "0.7.7"
+
 [workspace.dependencies.semver]
-version = "1.0.23"
+version = "1.0.26"
+
+[workspace.dependencies.wasm-bindgen]
+version = "0.2.100"
 
 [workspace.dependencies.wasmtime]
-version = "26.0.0"
+version = "30.0.2"
 default-features = false
 features = [
 	# todo reassess these features?

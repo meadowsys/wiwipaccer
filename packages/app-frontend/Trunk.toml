@@ -1,0 +1,11 @@
+trunk-version = "0.21.9"
+
+[build]
+target = "src/html.html"
+dist = "../../target/trunk"
+
+# [watch]
+# ignore = ["something about tauri goes here"]
+
+[tools]
+tailwindcss = "4.0.14"

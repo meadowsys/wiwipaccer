@@ -6,3 +6,11 @@ authors = { workspace = true }
 repository = { workspace = true }
 license = { workspace = true }
 publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+console-error-panic-hook = { workspace = true }
+leptos = { workspace = true }
+wasm-bindgen = { workspace = true }
