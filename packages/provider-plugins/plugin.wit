@@ -38,26 +38,14 @@ interface types {
 		/// This must be unique within a namespace (which should not be an issue
 		/// if you know your namespace to be unique).
 		id: string,
-		/// Version of this plugin (optional, but highly recommended)
-		///
-		/// This must be a semver string (it will be enforced).
-		version: plugin-version
+		/// Version of this plugin, a semver string (optional, but highly recommended)
+		version: string
 		// /// List of authors of this plugin (optional)
 		// ///
 		// /// These should be either just the name, or name followed by email
 		// /// surrounded in angle brackets (`<` and `>`).
 		// authors: list<plugin-author>
 	}
-
-	// for later?
-	// record plugin-version {
-	// 	major: u64,
-	// 	minor: u64,
-	// 	patch: u64,
-	// 	pre: string,
-	// 	build: string
-	// }
-	type plugin-version = string;
 
 	// // do we want to create a record for name, email, etc?
 	// // probably, but later

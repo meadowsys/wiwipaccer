@@ -13,7 +13,7 @@ pub mod __generated_notouchie {
 #[doc(inline)]
 pub use self::__generated_notouchie::exports::wiwi::wiwipaccer_provider_plugin::imp::Guest;
 #[doc(inline)]
-pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::{ PluginMetadata, PluginVersion };
+pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::PluginMetadata;
 
 #[macro_export]
 macro_rules! export {
