@@ -1,6 +1,8 @@
 {
 	"scripts": {
-		"dev": "tauri dev --config packages/app-desktop/tauri.conf.json"
+		"dev": "tauri dev --config packages/app-desktop/tauri.conf.json",
+		"build": "tauri build --debug --config packages/app-desktop/tauri.conf.json",
+		"build-release": "tauri build --config packages/app-desktop/tauri.conf.json"
 	},
 	"devDependencies": {
 		"@tauri-apps/cli": "^2.3.1",

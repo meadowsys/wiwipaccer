@@ -9,7 +9,10 @@
 			"cwd": "../app-frontend"
 		},
 		"devUrl": "http://localhost:3000",
-		"beforeBuildCommand": "trunk build",
+		"beforeBuildCommand": {
+			"script": "trunk build",
+			"cwd": "../app-frontend"
+		},
 		"frontendDist": "../../target/trunk"
 	},
 	"app": {
