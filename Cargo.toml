@@ -1,12 +1,14 @@
 [workspace]
 resolver = "2"
 members = [
+	"packages/app-desktop",
+	"packages/app-frontend",
 	"packages/decl",
 	"packages/model",
 	"packages/provider-plugin-api",
 	"packages/provider-plugin-host",
 	"packages/provider-plugin-random-cube-all",
-	"packages/standard-models",
+	"packages/standard-models"
 ]
 
 [workspace.package]

@@ -1860,6 +1860,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "wiwipaccer-app-desktop"
+version = "0.1.0"
+
+[[package]]
+name = "wiwipaccer-app-frontend"
+version = "0.1.0"
+
+[[package]]
 name = "wiwipaccer-decl"
 version = "0.1.0"
 dependencies = [
