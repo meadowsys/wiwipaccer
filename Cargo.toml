@@ -32,6 +32,12 @@ version = "0.7.7"
 [workspace.dependencies.semver]
 version = "1.0.26"
 
+[workspace.dependencies.tauri]
+version = "2.3.1"
+
+[workspace.dependencies.tauri-build]
+version = "2.0.6"
+
 [workspace.dependencies.wasm-bindgen]
 version = "0.2.100"
 

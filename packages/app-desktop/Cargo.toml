@@ -6,3 +6,9 @@ authors = { workspace = true }
 repository = { workspace = true }
 license = { workspace = true }
 publish = false
+
+[build-dependencies]
+tauri-build = { workspace = true }
+
+[dependencies]
+tauri = { workspace = true }
