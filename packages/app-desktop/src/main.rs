@@ -11,7 +11,7 @@ fn main() {
 		.invoke_handler(tauri::generate_handler![])
 		.setup(|app| {
 			WebviewWindowBuilder::new(app.handle(), "main", WebviewUrl::App("".into()))
-				.accept_first_mouse(cfg!(target_os = "macos"))
+				.accept_first_mouse(!cfg!(target_os = "macos"))
 				.build()
 				.unwrap();
 			Ok(())
