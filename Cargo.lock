@@ -6311,8 +6311,8 @@ dependencies = [
 
 [[package]]
 name = "wiwi"
-version = "0.11.0-pre.2"
-source = "git+https://github.com/meadowsys/wiwi?rev=f000a24fa11c6e6d2fbf078f20bd8e571efd2d15#f000a24fa11c6e6d2fbf078f20bd8e571efd2d15"
+version = "0.11.0-pre.3"
+source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
 dependencies = [
  "cfg-if",
  "chrono",
@@ -6321,9 +6321,40 @@ dependencies = [
  "parking_lot",
  "thiserror 1.0.69",
  "tokio",
- "wiwiwiwiwi",
- "wiwiwiwiwiwiwiwiwiwi",
+ "wiwi-chain",
+ "wiwi-macro-decl",
+ "wiwi-macro-proc",
+ "wiwi-util",
 ]
+
+[[package]]
+name = "wiwi-chain"
+version = "0.11.0-pre.3"
+source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+dependencies = [
+ "wiwi-util",
+]
+
+[[package]]
+name = "wiwi-macro-decl"
+version = "0.11.0-pre.3"
+source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+
+[[package]]
+name = "wiwi-macro-proc"
+version = "0.11.0-pre.3"
+source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+dependencies = [
+ "darling",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.96",
+]
+
+[[package]]
+name = "wiwi-util"
+version = "0.11.0-pre.3"
+source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
 
 [[package]]
 name = "wiwipaccer-app-desktop"
@@ -6387,22 +6418,6 @@ dependencies = [
  "wiwi",
  "wiwipaccer-model",
 ]
-
-[[package]]
-name = "wiwiwiwiwi"
-version = "0.11.0-pre.2"
-source = "git+https://github.com/meadowsys/wiwi?rev=f000a24fa11c6e6d2fbf078f20bd8e571efd2d15#f000a24fa11c6e6d2fbf078f20bd8e571efd2d15"
-dependencies = [
- "darling",
- "proc-macro2",
- "quote",
- "syn 2.0.96",
-]
-
-[[package]]
-name = "wiwiwiwiwiwiwiwiwiwi"
-version = "0.11.0-pre.2"
-source = "git+https://github.com/meadowsys/wiwi?rev=f000a24fa11c6e6d2fbf078f20bd8e571efd2d15#f000a24fa11c6e6d2fbf078f20bd8e571efd2d15"
 
 [[package]]
 name = "write16"

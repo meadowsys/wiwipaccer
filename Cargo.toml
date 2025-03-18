@@ -71,7 +71,7 @@ version = "0.41.0"
 
 [workspace.dependencies.wiwi]
 git = "https://github.com/meadowsys/wiwi"
-rev = "f000a24fa11c6e6d2fbf078f20bd8e571efd2d15"
+rev = "935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
 
 [workspace.dependencies.wiwipaccer-decl]
 path = "packages/decl"
