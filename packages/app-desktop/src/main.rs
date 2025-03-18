@@ -4,7 +4,7 @@
 	windows_subsystem = "windows"
 )]
 
-use tauri::{ WebviewWindowBuilder, WebviewUrl };
+use tauri::{ LogicalPosition, TitleBarStyle, WebviewWindowBuilder, WebviewUrl };
 
 fn main() {
 	tauri::Builder::<tauri::Wry>::new()
@@ -12,6 +12,13 @@ fn main() {
 		.setup(|app| {
 			WebviewWindowBuilder::new(app.handle(), "main", WebviewUrl::App("".into()))
 				.accept_first_mouse(!cfg!(target_os = "macos"))
+				.enable_clipboard_access()
+				.hidden_title(true)
+				.traffic_light_position(LogicalPosition { x: 20.0, y: 25.0 })
+				.min_inner_size(800.0, 500.0)
+				.title("")
+				.disable_drag_drop_handler()
+				.title_bar_style(TitleBarStyle::Overlay)
 				.build()
 				.unwrap();
 			Ok(())

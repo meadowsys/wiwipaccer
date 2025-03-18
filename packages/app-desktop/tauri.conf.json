@@ -18,7 +18,15 @@
 	"app": {
 		"withGlobalTauri": true,
 		"security": {
-			"csp": null
+			"csp": null,
+			"capabilities": [
+				{
+					"identifier": "h",
+					"webviews": ["*"],
+					"windows": ["*"],
+					"permissions": ["core:window:allow-start-dragging"]
+				}
+			]
 		}
 	},
 	"bundle": {

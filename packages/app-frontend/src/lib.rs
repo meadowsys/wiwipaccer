@@ -11,5 +11,9 @@ fn main() {
 		prev_hook(info);
 	});
 
-	mount_to_body(|| "uwuwuwuwuwu");
+	mount_to_body(|| view! {
+		<div data-tauri-drag-region>
+			{ "uwuwuwuwuwu" }
+		</div>
+	});
 }
