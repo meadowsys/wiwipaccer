@@ -11,4 +11,6 @@ publish = false
 tauri-build = { workspace = true }
 
 [dependencies]
+mimalloc = { workspace = true }
+surrealdb = { workspace = true }
 tauri = { workspace = true }

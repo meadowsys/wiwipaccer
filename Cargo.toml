@@ -30,8 +30,16 @@ version = "0.15.2"
 version = "0.7.7"
 features = ["csr"]
 
+[workspace.dependencies.mimalloc]
+version = "0.1.44"
+
 [workspace.dependencies.semver]
 version = "1.0.26"
+
+[workspace.dependencies.surrealdb]
+version = "2.2.1"
+default-features = false
+features = ["kv-rocksdb"]
 
 [workspace.dependencies.tauri]
 version = "2.3.1"

@@ -6,6 +6,13 @@
 
 use tauri::{ LogicalPosition, TitleBarStyle, WebviewWindowBuilder, WebviewUrl };
 
+mod db;
+
+// try to save on linking time by only doing this in release
+#[cfg(not(debug_assertions))]
+#[global_allocator]
+static GLOBAL_ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 fn main() {
 	tauri::Builder::<tauri::Wry>::new()
 		.invoke_handler(tauri::generate_handler![])
