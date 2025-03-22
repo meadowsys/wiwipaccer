@@ -18,7 +18,8 @@ fn main() {
 		.invoke_handler(tauri::generate_handler![])
 		.setup(|app| {
 			WebviewWindowBuilder::new(app.handle(), "main", WebviewUrl::App("".into()))
-				.accept_first_mouse(!cfg!(target_os = "macos"))
+				// as far as I know, only mac has this no first click thing
+				.accept_first_mouse(false)
 				.enable_clipboard_access()
 				.hidden_title(true)
 				.traffic_light_position(LogicalPosition { x: 20.0, y: 25.0 })
