@@ -20,14 +20,14 @@ impl<N> CoordsXYZ<N> {
 
 pub mod coords_xyz_builder {
 	use super::*;
-	use self::private::Sealed;
 	use wiwi::builder::{
 		Init,
 		Uninit,
 		IsInit,
 		IsUninit,
-		InitialisationStatus,
-		PhantomDataInvariant
+		InitStatus,
+		PhantomDataInvariant,
+		gen_builder_state_2
 	};
 
 	pub type CoordsXYZBuilderUninit<N> = CoordsXYZBuilder<N, StateContainer<Uninit, Uninit, Uninit>>;
@@ -39,47 +39,11 @@ pub mod coords_xyz_builder {
 		__marker: PhantomDataInvariant<S>
 	}
 
-	pub trait State: Sealed {
-		type X: InitialisationStatus;
-		type XInit: State;
-
-		type Y: InitialisationStatus;
-		type YInit: State;
-
-		type Z: InitialisationStatus;
-		type ZInit: State;
+	gen_builder_state_2! {
+		ident X;
+		ident Y;
+		ident Z;
 	}
-
-	pub struct StateContainer<X, Y, Z> {
-		__marker: PhantomDataInvariant<(X, Y, Z)>
-	}
-
-	/// notouchie
-	mod private {
-		/// notouchie
-		pub trait Sealed {}
-	}
-
-	impl<
-		X: InitialisationStatus,
-		Y: InitialisationStatus,
-		Z: InitialisationStatus
-	> State for StateContainer<X, Y, Z> {
-		type X = X;
-		type XInit = StateContainer<Init, Y, Z>;
-
-		type Y = Y;
-		type YInit = StateContainer<X, Init, Z>;
-
-		type Z = Z;
-		type ZInit = StateContainer<X, Y, Init>;
-	}
-
-	impl<
-		X: InitialisationStatus,
-		Y: InitialisationStatus,
-		Z: InitialisationStatus
-	> Sealed for StateContainer<X, Y, Z> {}
 
 	impl<N> CoordsXYZBuilderUninit<N> {
 		#[inline(always)]
@@ -184,14 +148,14 @@ impl<N> CoordsUV<N> {
 
 pub mod coords_uv_builder {
 	use super::*;
-	use self::private::Sealed;
 	use wiwi::builder::{
 		Init,
 		Uninit,
 		IsInit,
 		IsUninit,
-		InitialisationStatus,
-		PhantomDataInvariant
+		InitStatus,
+		PhantomDataInvariant,
+		gen_builder_state_2
 	};
 
 	pub type CoordsUVBuilderUninit<N> = CoordsUVBuilder<N, StateContainer<Uninit, Uninit>>;
@@ -202,39 +166,10 @@ pub mod coords_uv_builder {
 		__marker: PhantomDataInvariant<S>
 	}
 
-	pub trait State: Sealed {
-		type U: InitialisationStatus;
-		type UInit: State;
-
-		type V: InitialisationStatus;
-		type VInit: State;
+	gen_builder_state_2! {
+		ident U;
+		ident V;
 	}
-
-	pub struct StateContainer<U, V> {
-		__marker: PhantomDataInvariant<(U, V)>
-	}
-
-	/// notouchie
-	mod private {
-		/// notouchie
-		pub trait Sealed {}
-	}
-
-	impl<
-		U: InitialisationStatus,
-		V: InitialisationStatus
-	> State for StateContainer<U, V> {
-		type U = U;
-		type UInit = StateContainer<Init, V>;
-
-		type V = V;
-		type VInit = StateContainer<U, Init>;
-	}
-
-	impl<
-		U: InitialisationStatus,
-		V: InitialisationStatus
-	> Sealed for StateContainer<U, V> {}
 
 	impl<N> CoordsUVBuilderUninit<N> {
 		#[inline(always)]

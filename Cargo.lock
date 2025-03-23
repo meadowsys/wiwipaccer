@@ -8342,7 +8342,7 @@ dependencies = [
 [[package]]
 name = "wiwi"
 version = "0.11.0-pre.3"
-source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+source = "git+https://github.com/meadowsys/wiwi?rev=7c4d66ff77c66c415a4ef0d5493129d38b9184b9#7c4d66ff77c66c415a4ef0d5493129d38b9184b9"
 dependencies = [
  "cfg-if",
  "chrono",
@@ -8360,7 +8360,7 @@ dependencies = [
 [[package]]
 name = "wiwi-chain"
 version = "0.11.0-pre.3"
-source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+source = "git+https://github.com/meadowsys/wiwi?rev=7c4d66ff77c66c415a4ef0d5493129d38b9184b9#7c4d66ff77c66c415a4ef0d5493129d38b9184b9"
 dependencies = [
  "wiwi-util",
 ]
@@ -8368,12 +8368,12 @@ dependencies = [
 [[package]]
 name = "wiwi-macro-decl"
 version = "0.11.0-pre.3"
-source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+source = "git+https://github.com/meadowsys/wiwi?rev=7c4d66ff77c66c415a4ef0d5493129d38b9184b9#7c4d66ff77c66c415a4ef0d5493129d38b9184b9"
 
 [[package]]
 name = "wiwi-macro-proc"
 version = "0.11.0-pre.3"
-source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+source = "git+https://github.com/meadowsys/wiwi?rev=7c4d66ff77c66c415a4ef0d5493129d38b9184b9#7c4d66ff77c66c415a4ef0d5493129d38b9184b9"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -8384,7 +8384,7 @@ dependencies = [
 [[package]]
 name = "wiwi-util"
 version = "0.11.0-pre.3"
-source = "git+https://github.com/meadowsys/wiwi?rev=935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf#935c90e3ac68dc9f9a09690b8dd9e35f9db0d0cf"
+source = "git+https://github.com/meadowsys/wiwi?rev=7c4d66ff77c66c415a4ef0d5493129d38b9184b9#7c4d66ff77c66c415a4ef0d5493129d38b9184b9"
 
 [[package]]
 name = "wiwipaccer-app-desktop"

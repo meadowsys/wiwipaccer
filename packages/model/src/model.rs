@@ -39,14 +39,14 @@ impl Display {
 }
 pub mod display_builder {
 	use super::*;
-	use self::private::Sealed;
 	use wiwi::builder::{
 		Init,
 		Uninit,
 		IsInit,
 		IsUninit,
-		InitialisationStatus,
-		PhantomDataInvariant
+		InitStatus,
+		PhantomDataInvariant,
+		gen_builder_state_2
 	};
 
 	pub type DisplayBuilderUninit = DisplayBuilder<StateContainer<Uninit, Uninit, Uninit, Uninit, Uninit, Uninit, Uninit, Uninit>>;
@@ -57,124 +57,16 @@ pub mod display_builder {
 		__marker: PhantomDataInvariant<S>
 	}
 
-	pub trait State {
-		type FirstLeft: InitialisationStatus;
-		type FirstLeftInit: State;
-
-		type FirstRight: InitialisationStatus;
-		type FirstRightInit: State;
-
-		type ThirdLeft: InitialisationStatus;
-		type ThirdLeftInit: State;
-
-		type ThirdRight: InitialisationStatus;
-		type ThirdRightInit: State;
-
-		type Gui: InitialisationStatus;
-		type GuiInit: State;
-
-		type Head: InitialisationStatus;
-		type HeadInit: State;
-
-		type Ground: InitialisationStatus;
-		type GroundInit: State;
-
-		type Fixed: InitialisationStatus;
-		type FixedInit: State;
+	gen_builder_state_2! {
+		ident FirstLeft;
+		ident FirstRight;
+		ident ThirdLeft;
+		ident ThirdRight;
+		ident Gui;
+		ident Head;
+		ident Ground;
+		ident Fixed;
 	}
-
-	#[expect(clippy::type_complexity, reason = "shut")]
-	pub struct StateContainer<
-		FirstLeft,
-		FirstRight,
-		ThirdLeft,
-		ThirdRight,
-		Gui,
-		Head,
-		Ground,
-		Fixed
-	> {
-		__marker: PhantomDataInvariant<(
-			FirstLeft,
-			FirstRight,
-			ThirdLeft,
-			ThirdRight,
-			Gui,
-			Head,
-			Ground,
-			Fixed
-		)>
-	}
-
-	/// notouchie
-	mod private {
-		/// notouchie
-		pub trait Sealed {}
-	}
-
-	impl<
-		FirstLeft: InitialisationStatus,
-		FirstRight: InitialisationStatus,
-		ThirdLeft: InitialisationStatus,
-		ThirdRight: InitialisationStatus,
-		Gui: InitialisationStatus,
-		Head: InitialisationStatus,
-		Ground: InitialisationStatus,
-		Fixed: InitialisationStatus
-	> State for StateContainer<
-		FirstLeft,
-		FirstRight,
-		ThirdLeft,
-		ThirdRight,
-		Gui,
-		Head,
-		Ground,
-		Fixed
-	> {
-		type FirstLeft = FirstLeft;
-		type FirstLeftInit = StateContainer<Init, FirstRight, ThirdLeft, ThirdRight, Gui, Head, Ground, Fixed>;
-
-		type FirstRight = FirstRight;
-		type FirstRightInit = StateContainer<FirstLeft, Init, ThirdLeft, ThirdRight, Gui, Head, Ground, Fixed>;
-
-		type ThirdLeft = ThirdLeft;
-		type ThirdLeftInit = StateContainer<FirstLeft, FirstRight, Init, ThirdRight, Gui, Head, Ground, Fixed>;
-
-		type ThirdRight = ThirdRight;
-		type ThirdRightInit = StateContainer<FirstLeft, FirstRight, ThirdLeft, Init, Gui, Head, Ground, Fixed>;
-
-		type Gui = Gui;
-		type GuiInit = StateContainer<FirstLeft, FirstRight, ThirdLeft, ThirdRight, Init, Head, Ground, Fixed>;
-
-		type Head = Head;
-		type HeadInit = StateContainer<FirstLeft, FirstRight, ThirdLeft, ThirdRight, Gui, Init, Ground, Fixed>;
-
-		type Ground = Ground;
-		type GroundInit = StateContainer<FirstLeft, FirstRight, ThirdLeft, ThirdRight, Gui, Head, Init, Fixed>;
-
-		type Fixed = Fixed;
-		type FixedInit = StateContainer<FirstLeft, FirstRight, ThirdLeft, ThirdRight, Gui, Head, Ground, Init>;
-	}
-
-	impl<
-		FirstLeft: InitialisationStatus,
-		FirstRight: InitialisationStatus,
-		ThirdLeft: InitialisationStatus,
-		ThirdRight: InitialisationStatus,
-		Gui: InitialisationStatus,
-		Head: InitialisationStatus,
-		Ground: InitialisationStatus,
-		Fixed: InitialisationStatus
-	> Sealed for StateContainer<
-		FirstLeft,
-		FirstRight,
-		ThirdLeft,
-		ThirdRight,
-		Gui,
-		Head,
-		Ground,
-		Fixed
-	> {}
 
 	impl DisplayBuilderUninit {
 		#[inline(always)]
@@ -411,14 +303,14 @@ impl Position {
 
 pub mod position_builder {
 	use super::*;
-	use self::private::Sealed;
 	use wiwi::builder::{
 		Init,
 		Uninit,
 		IsInit,
 		IsUninit,
-		InitialisationStatus,
-		PhantomDataInvariant
+		InitStatus,
+		PhantomDataInvariant,
+		gen_builder_state_2
 	};
 
 	pub type PositionBuilderUninit = PositionBuilder<StateContainer<Uninit, Uninit, Uninit>>;
@@ -429,47 +321,11 @@ pub mod position_builder {
 		__marker: PhantomDataInvariant<S>
 	}
 
-	pub trait State: Sealed {
-		type Rotation: InitialisationStatus;
-		type RotationInit: State;
-
-		type Translation: InitialisationStatus;
-		type TranslationInit: State;
-
-		type Scale: InitialisationStatus;
-		type ScaleInit: State;
+	gen_builder_state_2! {
+		ident Rotation;
+		ident Translation;
+		ident Scale;
 	}
-
-	pub struct StateContainer<Rotation, Translation, Scale> {
-		__marker: PhantomDataInvariant<(Rotation, Translation, Scale)>
-	}
-
-	/// notouchie
-	mod private {
-		/// notouchie
-		pub trait Sealed {}
-	}
-
-	impl<
-		Rotation: InitialisationStatus,
-		Translation: InitialisationStatus,
-		Scale: InitialisationStatus
-	> State for StateContainer<Rotation, Translation, Scale> {
-		type Rotation = Rotation;
-		type RotationInit = StateContainer<Init, Translation, Scale>;
-
-		type Translation = Translation;
-		type TranslationInit = StateContainer<Rotation, Init, Scale>;
-
-		type Scale = Scale;
-		type ScaleInit = StateContainer<Rotation, Translation, Init>;
-	}
-
-	impl<
-		Rotation: InitialisationStatus,
-		Translation: InitialisationStatus,
-		Scale: InitialisationStatus
-	> Sealed for StateContainer<Rotation, Translation, Scale> {}
 
 	impl PositionBuilderUninit {
 		#[inline(always)]

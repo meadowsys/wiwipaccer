@@ -22,14 +22,14 @@ impl Texture {
 
 pub mod texture_builder {
 	use super::*;
-	use self::private::Sealed;
 	use wiwi::builder::{
 		Init,
 		Uninit,
 		IsInit,
 		IsUninit,
-		InitialisationStatus,
-		PhantomDataInvariant
+		InitStatus,
+		PhantomDataInvariant,
+		gen_builder_state_2
 	};
 
 	pub type TextureBuilderInit = TextureBuilder<StateContainer<Init, Init, Init>>;
@@ -41,49 +41,11 @@ pub mod texture_builder {
 		__marker: PhantomDataInvariant<S>
 	}
 
-	// - todo builder state trait def
-	pub trait State {
-		type Id: InitialisationStatus;
-		type IdInit: State;
-
-		type Name: InitialisationStatus;
-		type NameInit: State;
-
-		type BlockId: InitialisationStatus;
-		type BlockIdInit: State;
+	gen_builder_state_2! {
+		ident Id;
+		ident Name;
+		ident BlockId;
 	}
-
-	// - todo builder state container struct def
-	pub struct StateContainer<Id, Name, BlockId> {
-		__marker: PhantomDataInvariant<(Id, Name, BlockId)>
-	}
-
-	/// notouchie
-	mod private {
-		/// notouchie
-		pub trait Sealed {}
-	}
-
-	impl<
-		Id: InitialisationStatus,
-		Name: InitialisationStatus,
-		BlockId: InitialisationStatus
-	> State for StateContainer<Id, Name, BlockId> {
-		type Id = Id;
-		type IdInit = StateContainer<Init, Name, BlockId>;
-
-		type Name = Name;
-		type NameInit = StateContainer<Id, Init, BlockId>;
-
-		type BlockId = BlockId;
-		type BlockIdInit = StateContainer<Id, Name, Init>;
-	}
-
-	impl<
-		Id: InitialisationStatus,
-		Name: InitialisationStatus,
-		BlockId: InitialisationStatus
-	> Sealed for StateContainer<Id, Name, BlockId> {}
 
 	// - todo impl uninit for `new()` fn
 	impl TextureBuilderUninit {
