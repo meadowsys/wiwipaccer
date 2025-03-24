@@ -1,5 +1,5 @@
 [package]
-name = "wiwipaccer-provider-plugin-api"
+name = "wiwipaccer-provider-host"
 version = { workspace = true }
 edition = { workspace = true }
 authors = { workspace = true }
@@ -8,4 +8,6 @@ license = { workspace = true }
 publish = false
 
 [dependencies]
-wit-bindgen = { workspace = true }
+hashbrown = { workspace = true }
+semver = { workspace = true }
+wasmtime = { workspace = true }

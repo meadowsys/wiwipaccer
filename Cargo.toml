@@ -5,8 +5,8 @@ members = [
 	"packages/app-frontend",
 	"packages/decl",
 	"packages/model",
-	"packages/provider-plugin-api",
-	"packages/provider-plugin-host",
+	"packages/provider-api",
+	"packages/provider-host",
 	"packages/provider-plugin-cube-all",
 	"packages/standard-models"
 ]
@@ -84,8 +84,8 @@ rev = "7c4d66ff77c66c415a4ef0d5493129d38b9184b9"
 [workspace.dependencies.wiwipaccer-decl]
 path = "packages/decl"
 
-[workspace.dependencies.wiwipaccer-provider-plugin-api]
-path = "packages/provider-plugin-api"
+[workspace.dependencies.wiwipaccer-provider-api]
+path = "packages/provider-api"
 
 [workspace.dependencies.wiwipaccer-model]
 path = "packages/model"

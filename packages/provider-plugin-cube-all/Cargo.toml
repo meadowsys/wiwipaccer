@@ -11,4 +11,4 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-wiwipaccer-provider-plugin-api = { workspace = true }
+wiwipaccer-provider-api = { workspace = true }

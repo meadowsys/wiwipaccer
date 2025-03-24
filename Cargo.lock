@@ -8421,26 +8421,26 @@ dependencies = [
 ]
 
 [[package]]
-name = "wiwipaccer-provider-plugin-api"
+name = "wiwipaccer-provider-api"
 version = "0.1.0"
 dependencies = [
  "wit-bindgen",
 ]
 
 [[package]]
-name = "wiwipaccer-provider-plugin-cube-all"
-version = "0.1.0"
-dependencies = [
- "wiwipaccer-provider-plugin-api",
-]
-
-[[package]]
-name = "wiwipaccer-provider-plugin-host"
+name = "wiwipaccer-provider-host"
 version = "0.1.0"
 dependencies = [
  "hashbrown 0.15.2",
  "semver",
  "wasmtime",
+]
+
+[[package]]
+name = "wiwipaccer-provider-plugin-cube-all"
+version = "0.1.0"
+dependencies = [
+ "wiwipaccer-provider-api",
 ]
 
 [[package]]

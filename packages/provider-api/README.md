@@ -1,3 +1,3 @@
-# provider-plugin-api
+# provider-api
 
 Contains types for the provider plugin api
