@@ -27,19 +27,22 @@ interface types {
 	// 	read-next-bytes: func(amount: u64, offset: u64) -> tuple<list<u8>, bool>;
 	// }
 
-	record plugin-metadata {
+	record plugin-meta {
 		/// Namespace this plugin is part of (required)
 		///
 		/// This should be unique across plugin makers. Try reversed internet
 		/// domain name if not sure.
 		ns: string,
+
 		/// ID of this plugin (required)
 		///
 		/// This must be unique within a namespace (which should not be an issue
 		/// if you know your namespace to be unique).
 		id: string,
+
 		/// Version of this plugin, a semver string (optional, but highly recommended)
-		version: string
+		version: option<string>
+
 		// /// List of authors of this plugin (optional)
 		// ///
 		// /// These should be either just the name, or name followed by email
@@ -62,7 +65,7 @@ interface imp {
 	// use types.{ provider-input };
 	// run: func(input: provider-input) -> something-idk;
 
-	use types.{ plugin-metadata };
+	use types.{ plugin-meta };
 
-	metadata: func() -> plugin-metadata;
+	meta: func() -> plugin-meta;
 }

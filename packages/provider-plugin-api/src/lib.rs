@@ -11,10 +11,10 @@ pub mod __generated_notouchie {
 }
 
 #[doc(inline)]
-pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::PluginMetadata;
+pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::PluginMeta;
 
 pub trait Guest {
-	fn metadata() -> PluginMetadata;
+	fn meta() -> PluginMeta;
 }
 
 impl<T> self::__generated_notouchie::exports::wiwi::wiwipaccer_provider_plugin::imp::Guest for T
@@ -22,8 +22,8 @@ where
 	T: Guest
 {
 	#[inline]
-	fn metadata() -> PluginMetadata {
-		<T as Guest>::metadata()
+	fn meta() -> PluginMeta {
+		<T as Guest>::meta()
 	}
 }
 

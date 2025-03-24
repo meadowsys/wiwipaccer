@@ -1,14 +1,14 @@
-use wiwipaccer_provider_plugin_api::{ Guest, PluginMetadata, cargo_pkg_version, export };
+use wiwipaccer_provider_plugin_api::{ Guest, PluginMeta, cargo_pkg_version, export };
 
 struct Plugin;
 export!(Plugin);
 
 impl Guest for Plugin {
-	fn metadata() -> PluginMetadata {
-		PluginMetadata {
+	fn meta() -> PluginMeta {
+		PluginMeta {
 			ns: "wiwi".into(),
 			id: "random-cube-all".into(),
-			version: cargo_pkg_version!()
+			version: Some(cargo_pkg_version!())
 			// authors: vec![
 			// 	"Meadow Liu <meadowsys@kiwin.gay>".into(),
 			// 	api::h()
