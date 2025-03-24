@@ -18,7 +18,6 @@ fn main() {
 		.invoke_handler(tauri::generate_handler![])
 		.setup(|app| {
 			WebviewWindowBuilder::new(app.handle(), "main", WebviewUrl::App("".into()))
-				// as far as I know, only mac has this no first click thing
 				.accept_first_mouse(false)
 				.enable_clipboard_access()
 				.hidden_title(true)
