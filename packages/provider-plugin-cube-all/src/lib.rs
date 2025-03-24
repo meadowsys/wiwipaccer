@@ -7,7 +7,7 @@ impl Guest for Plugin {
 	fn meta() -> PluginMeta {
 		PluginMeta {
 			ns: "wiwi".into(),
-			id: "random-cube-all".into(),
+			id: "cube-all".into(),
 			version: Some(cargo_pkg_version!())
 			// authors: vec![
 			// 	"Meadow Liu <meadowsys@kiwin.gay>".into(),

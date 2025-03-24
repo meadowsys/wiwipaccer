@@ -1,5 +1,5 @@
 [package]
-name = "wiwipaccer-provider-plugin-random-cube-all"
+name = "wiwipaccer-provider-plugin-cube-all"
 version = { workspace = true }
 edition = { workspace = true }
 authors = { workspace = true }

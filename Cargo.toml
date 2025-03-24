@@ -7,7 +7,7 @@ members = [
 	"packages/model",
 	"packages/provider-plugin-api",
 	"packages/provider-plugin-host",
-	"packages/provider-plugin-random-cube-all",
+	"packages/provider-plugin-cube-all",
 	"packages/standard-models"
 ]
 

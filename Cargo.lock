@@ -8428,19 +8428,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "wiwipaccer-provider-plugin-cube-all"
+version = "0.1.0"
+dependencies = [
+ "wiwipaccer-provider-plugin-api",
+]
+
+[[package]]
 name = "wiwipaccer-provider-plugin-host"
 version = "0.1.0"
 dependencies = [
  "hashbrown 0.15.2",
  "semver",
  "wasmtime",
-]
-
-[[package]]
-name = "wiwipaccer-provider-plugin-random-cube-all"
-version = "0.1.0"
-dependencies = [
- "wiwipaccer-provider-plugin-api",
 ]
 
 [[package]]
