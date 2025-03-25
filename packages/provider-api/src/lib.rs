@@ -3,6 +3,7 @@ pub mod __generated_notouchie {
 	wit_bindgen::generate!({
 		path: "provider-plugin.wit",
 
+		// todo toy with configs if necessary
 		ownership: Borrowing {
 			duplicate_if_necessary: true
 		},
@@ -11,21 +12,9 @@ pub mod __generated_notouchie {
 }
 
 #[doc(inline)]
-pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::PluginMeta;
-
-pub trait Guest {
-	fn meta() -> PluginMeta;
-}
-
-impl<T> self::__generated_notouchie::exports::wiwi::wiwipaccer_provider_plugin::imp::Guest for T
-where
-	T: Guest
-{
-	#[inline]
-	fn meta() -> PluginMeta {
-		<T as Guest>::meta()
-	}
-}
+pub use self::__generated_notouchie::exports::wiwi::wiwipaccer_provider_plugin::imp::Guest;
+#[doc(inline)]
+pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::{ Ctx, CtxMethods, PluginMeta };
 
 #[macro_export]
 macro_rules! export {

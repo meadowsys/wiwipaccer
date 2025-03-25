@@ -1,22 +1,33 @@
-wasmtime::component::bindgen!({
-	path: "../provider-api/provider-plugin.wit",
+use self::generated::Plugin;
+use self::generated::wiwi::wiwipaccer_provider_plugin::api::Host as ApiHost;
+use self::generated::wiwi::wiwipaccer_provider_plugin::types::Host as TypesHost;
 
-	// ???
-	// async: true,
-	// or configure it more finely idk
-	ownership: Borrowing {
-		duplicate_if_necessary: true
-	}
-});
+use wasmtime::{ Engine, Store };
+use wasmtime::component::{ Component, Linker, Resource };
+
+mod generated {
+	wasmtime::component::bindgen!({
+		path: "../provider-api/provider-plugin.wit",
+
+		// todo toy with configs if necessary
+		ownership: Borrowing {
+			duplicate_if_necessary: true
+		}
+	});
+}
 
 fn _test_todo_remove_me() {
-	use wasmtime::component::{ Component, Linker };
-	use wasmtime::{ Engine, Store };
-
 	struct State;
 
-	impl self::wiwi::wiwipaccer_provider_plugin::api::Host for State {}
-	impl self::wiwi::wiwipaccer_provider_plugin::types::Host for State {}
+	impl ApiHost for State {}
+	impl TypesHost for State {}
+
+	impl self::generated::wiwi::wiwipaccer_provider_plugin::types::HostCtxMethods for State {
+		fn drop(&mut self, rep: Resource<generated::wiwi::wiwipaccer_provider_plugin::types::CtxMethods>) -> wasmtime::Result<()> {
+			let _ = rep;
+			unimplemented!()
+		}
+	}
 
 	let engine = Engine::default();
 	let component = Component::from_binary(&engine, b"Uwuwuwuwuuwuuwuuwuwuwuwuwu").unwrap();

@@ -6,14 +6,15 @@ world plugin {
 }
 
 interface types {
-	// resource provider-input {
-	// 	get-assets: func(assets: list<asset-entry>)
-	// }
+	resource ctx-methods {
+		// get-assets: func(assets: list<asset-entry>)
+	}
 
-	// record provider-input {
-	// 	manifest: manifest,
-	// 	assets: list<asset-entry>
-	// }
+	record ctx {
+		methods: ctx-methods
+		// manifest: manifest,
+		// assets: list<asset-entry>
+	}
 
 	// resource manifest {
 	// 	// ?
@@ -62,10 +63,10 @@ interface api {
 }
 
 interface imp {
-	// use types.{ provider-input };
-	// run: func(input: provider-input) -> something-idk;
-
-	use types.{ plugin-meta };
+	use types.{ ctx, plugin-meta };
 
 	meta: func() -> plugin-meta;
+
+	/// Run the plugin
+	run: func(input: ctx);
 }

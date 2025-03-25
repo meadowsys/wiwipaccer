@@ -1,4 +1,4 @@
-use wiwipaccer_provider_api::{ Guest, PluginMeta, cargo_pkg_version, export };
+use wiwipaccer_provider_api::{ Ctx, Guest, PluginMeta, cargo_pkg_version, export };
 
 struct Plugin;
 export!(Plugin);
@@ -14,5 +14,10 @@ impl Guest for Plugin {
 			// 	api::h()
 			// ]
 		}
+	}
+
+	fn run(input: Ctx) {
+		let _ = input;
+		unimplemented!()
 	}
 }
