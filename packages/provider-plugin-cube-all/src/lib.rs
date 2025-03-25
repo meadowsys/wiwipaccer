@@ -1,4 +1,4 @@
-use wiwipaccer_provider_api::{ Ctx, Guest, PluginMeta, cargo_pkg_version, export };
+use wiwipaccer_provider_api::prelude::*;
 
 struct Plugin;
 export!(Plugin);

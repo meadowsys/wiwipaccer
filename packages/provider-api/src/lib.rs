@@ -30,3 +30,14 @@ macro_rules! export {
 macro_rules! cargo_pkg_version {
 	() => { String::from(env!("CARGO_PKG_VERSION")) }
 }
+
+pub mod prelude {
+	pub use crate::{
+		Ctx,
+		CtxMethods,
+		Guest,
+		PluginMeta,
+		cargo_pkg_version,
+		export
+	};
+}
