@@ -14,7 +14,7 @@ pub mod __generated_notouchie {
 #[doc(inline)]
 pub use self::__generated_notouchie::exports::wiwi::wiwipaccer_provider_plugin::imp::Guest;
 #[doc(inline)]
-pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::{ Ctx, CtxMethods, PluginMeta };
+pub use self::__generated_notouchie::wiwi::wiwipaccer_provider_plugin::types::{ Asset, Ctx, PluginMeta };
 
 #[macro_export]
 macro_rules! export {
@@ -33,8 +33,8 @@ macro_rules! cargo_pkg_version {
 
 pub mod prelude {
 	pub use crate::{
+		Asset,
 		Ctx,
-		CtxMethods,
 		Guest,
 		PluginMeta,
 		cargo_pkg_version,

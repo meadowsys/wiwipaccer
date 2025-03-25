@@ -1,8 +1,7 @@
 use self::generated::Plugin;
 use self::generated::wiwi::wiwipaccer_provider_plugin::api::Host as ApiHost;
-use self::generated::wiwi::wiwipaccer_provider_plugin::types::Host as TypesHost;
-
-use wasmtime::{ Engine, Store };
+use self::generated::wiwi::wiwipaccer_provider_plugin::types::{ Asset, Ctx, HostAsset, HostCtx, Host as TypesHost };
+use wasmtime::{ Engine, Result, Store };
 use wasmtime::component::{ Component, Linker, Resource };
 
 mod generated {
@@ -22,10 +21,27 @@ fn _test_todo_remove_me() {
 	impl ApiHost for State {}
 	impl TypesHost for State {}
 
-	impl self::generated::wiwi::wiwipaccer_provider_plugin::types::HostCtxMethods for State {
-		fn drop(&mut self, rep: Resource<generated::wiwi::wiwipaccer_provider_plugin::types::CtxMethods>) -> wasmtime::Result<()> {
+	impl HostAsset for State {
+		fn path(&mut self, this: Resource<Asset>) -> String {
+			let _ = this;
+			todo!()
+		}
+
+		fn drop(&mut self, rep: Resource<Asset>) -> Result<()> {
 			let _ = rep;
-			unimplemented!()
+			todo!()
+		}
+	}
+
+	impl HostCtx for State {
+		fn get_assets(&mut self, this: Resource<Ctx>) -> Vec<Resource<Asset>> {
+			let _ = this;
+			todo!()
+		}
+
+		fn drop(&mut self, rep: Resource<Ctx>) -> Result<()> {
+			let _ = rep;
+			todo!()
 		}
 	}
 

@@ -6,14 +6,9 @@ world plugin {
 }
 
 interface types {
-	resource ctx-methods {
-		// get-assets: func(assets: list<asset-entry>)
-	}
-
-	record ctx {
-		methods: ctx-methods
+	resource ctx {
+		get-assets: func() -> list<asset>;
 		// manifest: manifest,
-		// assets: list<asset-entry>
 	}
 
 	// resource manifest {
@@ -22,11 +17,13 @@ interface types {
 	// 	// get: func(key: string) -> option<manifest-entry>;
 	// }
 
-	// resource asset-entry {
-	// 	path: func() -> string;
-	// 	bytes: func() -> list<u8>;
-	// 	read-next-bytes: func(amount: u64, offset: u64) -> tuple<list<u8>, bool>;
-	// }
+	resource asset {
+		/// Provides relative path within the provider directory
+		path: func() -> string;
+
+		// read-all: func() -> list<u8>;
+		// read-next-bytes: func(amount: u64, offset: u64) -> tuple<list<u8>, bool>;
+	}
 
 	record plugin-meta {
 		/// Namespace this plugin is part of (required)
