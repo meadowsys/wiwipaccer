@@ -76,7 +76,10 @@ interface types {
 		// read-next: func(limit: u64) -> result<list<u8>, error>;
 	}
 
-	record pack-entries {}
+	record pack-entries {
+		dummy-todo-remove-me: s64
+	}
+
 	resource error {
 		from-str: static func(s: string) -> error;
 
