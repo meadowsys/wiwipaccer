@@ -9,3 +9,6 @@ publish = false
 
 [dependencies]
 wiwi = { workspace = true }
+
+[lints]
+workspace = true

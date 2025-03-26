@@ -10,3 +10,6 @@ publish = false
 [dependencies]
 hashbrown = { workspace = true }
 wiwi = { workspace = true }
+
+[lints]
+workspace = true

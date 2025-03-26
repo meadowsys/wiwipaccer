@@ -93,3 +93,30 @@ path = "packages/model"
 [patch.crates-io]
 tauri = { git = "https://github.com/tauri-apps/tauri", rev = "f2c94aaca074bf15164d08e959b67f67f4c934ed" }
 tauri-build = { git = "https://github.com/tauri-apps/tauri", rev = "f2c94aaca074bf15164d08e959b67f67f4c934ed" }
+
+[workspace.lints.rust]
+# missing_docs = "warn"
+rust_2024_compatibility = "warn"
+unconditional_recursion = "warn"
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(kiwingay)"] }
+unfulfilled_lint_expectations = "warn"
+unsafe_op_in_unsafe_fn = "warn"
+unused_unsafe = "warn"
+
+[workspace.lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+as_conversions = "deny"
+empty_docs = "deny"
+inline_always = "warn"
+items_after_statements = "warn"
+items_after_test_module = "warn"
+# missing_docs_in_private_items = "warn"
+missing_inline_in_public_items = "warn"
+missing_safety_doc = "warn"
+mixed_attributes_style = "warn"
+# multiple_unsafe_ops_per_block = "warn"
+trait_duplication_in_bounds = "warn"
+undocumented_unsafe_blocks = "warn"
+unnecessary_lazy_evaluations = "allow"
+unnecessary_safety_comment = "warn"

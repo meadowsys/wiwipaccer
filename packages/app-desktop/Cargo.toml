@@ -14,3 +14,6 @@ tauri-build = { workspace = true }
 mimalloc = { workspace = true }
 surrealdb = { workspace = true }
 tauri = { workspace = true }
+
+[lints]
+workspace = true

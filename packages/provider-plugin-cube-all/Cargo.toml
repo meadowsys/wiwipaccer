@@ -12,3 +12,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wiwipaccer-provider-api = { workspace = true }
+
+[lints]
+workspace = true

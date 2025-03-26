@@ -10,3 +10,6 @@ publish = false
 [dependencies]
 wiwi = { workspace = true }
 wiwipaccer-model = { workspace = true }
+
+[lints]
+workspace = true

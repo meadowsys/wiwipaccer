@@ -11,3 +11,6 @@ publish = false
 hashbrown = { workspace = true }
 semver = { workspace = true }
 wasmtime = { workspace = true }
+
+[lints]
+workspace = true
