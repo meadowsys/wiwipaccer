@@ -55,23 +55,55 @@ version = "30.0.2"
 default-features = false
 features = [
 	# todo reassess these features?
+
 	"runtime",
+	# the backend compiler of the wasm components
 	"cranelift",
 	"component-model"
 
-	# "async",
-	# "demangle",
-	# "coredump",
-	# "addr2line",
+	# for debugging guest code (affects backtrace printing)
+	# but dunno how useful this is with `panic-immediate-abort` and no `unwind`
+	# "demangle"
+
+	# for debugging guest code (generates core dump when trap happens)
+	# but dunno how useful this is with `panic-immediate-abort` and no `unwind`
+	# "coredump"
+
+	# for debugging guest code (parse debug info to convert
+	# wasm addresses to source code locations)
+	# but dunno how useful this is with `panic-immediate-abort` and no `unwind`
+	# "addr2line"
+
+	# need to read up on how this affects components specifically
+	# I did also read somewhere about wasm async fns not being "coloured" or
+	# something and how all 4 combos of sync/async calling sync/async were supported
+	# "async"
 
 	# I dunno if beneficial
+	# see `Config::allocation_strategy` also
+	# we dont really fit "high-concurrency" or "high-instantiation-count" though
 	# "pooling-allocator"
 
 	# for debugging guest code
+	# see `Config::profiler` also
 	# "profiling"
 
-	# for debugging guest code
+	# for debugging guest code (debug utils for external debuggers
+	# attaching to the embedding program, to debug wasm guest code)
+	# this isn't affected by like, `panic-immediate-abort`
+	# so I can see this being actually beneficial to have
 	# "debug-builtins"
+
+	# consider caching using fs and `Config::cache_config_load`?
+	# is it really worth it though?
+	# "cache"
+
+	# as of now, I dont see it being worth it, as the threading is through rayon
+	# and I'm not sure how to control its thread usage to not be all threads
+	# "parallel-compilation"
+
+	# see wasm documentation, but we probably want this?
+	# "signals-based-traps"
 ]
 
 [workspace.dependencies.wit-bindgen]
