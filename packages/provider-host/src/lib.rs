@@ -1,38 +1,32 @@
-use self::generated::Plugin;
-use self::generated::wiwi::wiwipaccer_provider_plugin::api::Host as ApiHost;
-use self::generated::wiwi::wiwipaccer_provider_plugin::types::{
+use self::generated::{
 	Asset,
 	Error,
+	HostApi,
 	HostAsset,
 	HostError,
 	HostManifestMap,
 	HostRunCtx,
+	HostTypes,
 	ManifestKey,
 	ManifestMap,
 	ManifestSubItem,
-	PackEntries,
-	RunCtx,
-	Host as TypesHost
+	// PackEntries,
+	Plugin,
+	// PluginIndices,
+	PluginMeta,
+	// PluginPre,
+	RunCtx
 };
 use wasmtime::{ Engine, Result, Store };
 use wasmtime::component::{ Component, Linker, Resource };
 
-mod generated {
-	wasmtime::component::bindgen!({
-		path: "../provider-api/provider-plugin.wit",
-
-		// todo toy with configs if necessary
-		ownership: Borrowing {
-			duplicate_if_necessary: true
-		}
-	});
-}
+mod generated;
 
 fn _test_todo_remove_me() {
 	struct State;
 
-	impl ApiHost for State {}
-	impl TypesHost for State {}
+	impl HostApi for State {}
+	impl HostTypes for State {}
 
 	impl HostAsset for State {
 		fn path(&mut self, this: Resource<Asset>) -> String {
