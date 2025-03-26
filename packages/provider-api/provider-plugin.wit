@@ -6,25 +6,6 @@ world plugin {
 }
 
 interface types {
-	resource ctx {
-		get-assets: func() -> list<asset>;
-		// manifest: manifest,
-	}
-
-	// resource manifest {
-	// 	// ?
-	// 	// so far: string, bool, list of numbers (random-cube-all)
-	// 	// get: func(key: string) -> option<manifest-entry>;
-	// }
-
-	resource asset {
-		/// Provides relative path within the provider directory
-		path: func() -> string;
-
-		// read-all: func() -> list<u8>;
-		// read-next-bytes: func(amount: u64, offset: u64) -> tuple<list<u8>, bool>;
-	}
-
 	record plugin-meta {
 		/// Namespace this plugin is part of (required)
 		///
@@ -54,16 +35,68 @@ interface types {
 
 	// /// binary data
 	// type binary = list<u8>;
+
+	resource run-ctx {
+		get-assets: func() -> result<list<asset>, error>;
+		// get-block-id: func() -> string;
+		get-manifest-key: func(key: string) -> manifest-key;
+	}
+
+	variant manifest-key {
+		none,
+		%bool(bool),
+		int(s64),
+		float(f64),
+		str(string),
+		array(list<manifest-sub-item>),
+		map(manifest-map)
+	}
+
+	resource manifest-map {
+		get: func(key: manifest-sub-item) -> manifest-sub-item;
+	}
+
+	variant manifest-sub-item {
+		%bool(bool),
+		int(s64),
+		float(f64),
+		str(string)
+	}
+
+	resource asset {
+		/// Provides relative path within the provider directory
+		path: func() -> string;
+
+		/// Reads all the bytes of the file, or all the remaining bytes if some
+		/// have already been read
+		read-all: func() -> result<list<u8>, error>;
+
+		// /// Reads up to the next `limit` bytes
+		// read-next: func(limit: u64) -> result<list<u8>, error>;
+	}
+
+	record pack-entries {}
+	resource error {
+		from-str: static func(s: string) -> error;
+
+		/// Returns debug string
+		dbg: func() -> string;
+	}
 }
 
 interface api {
 }
 
 interface imp {
-	use types.{ ctx, plugin-meta };
+	use types.{
+		run-ctx,
+		error,
+		pack-entries,
+		plugin-meta
+	};
 
 	meta: func() -> plugin-meta;
 
 	/// Run the plugin
-	run: func(input: ctx);
+	run: func(input: run-ctx) -> result<pack-entries, error>;
 }

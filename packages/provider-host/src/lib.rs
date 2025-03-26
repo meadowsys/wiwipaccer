@@ -1,6 +1,19 @@
 use self::generated::Plugin;
 use self::generated::wiwi::wiwipaccer_provider_plugin::api::Host as ApiHost;
-use self::generated::wiwi::wiwipaccer_provider_plugin::types::{ Asset, Ctx, HostAsset, HostCtx, Host as TypesHost };
+use self::generated::wiwi::wiwipaccer_provider_plugin::types::{
+	Asset,
+	Error,
+	HostAsset,
+	HostError,
+	HostManifestMap,
+	HostRunCtx,
+	ManifestKey,
+	ManifestMap,
+	ManifestSubItem,
+	PackEntries,
+	RunCtx,
+	Host as TypesHost
+};
 use wasmtime::{ Engine, Result, Store };
 use wasmtime::component::{ Component, Linker, Resource };
 
@@ -27,19 +40,61 @@ fn _test_todo_remove_me() {
 			todo!()
 		}
 
+		fn read_all(&mut self, this: Resource<Asset>) -> Result<Vec<u8>, Resource<Error>> {
+			let _ = this;
+			todo!()
+		}
+
 		fn drop(&mut self, rep: Resource<Asset>) -> Result<()> {
+			let _ = rep;
+			// Resource::<Ctx>::new_borrow(134);
+			todo!()
+		}
+	}
+
+	impl HostError for State {
+		fn dbg(&mut self, this: Resource<Error>) -> String {
+			let _ = this;
+			todo!()
+		}
+
+		fn from_str(&mut self, str: String) -> Resource<Error> {
+			let _ = str;
+			todo!()
+		}
+
+		fn drop(&mut self, rep: Resource<Error>) -> Result<()> {
 			let _ = rep;
 			todo!()
 		}
 	}
 
-	impl HostCtx for State {
-		fn get_assets(&mut self, this: Resource<Ctx>) -> Vec<Resource<Asset>> {
+	impl HostManifestMap for State {
+		fn get(&mut self, this: Resource<ManifestMap>, key: ManifestSubItem) -> ManifestSubItem {
+			let _ = this;
+			let _ = key;
+			todo!()
+		}
+
+		fn drop(&mut self, rep: Resource<ManifestMap>) -> Result<()> {
+			let _ = rep;
+			todo!()
+		}
+	}
+
+	impl HostRunCtx for State {
+		fn get_assets(&mut self, this: Resource<RunCtx>) -> Result<Vec<Resource<Asset>>, Resource<Error>> {
 			let _ = this;
 			todo!()
 		}
 
-		fn drop(&mut self, rep: Resource<Ctx>) -> Result<()> {
+		fn get_manifest_key(&mut self, this: Resource<RunCtx>, key: String) -> ManifestKey {
+			let _ = this;
+			let _ = key;
+			todo!()
+		}
+
+		fn drop(&mut self, rep: Resource<RunCtx>) -> Result<()> {
 			let _ = rep;
 			todo!()
 		}
