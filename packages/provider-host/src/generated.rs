@@ -17,8 +17,8 @@ mod __generated {
 pub use self::__generated::{ Plugin, PluginIndices, PluginPre };
 pub use self::__generated::exports::wiwi::wiwipaccer_provider_plugin::imp::{ Guest, GuestIndices };
 pub use self::__generated::wiwi::wiwipaccer_provider_plugin::api::{
-	Host as HostApi,
-	add_to_linker as add_to_linker_api
+	Host as HostApi
+	// add_to_linker as add_to_linker_api
 };
 pub use self::__generated::wiwi::wiwipaccer_provider_plugin::types::{
 	Asset,
@@ -33,6 +33,6 @@ pub use self::__generated::wiwi::wiwipaccer_provider_plugin::types::{
 	PackEntries,
 	PluginMeta,
 	RunCtx,
-	Host as HostTypes,
-	add_to_linker as add_to_linker_types
+	Host as HostTypes
+	// add_to_linker as add_to_linker_types
 };
