@@ -55,6 +55,7 @@ interface types {
 
 	resource manifest-map {
 		get: func(key: manifest-sub-item) -> manifest-sub-item;
+		get-all-items: func() -> list<tuple<manifest-sub-item, manifest-sub-item>>;
 	}
 
 	variant manifest-sub-item {
@@ -81,7 +82,7 @@ interface types {
 	}
 
 	resource error {
-		from-str: static func(s: string) -> error;
+		from-str: static func(str: string) -> error;
 
 		/// Returns debug string
 		dbg: func() -> string;

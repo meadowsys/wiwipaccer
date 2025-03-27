@@ -82,6 +82,11 @@ impl HostManifestMap for State {
 	}
 
 	#[inline]
+	fn get_all_items(&mut self, this: Resource<ManifestMap>) -> Vec<(ManifestSubItem, ManifestSubItem)> {
+		self.manifest_map_state.get_all_items(this)
+	}
+
+	#[inline]
 	fn drop(&mut self, rep: Resource<ManifestMap>) -> Result<()> {
 		self.manifest_map_state.drop(rep)
 	}
@@ -155,6 +160,12 @@ impl HostManifestMap for ManifestMapState {
 	fn get(&mut self, this: Resource<ManifestMap>, key: ManifestSubItem) -> ManifestSubItem {
 		let _ = this;
 		let _ = key;
+		todo!()
+	}
+
+	#[inline]
+	fn get_all_items(&mut self, this: Resource<ManifestMap>) -> Vec<(ManifestSubItem, ManifestSubItem)> {
+		let _ = this;
 		todo!()
 	}
 
